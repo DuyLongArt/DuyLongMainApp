@@ -2,7 +2,7 @@ FROM ubuntu:22.04
 
 # Set environment variables
 ENV PYTHON_VERSION=3.12.10
-ENV NODE_VERSION=23.7.0
+ENV NODE_VERSION=22.16.0
 ENV TYPESCRIPT_VERSION=5.8.3
 
 # Install dependencies
