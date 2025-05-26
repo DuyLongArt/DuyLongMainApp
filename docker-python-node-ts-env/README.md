@@ -29,9 +29,10 @@ This will start a new container with an interactive terminal.
 The Dockerfile sets up the following:
 
 - **Python 3.12.10**: A popular programming language for various applications.
-- **Node.js 23.7.0**: A JavaScript runtime built on Chrome's V8 JavaScript engine.
+- **Node.js 22.16.0**: A JavaScript runtime built on Chrome's V8 JavaScript engine.
 - **TypeScript 5.8.3**: A superset of JavaScript that compiles to plain JavaScript.
-
+## Intergrate with VsCode
+"docker dockerPath": "podman" and using VsCode attach to running container
 ## Additional Information
 
 Feel free to modify the Dockerfile to add any additional dependencies or configurations as needed for your project.
