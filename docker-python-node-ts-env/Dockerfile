@@ -29,7 +29,6 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | b
 WORKDIR /app
 
 # Copy the application code (if any)
-# COPY . .
 
 # Expose any ports (if needed)
 # EXPOSE 3000

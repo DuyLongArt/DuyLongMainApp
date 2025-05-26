@@ -6,12 +6,12 @@ services:
     image: duylong_python_node_ts
     container_name: DuyLongMainApp
     volumes:
-      - ./app:/app
+      - ..:/app
       - ~/.ssh:/root/.ssh:ro  # Optional: Mount SSH keys if needed for git operations
     ports:
       - "3000:3000"  # For Node.js apps (if needed)
       - "22222:22222"  # For Python apps (if needed)
-    working_dir: /app
+    working_dir: /app/ui
     tty: true  # Keep container running
     stdin_open: true  # Enable interactive sessions
     command: /bin/bash
