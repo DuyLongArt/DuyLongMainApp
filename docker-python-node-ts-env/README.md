@@ -1,6 +1,6 @@
 # docker-python-node-ts-env
 
-This project sets up a Docker environment with Python 3.12.10, Node.js 23.7.0, and TypeScript 5.8.3.
+This project sets up a Docker environment with Python 3.12.10, Node.js 22.16.0, and TypeScript 5.8.3.
 
 ## Prerequisites
 
@@ -12,6 +12,7 @@ To build the Docker image, navigate to the project directory and run the followi
 
 ```bash
 docker build -t python-node-ts-env .
+podman build -t python-node-ts-env .
 ```
 
 ## Running the Docker Container
@@ -20,6 +21,8 @@ After building the image, you can run a container using the following command:
 
 ```bash
 docker run -it python-node-ts-env
+podman-compose up
+docker compose up
 ```
 
 This will start a new container with an interactive terminal.
