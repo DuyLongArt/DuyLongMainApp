@@ -1,0 +1,19 @@
+services:
+  dev-environment:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: python_api
+    container_name: DuyLongAPI
+    volumes:
+      - ../python_api:/app/python_api  # Mount the local python_api directory
+      - ~/.ssh:/root/.ssh:ro  # Optional: Mount SSH keys if needed for git operations
+    ports:
+      - 8889:8889 # Expose port for API access
+    working_dir: /app/python_api
+    tty: true  # Keep container running
+    stdin_open: true  # Enable interactive sessions
+    command: /bin/bash
+    environment:
+      - NODE_ENV=development
+      - PYTHONUNBUFFERED=1  # Ensures Python output is sent straight to terminal without buffering
