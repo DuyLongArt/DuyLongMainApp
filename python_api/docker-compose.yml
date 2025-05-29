@@ -1,10 +1,12 @@
 services:
-  dev-environment:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
     image: python_api
     container_name: DuyLongAPI
+    depends_on: 
+      - database
     volumes:
       - ../python_api:/app/python_api  # Mount the local python_api directory
       - ~/.ssh:/root/.ssh:ro  # Optional: Mount SSH keys if needed for git operations
@@ -17,3 +19,22 @@ services:
     environment:
       - NODE_ENV=development
       - PYTHONUNBUFFERED=1  # Ensures Python output is sent straight to terminal without buffering
+      - DATABASE_URL=postgresql://duylong:duylongpass@database:5432/duylongdb
+   
+
+
+  database:
+    image: postgres:17.5
+    container_name: my_database
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: myDatabase
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
