@@ -2,10 +2,8 @@ FROM ubuntu:22.04
 
 # Set environment variables
 ENV PYTHON_VERSION=3.12.10
-ENV NODE_VERSION=22.16.0
-ENV TYPESCRIPT_VERSION=5.8.3
-
 # Install dependencies
+WORKDIR /home/app
 RUN apt-get update && apt-get install -y \
     curl \
     build-essential \
@@ -20,13 +18,9 @@ RUN curl -O https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VER
     && ./configure --enable-optimizations \
     && make altinstall \
     && cd .. \
-    && rm -rf Python-$PYTHON_VERSION Python-$PYTHON_VERSION.tgz
-
-# Install Node.js
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && \. "$HOME/.nvm/nvm.sh" && nvm install 22 && node -v # && nvm current  && npm -v && npm install -g typescript@$TYPESCRIPT_VERSION
-
+    && rm -rf Python-$PYTHON_VERSION Python-$PYTHON_VERSION.tgz && cd ~/app/python_api && pip install -r requirements.txt
 # Set the working directory
-WORKDIR /app
+
 
 # Copy the application code (if any)
 

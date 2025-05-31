@@ -1,4 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import Container from '@mui/material/Container';
+import Grid   from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+
 interface WidgetData {
   id: number;
   name: string;
@@ -6,83 +10,27 @@ interface WidgetData {
 }
 
 const WidgetMainPage: React.FC = () => {
-  const [widgets, setWidgets] = useState<WidgetData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Simulate fetching data from an API
-    const fetchWidgets = async () => {
-      try {
-        // In a real app, replace with actual API call
-        setTimeout(() => {
-          const mockData: WidgetData[] = [
-            { id: 1, name: "CPU Usage", value: 45 },
-            { id: 2, name: "Memory Usage", value: 72 },
-            { id: 3, name: "Disk Space", value: 33 }
-          ];
-          setWidgets(mockData);
-          setLoading(false);
-        }, 1000);
-      } catch (err) {
-        setError("Failed to fetch widget data");
-        setLoading(false);
-      }
-    };
-
-    fetchWidgets();
-  }, []);
-
-  const handleRefresh = () => {
-    setLoading(true);
-    // Simulate refreshing data
-    setTimeout(() => {
-      const updatedData = widgets.map(widget => ({
-        ...widget,
-        value: Math.floor(Math.random() * 100)
-      }));
-      setWidgets(updatedData);
-      setLoading(false);
-    }, 800);
-  };
+  const [widgets] = useState<WidgetData[]>([
+    { id: 1, name: 'Widget A', value: 10 },
+    { id: 2, name: 'Widget B', value: 20 },
+    { id: 3, name: 'Widget C', value: 30 },
+    { id: 4, name: 'Widget D', value: 40 },
+    { id: 5, name: 'Widget E', value: 50 },
+    { id: 6, name: 'Widget F', value: 60 },
+  ]);
 
   return (
-    <div className="widget-container">
-      <header className="widget-header">
-        <h1>Widget Dashboard</h1>
-        <button 
-          onClick={handleRefresh}
-          disabled={loading}
-          className="refresh-button"
-        >
-          {loading ? 'Loading...' : 'Refresh'}
-        </button>
-      </header>
-
-      <main className="widget-content">
-        {error && <div className="error-message">{error}</div>}
-        
-        {loading ? (
-          <div className="loading-spinner">Loading widgets...</div>
-        ) : (
-          <div className="widgets-grid">
-            {widgets.map(widget => (
-              <div key={widget.id} className="widget-card">
-                <h3>{widget.name}</h3>
-                <div className="widget-value">{widget.value}%</div>
-                <div className="progress-bar">
-                  <div 
-                    className="progress-fill"
-                    style={{ width: `${widget.value}%` }}
-                  ></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </main>
-
-   </>
+    <Container>
+        {widgets.map((widget) => (
+          <Grid item xs={12} sm={6} md={4} key={widget.id} component="div">
+            <Paper style={{ padding: 16, textAlign: 'center' }}>
+              <div><strong>{widget.name}</strong></div>
+              <div>Value: {widget.value}</div>
+            </Paper>
+          </Grid>
+        ))}
+    
+    </Container>
   );
 };
 

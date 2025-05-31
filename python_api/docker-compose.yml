@@ -11,7 +11,7 @@ services:
       - ../python_api:/app/python_api  # Mount the local python_api directory
       - ~/.ssh:/root/.ssh:ro  # Optional: Mount SSH keys if needed for git operations
     ports:
-      - 8889:8889 # Expose port for API access
+      - 3346:3346 # Expose port for API access
     working_dir: /app/python_api
     tty: true  # Keep container running
     stdin_open: true  # Enable interactive sessions
@@ -19,20 +19,16 @@ services:
     environment:
       - NODE_ENV=development
       - PYTHONUNBUFFERED=1  # Ensures Python output is sent straight to terminal without buffering
-      - DATABASE_URL=postgresql://duylong:duylongpass@database:5432/duylongdb
-   
-
-
+      - DATABASE_URL=postgresql://duylong:duylongpass@database:5432/duylongdb 
   database:
     image: postgres:17.5
-    container_name: my_database
+    container_name: postgres_db
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: myDatabase
-      MYSQL_USER: user
-      MYSQL_PASSWORD: userpassword
+      POSTGRES_USER: duylong
+      POSTGRES_DATABASE: duylongdb
+      POSTGRES_PASSWORD: duylongpass
     ports:
-      - "5432:5432"
+      - "6000:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
 
