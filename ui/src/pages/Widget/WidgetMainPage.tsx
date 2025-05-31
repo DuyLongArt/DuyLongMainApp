@@ -82,10 +82,7 @@ const WidgetMainPage: React.FC = () => {
         )}
       </main>
 
-      <footer className="widget-footer">
-        <p>© 2025 Widget Dashboard</p>
-      </footer>
-    </div>
+   </>
   );
 };
 
