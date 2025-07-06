@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/person") // Đường dẫn cơ sở cho tất cả các API trong controller này
 public class PersonController {
 
-    private final PersonRepo personRepo;
+    private final PersonDAO personRepo;
 
     @Autowired
-    public PersonController(PersonRepo personRepo) {
+    public PersonController(PersonDAO personRepo) {
         this.personRepo = personRepo;
     }
 

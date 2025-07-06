@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import Container from '@mui/material/Container';
 import Grid   from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import Card from '@mui/material/Card';
+import Box from '@mui/material/Box';
 
 interface WidgetData {
   id: number;
   name: string;
   value: number;
+  imageUrl?:string ;
 }
 
 const WidgetMainPage: React.FC = () => {
@@ -20,17 +23,25 @@ const WidgetMainPage: React.FC = () => {
   ]);
 
   return (
-    <Container>
+    <Box>
+      <Grid container spacing={5} xs={8} sm={4} md={2} sx={{display:'flex',justifyContent:'center'}}>
+
+     
         {widgets.map((widget) => (
-          <Grid item xs={12} sm={6} md={4} key={widget.id} component="div">
+          <Grid item xs={2} sm={1} md={1} key={widget.id} component="div" sx={{border:'1px solid red'}}>
+            <Card sx={{border:'1px solid red'}}>
+              
             <Paper style={{ padding: 16, textAlign: 'center' }}>
               <div><strong>{widget.name}</strong></div>
               <div>Value: {widget.value}</div>
-            </Paper>
+            </Paper> 
+            </Card>
+           
           </Grid>
         ))}
+         </Grid>
     
-    </Container>
+    </Box>
   );
 };
 

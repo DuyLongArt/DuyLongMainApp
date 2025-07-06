@@ -1,9 +1,6 @@
 services:
-  dev-environment:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: duylong_python_node_ts
+  DuyLongMainApp:
+    image: python-node-ts-env
     container_name: DuyLongMainApp
     volumes:
       - ..:/app
