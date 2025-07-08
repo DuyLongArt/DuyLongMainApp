@@ -24,11 +24,11 @@ const WidgetMainPage: React.FC = () => {
 
   return (
     <Box>
-      <Grid container spacing={5} xs={8} sm={4} md={2} sx={{display:'flex',justifyContent:'center'}}>
+      <Grid container spacing={5} md={12} sx={{display:'flex',justifyContent:'center'}}>
 
      
         {widgets.map((widget) => (
-          <Grid item xs={2} sm={1} md={1} key={widget.id} component="div" sx={{border:'1px solid red'}}>
+          <Grid item xs={3}  key={widget.id} component="div" sx={{border:'1px solid red'}}>
             <Card sx={{border:'1px solid red'}}>
               
             <Paper style={{ padding: 16, textAlign: 'center' }}>

@@ -21,7 +21,7 @@ import AppIcon from "../assets/AppMainIcon_White.png"; // Import icon logo của
 
 
 
-function ResponsiveAppBar() {
+function ResponsiveAppBar({openDrawerGoUpProps}) {
   // State để quản lý việc đóng/mở menu trên mobile
   console.log("ResponsiveAppBar.tsx is running");
   const [page1,setPage1]=React.useState<string>("Personal");
@@ -48,8 +48,11 @@ function ResponsiveAppBar() {
       <Container sx={{minWidth:"100%" ,paddingLeft:"0px",paddingRight:"0px"}} style={{paddingLeft:"15px",paddingRight:"15px"}}>
         <Toolbar disableGutters>
           {/* --- LOGO (DESKTOP) --- */}
-            <img src={AppIcon} style={{width:"55px",height:"55px"}} />
+          <IconButton onClick={openDrawerGoUpProps(true)}>
 
+   
+            <img src={AppIcon} style={{width:"55px",height:"55px"}} />
+</IconButton>
 
           <Typography
             variant="h6"
