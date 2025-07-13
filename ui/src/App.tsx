@@ -62,8 +62,7 @@ const [open, setOpen] = React.useState(false);
               </ListItemButton>
             </ListItem>
           </List>
-          
-          <p>Drawer Content Here</p>
+      
         </Box>
       </Drawer>
     </>
