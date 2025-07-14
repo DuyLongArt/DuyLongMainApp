@@ -1,0 +1,36 @@
+services:
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    image: ui_image
+    container_name: ui_container
+    ports:
+      - "22222:22222"
+    networks:
+      - duylong_network
+  database:
+    image: postgres:16
+    container_name: postgres_db
+    ports:
+      - "6000:5432"
+    networks:
+      - duylong_network
+    environment:
+      - POSTGRES_USER=duylong
+      - POSTGRES_PASSWORD=duylongpass
+      - POSTGRES_DB=duylongdb
+  backend:
+    image: tomcat_backend
+    build: 
+      context: ./Tomcat
+      dockerfile: Dockerfile
+    container_name: tomcat_container
+    ports:
+      - "8086:8080"
+    networks:
+      - duylong_network
+
+networks:
+  duylong_network:
+    driver: bridge

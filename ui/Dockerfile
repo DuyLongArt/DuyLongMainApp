@@ -51,5 +51,6 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | b
 
 # Set the working directory
 WORKDIR /home/app
+EXPOSE 22222
 
-CMD ["/bin/sh"]
+CMD ["tail","-f","/dev/null"]
