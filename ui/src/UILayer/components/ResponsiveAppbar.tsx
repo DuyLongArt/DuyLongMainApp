@@ -10,25 +10,15 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import AdbIcon from '@mui/icons-material/Adb'; // Icon ví dụ cho logo
-import {ThemeProvider} from "@mui/material";
-import containerTheme from "../styles/ContainerStyle.tsx";
-import AppIcon from "../assets/AppMainIcon_White.png"; // Import icon logo của bạ
+
 // Danh sách các trang để hiển thị trên thanh đi hướng
-
-
-
 // theme.js
-
-
-
-function ResponsiveAppBar({openDrawerGoUpProps}) {
+interface responsiveListProps{
+  listPage:string[]
+}
+const  ResponsiveAppBar:React.FC<responsiveListProps>=({listPage})=> {
   // State để quản lý việc đóng/mở menu trên mobile
-  console.log("ResponsiveAppBar.tsx is running");
-  const [page1,setPage1]=React.useState<string>("Personal");
-  console.log("Page1: ",page1);
-  const [page2,setPage2]=React.useState<string>("Widget");
-  const [page3,setPage3]=React.useState<string>("Contact");
-  const pages = [page1,page2,page3];
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -48,11 +38,7 @@ function ResponsiveAppBar({openDrawerGoUpProps}) {
       <Container sx={{minWidth:"100%" ,paddingLeft:"0px",paddingRight:"0px"}} style={{paddingLeft:"15px",paddingRight:"15px"}}>
         <Toolbar disableGutters>
           {/* --- LOGO (DESKTOP) --- */}
-          <IconButton onClick={openDrawerGoUpProps(true)}>
-
-   
-            <img src={AppIcon} style={{width:"55px",height:"55px"}} />
-</IconButton>
+         
 
           <Typography
             variant="h6"
@@ -102,7 +88,7 @@ function ResponsiveAppBar({openDrawerGoUpProps}) {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-               {pages.map((page) => (
+               {listPage.map((page) => (
                   <MenuItem 
                     key={page} 
                     onClick={handleCloseNavMenu} 
@@ -140,7 +126,7 @@ function ResponsiveAppBar({openDrawerGoUpProps}) {
 
           {/* --- CÁC LIÊN KẾT (DESKTOP) --- */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
+            {listPage.map((page) => (
 
 
                

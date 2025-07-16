@@ -31,7 +31,7 @@ const ErrorIcon = () => (
 
 // Renamed component to 'ErrorPageComponent' to resolve the naming conflict.
 // The name 'Error' is a built-in JavaScript constructor and cannot be used as a JSX element name.
-const ErrorPage: React.FC<ErrorPageProps> = ({
+const NotFoundPage: React.FC<ErrorPageProps> = ({
   errorCode = '404',
   errorMessage = 'Page Not Found',
   errorDescription = "Sorry, we couldn't find the page you're looking for. It might have been moved, deleted, or maybe you just mistyped the URL.",
@@ -78,4 +78,4 @@ const ErrorPage: React.FC<ErrorPageProps> = ({
   );
 };
 
-export default ErrorPage;
+export default NotFoundPage;
