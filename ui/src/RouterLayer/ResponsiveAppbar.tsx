@@ -33,9 +33,9 @@ const  ResponsiveAppBar:React.FC<responsiveListProps>=({listPage})=> {
     // AppBar là container chính, 'sticky' để nó dính lại khi cuộn
       // <ThemeProvider theme={DefaultTheme}>
 
-
+<Box sx={{border:"1px red solid",width:"100%"}}>
     <AppBar position="sticky"  >
-      <Container sx={{minWidth:"100%" ,paddingLeft:"0px",paddingRight:"0px"}} style={{paddingLeft:"15px",paddingRight:"15px"}}>
+    
         <Toolbar disableGutters>
           {/* --- LOGO (DESKTOP) --- */}
          
@@ -44,7 +44,7 @@ const  ResponsiveAppBar:React.FC<responsiveListProps>=({listPage})=> {
             variant="h6"
             noWrap
             component="a"
-            href="/"
+            href="/home"
             sx={{
              
               display: { xs: 'none', md: 'flex' },
@@ -93,7 +93,7 @@ const  ResponsiveAppBar:React.FC<responsiveListProps>=({listPage})=> {
                     key={page} 
                     onClick={handleCloseNavMenu} 
                     component="a" // Chuyển MenuItem thành thẻ <a>
-                    href={`/${page.toLowerCase().replace(' ', '-')}`} // Tạo href hợp lệ
+                    href={`/home/${page.toLowerCase().replace(' ', '-')}`} // Tạo href hợp lệ
                   >
                     <Typography textAlign="center">{page}</Typography>
                   </MenuItem>
@@ -135,7 +135,7 @@ const  ResponsiveAppBar:React.FC<responsiveListProps>=({listPage})=> {
                     key={page} 
                     onClick={handleCloseNavMenu} 
                     component="a" // Chuyển MenuItem thành thẻ <a>
-                    href={`/${page.toLowerCase().replace(' ', '-')}`} // Tạo href hợp lệ
+                    href={`/home/${page.toLowerCase().replace(' ', '-')}`} // Tạo href hợp lệ
                   >
                     <Typography textAlign="center">{page}</Typography>
                   </MenuItem>
@@ -150,9 +150,9 @@ const  ResponsiveAppBar:React.FC<responsiveListProps>=({listPage})=> {
              </Button>
           </Box>
         </Toolbar>
-      </Container>
+
     </AppBar>
-      // </ThemeProvider>
+     </Box>
   );
 }
 export default ResponsiveAppBar;

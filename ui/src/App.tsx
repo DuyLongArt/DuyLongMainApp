@@ -4,7 +4,7 @@ import './App.css'
 import HomePage from "./UILayer/pages/Home/HomePage";
 
 
-function App() {
+const  App:React.FC=()=> {
   return (
     <Box>
       <HomePage/>

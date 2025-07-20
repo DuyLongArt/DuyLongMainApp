@@ -12,6 +12,9 @@ import {
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { LockOutlined as LockOutlinedIcon } from '@mui/icons-material';
 import { Avatar } from '@mui/material'; // Import Avatar for the icon
+import { useDispatch, useSelector } from 'react-redux';
+import { authSlice } from '../../../OrchestraLayer/ReduxToolkit/slice/AuthSlice';
+import { RootState } from '../../../OrchestraLayer/ReduxToolkit/Store';
 
 // Define a custom theme for the login page (optional, but good practice)
 const loginTheme = createTheme({
@@ -75,18 +78,21 @@ const LoginPage: React.FC = () => {
     event.preventDefault(); // Prevent default form submission behavior
     setLoading(true);
     setError(null); // Clear previous errors
+    const dispatch=useDispatch();
+    const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
-    // Simulate an API call
+
+    dispatch(authSlice.actions.loginByUserPassword({
+      usernameBackend: "admin",
+      passwordBackend: "admin",
+      username: email,
+      password: password
+    }));
+
     setTimeout(() => {
-      if (email === 'user@example.com' && password === 'password123') {
-        alert('Login successful!'); // In a real app, you'd redirect or set user context
-        setEmail('');
-        setPassword('');
-      } else {
-        setError('Invalid email or password. Please try again.');
-      }
+if(isAuthenticated)
       setLoading(false);
-    }, 1500); // Simulate network delay
+    }, 1000); // Simulate network delay
   };
 
   return (
