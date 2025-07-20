@@ -1,0 +1,214 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # --- Config Server Replica Set ---
+  configsvr1:
+    image: mongo:7.0 # Pin your MongoDB version
+    container_name: configsvr1
+    ports:
+      - "8000:27019" # Default config server port
+    volumes:
+      - configsvr1-data:/data/db
+    networks:
+      - mongo-sharded-net
+    command: mongod --configsvr --replSet configRS --dbpath /data/db --port 27019 --bind_ip_all
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --port 27019 --quiet --eval 'db.adminCommand(\"ping\").ok || rs.status().ok'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20 # Increased retries for initial setup
+    # Auto-initiate replica set for config servers
+    entrypoint: ["bash", "-c", "mongod --configsvr --replSet configRS --dbpath /data/db --port 27019 --bind_ip_all & sleep 10 && mongosh --port 27019 --eval 'try { rs.initiate({_id: \"configRS\", configsvr: true, members: [{_id: 0, host: \"configsvr1:27019\"}, {_id: 1, host: \"configsvr2:27019\"}, {_id: 2, host: \"configsvr3:27019\"}]}) } catch (e) { print(e.message) }'"]
+
+  configsvr2:
+    image: mongo:7.0
+    container_name: configsvr2
+    ports:
+      - "8001:27019"
+    volumes:
+      - configsvr2-data:/data/db
+    networks:
+      - mongo-sharded-net
+    command: mongod --configsvr --replSet configRS --dbpath /data/db --port 27019 --bind_ip_all
+    healthcheck: # ADDED HEALTHCHECK
+      test: ["CMD-SHELL", "mongosh --port 27019 --quiet --eval 'db.adminCommand(\"ping\").ok || rs.status().ok'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    depends_on:
+      - configsvr1 # Simple dependency, no condition needed for replica set members
+
+  configsvr3:
+    image: mongo:7.0
+    container_name: configsvr3
+    ports:
+      - "8002:27019"
+    volumes:
+      - configsvr3-data:/data/db
+    networks:
+      - mongo-sharded-net
+    command: mongod --configsvr --replSet configRS --dbpath /data/db --port 27019 --bind_ip_all
+    healthcheck: # ADDED HEALTHCHECK
+      test: ["CMD-SHELL", "mongosh --port 27019 --quiet --eval 'db.adminCommand(\"ping\").ok || rs.status().ok'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    depends_on:
+      - configsvr1 # Simple dependency
+
+  # --- Shard 1 Replica Set ---
+  shard1a:
+    image: mongo:7.0
+    container_name: shard1a
+    ports:
+      - "8110:27017" # Shard member port
+    volumes:
+      - shard1a-data:/data/db
+    networks:
+      - mongo-sharded-net
+    command: mongod --shardsvr --replSet shardRS1 --dbpath /data/db --port 27017 --bind_ip_all
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --port 27017 --quiet --eval 'db.adminCommand(\"ping\").ok || rs.status().ok'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    entrypoint: ["bash", "-c", "mongod --shardsvr --replSet shardRS1 --dbpath /data/db --port 27017 --bind_ip_all & sleep 10 && mongosh --port 27017 --eval 'try { rs.initiate({_id: \"shardRS1\", members: [{_id: 0, host: \"shard1a:27017\"}, {_id: 1, host: \"shard1b:27017\"}, {_id: 2, host: \"shard1c:27017\"}]}) } catch (e) { print(e.message) }'"]
+
+  shard1b:
+    image: mongo:7.0
+    container_name: shard1b
+    ports:
+      - "8111:27017"
+    volumes:
+      - shard1b-data:/data/db
+    networks:
+      - mongo-sharded-net
+    command: mongod --shardsvr --replSet shardRS1 --dbpath /data/db --port 27017 --bind_ip_all
+    healthcheck: # ADDED HEALTHCHECK
+      test: ["CMD-SHELL", "mongosh --port 27017 --quiet --eval 'db.adminCommand(\"ping\").ok || rs.status().ok'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    depends_on:
+      - shard1a # Simple dependency
+
+  shard1c:
+    image: mongo:7.0
+    container_name: shard1c
+    ports:
+      - "8112:27017"
+    volumes:
+      - shard1c-data:/data/db
+    networks:
+      - mongo-sharded-net
+    command: mongod --shardsvr --replSet shardRS1 --dbpath /data/db --port 27017 --bind_ip_all
+    healthcheck: # ADDED HEALTHCHECK
+      test: ["CMD-SHELL", "mongosh --port 27017 --quiet --eval 'db.adminCommand(\"ping\").ok || rs.status().ok'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    depends_on:
+      - shard1a # Simple dependency
+
+  # --- Shard 2 Replica Set ---
+  shard2a:
+    image: mongo:7.0
+    container_name: shard2a
+    ports:
+      - "8120:27017"
+    volumes:
+      - shard2a-data:/data/db
+    networks:
+      - mongo-sharded-net
+    command: mongod --shardsvr --replSet shardRS2 --dbpath /data/db --port 27017 --bind_ip_all
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --port 27017 --quiet --eval 'db.adminCommand(\"ping\").ok || rs.status().ok'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    entrypoint: ["bash", "-c", "mongod --shardsvr --replSet shardRS2 --dbpath /data/db --port 27017 --bind_ip_all & sleep 10 && mongosh --port 27017 --eval 'try { rs.initiate({_id: \"shardRS2\", members: [{_id: 0, host: \"shard2a:27017\"}, {_id: 1, host: \"shard2b:27017\"}, {_id: 2, host: \"shard2c:27017\"}]}) } catch (e) { print(e.message) }'"]
+
+  shard2b:
+    image: mongo:7.0
+    container_name: shard2b
+    ports:
+      - "8121:27017"
+    volumes:
+      - shard2b-data:/data/db
+    networks:
+      - mongo-sharded-net
+    command: mongod --shardsvr --replSet shardRS2 --dbpath /data/db --port 27017 --bind_ip_all
+    healthcheck: # ADDED HEALTHCHECK
+      test: ["CMD-SHELL", "mongosh --port 27017 --quiet --eval 'db.adminCommand(\"ping\").ok || rs.status().ok'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    depends_on:
+      - shard2a # Simple dependency
+
+  shard2c:
+    image: mongo:7.0
+    container_name: shard2c
+    ports:
+      - "8122:27017"
+    volumes:
+      - shard2c-data:/data/db
+    networks:
+      - mongo-sharded-net
+    command: mongod --shardsvr --replSet shardRS2 --dbpath /data/db --port 27017 --bind_ip_all
+    healthcheck: # ADDED HEALTHCHECK
+      test: ["CMD-SHELL", "mongosh --port 27017 --quiet --eval 'db.adminCommand(\"ping\").ok || rs.status().ok'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    depends_on:
+      - shard2a # Simple dependency
+
+  # --- Mongos Query Routers ---
+  mongos1:
+    image: mongo:7.0
+    container_name: mongos1
+    ports:
+      - "8200:27017" # Default mongos port for client connections
+    networks:
+      - mongo-sharded-net
+    depends_on: # Ensure config servers are healthy before starting mongos
+      configsvr1:
+        condition: service_healthy
+      configsvr2:
+        condition: service_healthy # Now these have healthchecks
+      configsvr3:
+        condition: service_healthy # Now these have healthchecks
+    command: mongos --configdb configRS/configsvr1:27019,configsvr2:27019,configsvr3:27019 --bind_ip_all --port 27017
+
+  mongos2:
+    image: mongo:7.0
+    container_name: mongos2
+    ports:
+      - "8201:27017" # Another mongos instance on a different host port
+    networks:
+      - mongo-sharded-net
+    depends_on:
+      configsvr1:
+        condition: service_healthy
+      configsvr2:
+        condition: service_healthy # Now these have healthchecks
+      configsvr3:
+        condition: service_healthy # Now these have healthchecks
+    command: mongos --configdb configRS/configsvr1:27019,configsvr2:27019,configsvr3:27019 --bind_ip_all --port 27017
+
+networks:
+  mongo-sharded-net:
+    driver: bridge
+
+volumes:
+  configsvr1-data:
+  configsvr2-data:
+  configsvr3-data:
+  shard1a-data:
+  shard1b-data:
+  shard1c-data:
+  shard2a-data:
+  shard2b-data:
+  shard2c-data:
