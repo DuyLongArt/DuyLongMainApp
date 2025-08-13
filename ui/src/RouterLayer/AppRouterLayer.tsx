@@ -5,9 +5,10 @@ import HomePage from "../UILayer/pages/Home/HomePage";
 import NotFoundPage from "../UILayer/pages/Error/NotFoundPage";
 import WidgetMainPage from "../UILayer/pages/Widget/WidgetMainPage";
 import { navigatorList } from "../DataLayer/NavigatorList";
-import ResponsiveAppBar from "./ResponsiveAppbar";
+import ResponsiveAppBar from "../UILayer/components/ResponsiveAppbar";
 import HomeLayout from "../UILayer/pages/Home/HomeLayout";
 import LoginPage from "../UILayer/pages/Login/LoginPage";
+import PersonPage from "../UILayer/pages/Personal/PersonPage";
 const AppRouterLayer:React.FC<ChildrenInterface>=({children})=>{
 return (
     <Box>
@@ -20,7 +21,7 @@ return (
   <Route path="home" element={<HomeLayout />} >
   <Route path="index" element={<HomePage/>} />
     <Route path="widget" element={<WidgetMainPage />} />
-    
+    <Route path="personal" element={<PersonPage/>} />
 
   </Route>
   <Route path="login" element={<LoginPage/>}/>

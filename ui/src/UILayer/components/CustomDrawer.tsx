@@ -13,9 +13,7 @@ interface drawerProps{
     onClose:(isOpen:boolean)=>void;
 }
 const CustomDrawer:React.FC<drawerProps>=({isOpen,onClose})=>{ 
-   const handleOnClose:void =(variable)=>{
-    isOpen=variable;
-   }
+  
     return (
         <Box>
   <Drawer anchor="left" open={isOpen} onClose={onClose}>

@@ -146,7 +146,7 @@ const  ResponsiveAppBar:React.FC<responsiveListProps>=({listPage})=> {
           {/* --- NÚT HÀNH ĐỘNG (CTA) --- */}
           <Box sx={{ flexGrow: 0 }}>
              <Button variant="contained" color="secondary">
-                Đăng nhập
+                Login
              </Button>
           </Box>
         </Toolbar>

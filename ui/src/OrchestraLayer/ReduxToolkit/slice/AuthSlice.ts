@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { act } from 'react';
 
 export interface AuthState {
   isAuthenticated: boolean;
@@ -32,11 +31,6 @@ export const authSlice = createSlice({
       state.user = null;
       state.token = null;
     },
-    loginByUserPassword:(state,action:PayloadAction<{passwordBackend:string;usernameBackend:string,password:string,username:string}>)=>{
-      if(action.payload.passwordBackend===action.payload.password&&action.payload.username===action.payload.usernameBackend){
-        state.isAuthenticated=true;
-      }
-    }
   },
 });
 

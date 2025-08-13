@@ -15,7 +15,9 @@ import { Avatar } from '@mui/material'; // Import Avatar for the icon
 import { useDispatch, useSelector } from 'react-redux';
 import { authSlice } from '../../../OrchestraLayer/ReduxToolkit/slice/AuthSlice';
 import { RootState } from '../../../OrchestraLayer/ReduxToolkit/Store';
-
+import { AuthContext, authenState } from '../../../OrchestraLayer/XState/AuthenState';
+import { StateMachine, MachineContext, AnyEventObject, AnyActorRef, ProvidedActor, ParameterizedObject, StateValue, NonReducibleUnknown, EventObject, MetaObject } from 'xstate';
+import { useMachine } from "@xstate/react";
 // Define a custom theme for the login page (optional, but good practice)
 const loginTheme = createTheme({
   palette: {
@@ -68,31 +70,39 @@ const loginTheme = createTheme({
   },
 });
 
+
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState<string>('');
+  
+  
+  const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
+  const actorRef=AuthContext.useActorRef();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent default form submission behavior
     setLoading(true);
     setError(null); // Clear previous errors
-    const dispatch=useDispatch();
-    const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
+  
 
-    dispatch(authSlice.actions.loginByUserPassword({
-      usernameBackend: "admin",
-      passwordBackend: "admin",
-      username: email,
-      password: password
-    }));
+    console.log("Send activate");
+    console.log("Email: "+username);
+    console.log("password: "+password);
+   
 
-    setTimeout(() => {
-if(isAuthenticated)
-      setLoading(false);
-    }, 1000); // Simulate network delay
+actorRef.send({type:"SUBMIT",username:"admin",password:"123"});
+// const state = useSelector(actorRef, (snapshot) => snapshot);
+
+  // const isAuthenticated = state.matches("onLogin");
+
+    
+
+//     setTimeout(() => {
+// if(isAuthenticated)
+//       setLoading(false);
+//     console.log("On login is true");
+//     }, 1000); // Simulate network delay
   };
 
   return (
@@ -138,8 +148,8 @@ if(isAuthenticated)
               name="email"
               autoComplete="email"
               autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               variant="outlined"
               size="medium" // Medium size for better touch target
             />
@@ -181,4 +191,5 @@ if(isAuthenticated)
 // Main App component to render the LoginPage
 // In a real application, this would typically be your App.tsx
 
-export default LoginPage; // Export App as default for Canvas preview
+export default LoginPage;
+

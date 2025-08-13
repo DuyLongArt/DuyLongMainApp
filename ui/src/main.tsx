@@ -10,20 +10,6 @@ import SecurityLayer from './SecurityLayer/SecurityLayer.tsx';
 
 createRoot(document.getElementById('root')!).render(  
   <StrictMode>
-        <BrowserRouter>
-    <DataLayer>
-
-   
-    <OrchestraLayer >
-      <SecurityLayer>
-
-   
-      <AppRouterLayer>
-        <App />
-      </AppRouterLayer>
-         </SecurityLayer>
-    </OrchestraLayer>
-     </DataLayer>
-     </BrowserRouter>
+    <App/>
   </StrictMode>,
 )

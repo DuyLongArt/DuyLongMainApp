@@ -2,13 +2,13 @@ import { Button, IconButton } from '@mui/material';
 import React, { Children } from 'react';
 import ChildrenComponent from './ChildrenComponent';
 import { MainAppIcon } from '../DataLayer/IconAssets';
-const OrchestraButton:React.FC<ChildrenComponent>=({children})=>{
+const OrchestraButton=({onClick})=>{
 return (
-<Button onClick={(true)}>
+<Button onClick={onClick}>
 
    
             <img src={MainAppIcon} style={{width:"55px",height:"55px"}} />
-            {children}
+            
 </Button>
 );
 }
