@@ -8,7 +8,6 @@ import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
-import Container from '@mui/material/Container';
 import AdbIcon from '@mui/icons-material/Adb'; // Icon ví dụ cho logo
 
 // Danh sách các trang để hiển thị trên thanh đi hướng
@@ -16,7 +15,7 @@ import AdbIcon from '@mui/icons-material/Adb'; // Icon ví dụ cho logo
 interface responsiveListProps{
   listPage:string[]
 }
-const  ResponsiveAppBar:React.FC<responsiveListProps>=({listPage})=> {
+const  ResponsiveAppBar:React.FC<responsiveListProps>=({listPage,listPath})=> {
   // State để quản lý việc đóng/mở menu trên mobile
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);

@@ -5,8 +5,7 @@ import { navigatorList } from '../../../RouterLayer/NavigatorList.ts';
 import { Outlet } from 'react-router-dom';
 import OrchestraButton from '../../components/OrchestraButton.tsx';
 import CustomDrawer from '../../components/CustomDrawer';
-import { orchestraButton, OrchestraButtonContext } from '../../../OrchestraLayer/XState/OrchestraButton';
-import { useSelector } from 'react-redux';
+import { orchestraButton } from '../../../OrchestraLayer/XState/OrchestraButton';
 import { useMachine } from '@xstate/react';
 
 const HomeLayout: React.FC <ChildrenInterface>= ({children}) => {
@@ -15,7 +14,7 @@ const [state,send]=useMachine(orchestraButton);
         <Box sx={{border:"1px solid blue"}}>
       <Box sx={{display:"flex",flexDirection:"row"}}>
            <OrchestraButton onClick={() => send({ type: 'CLICK' })} />
-                    <ResponsiveAppBar listPage={navigatorList} />
+                    <ResponsiveAppBar listPageName={navigatorList} listPath={pathList}/>
                     </Box>
           <Box>
               <CustomDrawer isOpen={state.matches("onButtonOpen")}  onClose={() => send({ type: 'CLOSE' })}/>
