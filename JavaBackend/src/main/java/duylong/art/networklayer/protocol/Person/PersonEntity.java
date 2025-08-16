@@ -1,4 +1,4 @@
-package duylong.art.javabackend.Person;
+package duylong.art.networklayer.Person;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

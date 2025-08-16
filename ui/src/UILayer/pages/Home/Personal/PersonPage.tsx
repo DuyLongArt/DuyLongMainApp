@@ -1,6 +1,9 @@
 import React from 'react';
 import axios from 'axios';
-import { Grid, Box, Typography, CircularProgress } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface PersonData {
     personName: string;

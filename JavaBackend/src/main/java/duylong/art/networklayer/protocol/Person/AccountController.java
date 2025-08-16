@@ -1,4 +1,4 @@
-package duylong.art.javabackend.Person;
+package duylong.art.networklayer.Person;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -6,12 +6,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/person") // Đường dẫn cơ sở cho tất cả các API trong controller này
-public class PersonController {
+public class AccountController
+{
 
-    private final PersonDAO personRepo;
+    private final AccountDAO personRepo;
 
     @Autowired
-    public PersonController(PersonDAO personRepo) {
+    public AccountController(AccountDAO personRepo) {
         this.personRepo = personRepo;
     }
 
