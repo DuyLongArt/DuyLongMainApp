@@ -1,4 +1,4 @@
-package duylong.art.javabackend;
+package duylong.art.networklayer;
 
 
 import org.springframework.context.annotation.Bean;

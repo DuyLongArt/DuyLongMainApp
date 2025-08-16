@@ -1,0 +1,120 @@
+{
+  "routes": [
+    {
+      "type": "redirect",
+      "from": "/",
+      "to": "/home/index"
+    },
+    {
+      "type": "standalone",
+      "path": "/login",
+      "component": "LoginPage",
+      "title": "Login"
+    },
+    {
+      "type": "standalone",
+      "path": "/register",
+      "component": "RegisterPage",
+      "title": "Register"
+    },
+    {
+      "type": "layout",
+      "path": "/home",
+      "component": "HomeLayout",
+      "children": [
+        {
+          "path": "index",
+          "component": "HomePage",
+          "title": "Home"
+        },
+        {
+          "path": "widget",
+          "component": "WidgetMainPage",
+          "title": "Widgets"
+        },
+        {
+          "path": "contact",
+          "component": "ContactPage",
+          "title": "Contact Us"
+        },
+        {
+          "path": "profile",
+          "component": "ProfilePage",
+          "title": "Profile"
+        },
+        {
+          "path": "personal",
+          "component": "PersonPage",
+          "title": "Personal"
+        }
+      ]
+    },
+    {
+      "type": "layout",
+      "path": "/admin",
+      "component": "AdminLayout",
+      "children": [
+        {
+          "path": "",
+          "isIndex": true,
+          "component": "AdminDashboard",
+          "title": "Dashboard"
+        },
+        {
+          "path": "create-account",
+          "component": "CreateAccountPage",
+          "title": "Create Account"
+        },
+        {
+          "path": "change-ui",
+          "component": "ChangeUIPage",
+          "title": "Change UI"
+        },
+        {
+          "path": "theme",
+          "component": "ThemePage",
+          "title": "Theme Settings"
+        }
+      ]
+    },
+    {
+      "type": "layout",
+      "path": "/blog",
+      "component": "BlogLayout",
+      "children": [
+        {
+          "path": "write",
+          "component": "BlogEditorPage",
+          "title": "Write Post"
+        },
+        {
+          "path": "find",
+          "component": "BlogFindPage",
+          "title": "Find Posts"
+        },
+        {
+          "path": "drafts",
+          "component": "BlogDraftsPage",
+          "title": "Drafts"
+        },
+        {
+          "path": "open/:id",
+          "component": "BlogPostPage",
+          "title": "View Post",
+          "isDynamic": true
+        },
+        {
+          "path": "edit/:id",
+          "component": "BlogEditorPage",
+          "title": "Edit Post",
+          "isDynamic": true
+        }
+      ]
+    }
+  ],
+  "error": {
+    "path": "*",
+    "component": "NotFoundPage",
+    "title": "Page Not Found"
+  }
+}

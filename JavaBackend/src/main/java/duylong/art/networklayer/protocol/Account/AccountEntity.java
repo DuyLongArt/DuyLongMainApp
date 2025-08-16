@@ -1,6 +1,6 @@
-package duylong.art.networklayer.protocol;
+package duylong.art.networklayer.protocol.Account;
 
-import duylong.art.networklayer.Mail.MailEntity;
+import duylong.art.networklayer.protocol.Mail.MailEntity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

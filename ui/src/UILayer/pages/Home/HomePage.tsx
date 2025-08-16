@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import ResponsiveAppBar from '../../components/ResponsiveAppbar';
-import ChildrenInterface from '../../../OrchestraLayer/ChildrenComponent';
-import { navigatorList } from '../../../DataLayer/NavigatorList';
+import {ChildrenInterface} from '../../../OrchestraLayer/ChildrenComponent';
+import { navigatorList } from '../../../RouterLayer/NavigatorList.ts';
 import { Outlet } from 'react-router-dom';
 
 const HomePage: React.FC <ChildrenInterface>= ({children}) => {

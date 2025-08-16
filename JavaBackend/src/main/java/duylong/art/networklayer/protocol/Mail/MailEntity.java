@@ -1,6 +1,6 @@
-package duylong.art.networklayer.Mail;
+package duylong.art.networklayer.protocol.Mail;
 
-import duylong.art.networklayer.Person.PersonEntity;
+import duylong.art.networklayer.protocol.Person.PersonEntity;
 import jakarta.persistence.*;
 
 @Entity

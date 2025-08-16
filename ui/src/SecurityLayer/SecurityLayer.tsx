@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import React, { Children, useContext, useEffect } from "react";
-import ChildrenInterface from "../OrchestraLayer/ChildrenComponent";
+import {ChildrenInterface} from "../OrchestraLayer/ChildrenComponent";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../OrchestraLayer/XState/AuthenState";
 import { useActor, useActorRef, useSelector } from "@xstate/react";

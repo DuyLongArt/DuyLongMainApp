@@ -1,4 +1,4 @@
-package duylong.art.networklayer.Mail;
+package duylong.art.networklayer.protocol.Mail;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

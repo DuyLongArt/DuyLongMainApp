@@ -1,6 +1,6 @@
 import { Button } from '@mui/material';
-import { MainAppIcon } from '../DataLayer/LocalDataLayer/IconAssets';
-import MotionImageSpinner from "../UILayer/UILogics/Spin.tsx";
+import { MainAppIcon } from '../../DataLayer/LocalDataLayer/IconAssets.tsx';
+import MotionImageSpinner from "../UILogics/Spin.tsx";
 const OrchestraButton=({onClick})=>{
 return (
 <Button onClick={onClick}>

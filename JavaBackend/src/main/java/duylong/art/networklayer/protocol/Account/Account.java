@@ -1,7 +1,5 @@
-package duylong.art.networklayer.protocol;
+package duylong.art.networklayer.protocol.Account;
 
-
-import jakarta.persistence.Id;
 
 import java.time.LocalDateTime;
 

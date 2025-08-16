@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box';
 import ResponsiveAppBar from '../../components/ResponsiveAppbar';
-import ChildrenInterface from '../../../OrchestraLayer/ChildrenComponent';
-import { navigatorList } from '../../../DataLayer/NavigatorList';
+import {ChildrenInterface} from '../../../OrchestraLayer/ChildrenComponent';
+import { navigatorList } from '../../../RouterLayer/NavigatorList.ts';
 import { Outlet } from 'react-router-dom';
-import OrchestraButton from '../../../OrchestraLayer/OrchestraButton';
+import OrchestraButton from '../../components/OrchestraButton.tsx';
 import CustomDrawer from '../../components/CustomDrawer';
 import { orchestraButton, OrchestraButtonContext } from '../../../OrchestraLayer/XState/OrchestraButton';
 import { useSelector } from 'react-redux';

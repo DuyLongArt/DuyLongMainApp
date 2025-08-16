@@ -1,4 +1,4 @@
-package duylong.art.networklayer.Person;
+package duylong.art.networklayer.protocol.Person;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

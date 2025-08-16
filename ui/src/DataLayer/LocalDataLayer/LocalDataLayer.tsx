@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import ChildrenInterface from "../OrchestraLayer/ChildrenComponent";
+import type {ChildrenInterface} from "../../OrchestraLayer/ChildrenComponent.tsx";
 import Box from "@mui/material/Box";
 
-const DataLayer:React.FC<ChildrenInterface>=({children})=>{
+const LocalDataLayer:React.FC<ChildrenInterface>=({children})=>{
     //init data
     useEffect(()=>{
         sessionStorage.setItem("authen","false");
@@ -13,4 +13,4 @@ return(
     </Box>
 )
 }
-export default DataLayer;
+export default LocalDataLayer;
