@@ -1,10 +1,10 @@
 // --- Type Definitions for routes.json ---
-
+import RouterConfig from "./Router.json";
 // This interface describes a child route within a layout
 interface ChildRoute {
     path: string;
     component: string;
-    title: string;
+    title?: string;
     isIndex?: boolean;
     isDynamic?: boolean;
 }
@@ -26,7 +26,7 @@ interface StandAloneRoute extends BaseRoute {
     type: 'standalone';
     path: string;
     component: string;
-    title: string;
+    title?: string;
 }
 
 // Specific type for layout routes
@@ -46,7 +46,7 @@ interface RoutesConfig {
     error: {
         path: string;
         component: string;
-        title: string;
+        title?: string;
     };
 }
 
@@ -92,43 +92,7 @@ function getRedirectRoutes(config: RoutesConfig): RedirectRoute[] {
 // --- Example Usage ---
 
 // Assume 'routesJson' is the JSON content from your Canvas file
-const routesJson: RoutesConfig = {
-    "routes": [
-        { "type": "redirect", "from": "/", "to": "/home/index" },
-        { "type": "standalone", "path": "/login", "component": "LoginPage", "title": "Login" },
-        { "type": "standalone", "path": "/register", "component": "RegisterPage", "title": "Register" },
-        {
-            "type": "layout",
-            "path": "/home",
-            "component": "HomeLayout",
-            "children": [
-                { "path": "personal", "component": "PersonPage", "title": "Personal" },
-                { "path": "widget", "component": "WidgetMainPage", "title": "Widget" },
-                { "path": "contact", "component": "ContactPage", "title": "Contact" },
-                { "path": "profile", "component": "ProfilePage", "title": "Profile" }
-
-            ]
-        },
-        {
-            "type": "layout",
-            "path": "/admin",
-            "component": "AdminLayout",
-            "children": [ /* ... */ ]
-        },
-        {
-            "type": "layout",
-            "path": "/blog",
-            "component": "BlogLayout",
-            "children": [ /* ... */ ]
-        }
-    ],
-    "error": {
-        "path": "*",
-        "component": "NotFoundPage",
-        "title": "Page Not Found"
-    }
-};
-
+const routesJson = RouterConfig as unknown as RoutesConfig;
 const layoutRoutes = getLayoutRoutes(routesJson);
 const standAloneRoutes = getStandAloneRoutes(routesJson);
 const redirectRoutes = getRedirectRoutes(routesJson);
@@ -137,6 +101,7 @@ const redirectRoutes = getRedirectRoutes(routesJson);
 const layoutPaths = layoutRoutes.map(route => route.path);
 const standAlonePaths = standAloneRoutes.map(route => route.path);
 export const navigatorList= layoutRoutes.map(route=>route.path==="/home" ? route.children.map(child => child.title) : []).flat();
+export const pathList=layoutRoutes.map(route=>route.path==="/home" ? route.children.map(child => child.path) : []).flat();
 console.log("Layout Paths:", layoutPaths);
 // Expected Output: [ "/home", "/admin", "/blog" ]
 
