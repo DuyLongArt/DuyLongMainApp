@@ -1,28 +1,41 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+// Assuming your config file is correctly located
+import { config } from '../../OrchestraLayer/ThemeLayer/Animation/SpinConfigProtocol.ts';
 
-// An image URL to use for the demo
-// const imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg';
 interface ImageUrlInterface {
-imageUrl:string;
+    imageUrl: string;
 }
-const MotionImageSpinner: React.FC<ImageUrlInterface> = ({imageUrl}) => {
-    return (
-        <div style={{width:"55px",height:"55px"}}>
 
+const MotionImageSpinner: React.FC<ImageUrlInterface> = ({ imageUrl }) => {
+    // 1. Prepare the animation properties from the config
+    const animationProps = {
+        // This dynamically creates the animation object.
+        // For example, if trigger is "whileHover", this becomes:
+        // { whileHover: { rotate: 360, transition: { ... } } }
+        [config.animationConfig.trigger]: {
+            ...config.animationConfig.animate,
+            transition: {
+                ...config.animationConfig.transition,
+                // JSON can't store Infinity, so we convert the string 'Infinity'
+                // to the actual JavaScript Infinity value that Framer Motion needs.
+                repeat: config.animationConfig.transition.repeat === 'Infinity'
+                    ? Infinity
+                    : config.animationConfig.transition.repeat,
+            },
+        },
+    };
+
+    return (
+        // Use the style from the config for the container
+        <div style={config.general.style}>
             <motion.img
                 src={imageUrl}
-                alt="Spinning React Logo"
-                style={{ width:"55px",height:"55px", cursor: 'pointer' }}
-                // Define the animation state for when the element is hovered
-                whileHover={{
-                    rotate: 360, // Rotate a full 360 degrees
-                    transition: {
-                        repeat: Infinity,      // Loop the animation forever
-                        ease: "linear",        // Use a constant speed
-                        duration: 1.5            // Each rotation takes 2 seconds
-                    }
-                }}
+                // 2. Use props from the config object
+                alt={config.general.name}
+                style={config.general.style}
+                // 3. Spread the dynamically created animation props
+                {...animationProps}
             />
         </div>
     );

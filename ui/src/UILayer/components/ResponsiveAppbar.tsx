@@ -12,11 +12,22 @@ import AdbIcon from '@mui/icons-material/Adb'; // Icon ví dụ cho logo
 
 // Danh sách các trang để hiển thị trên thanh đi hướng
 // theme.js
-interface responsiveListProps{
-  listPage:string[]
+interface listNameAndPageInterface {
+    name:string;
+    path:string;
 }
-const  ResponsiveAppBar:React.FC<responsiveListProps>=({listPage,listPath})=> {
+interface responsiveListProps{
+    pageList:string[];
+    pathList:string[]
+}
+const  ResponsiveAppBar:React.FC<responsiveListProps>=({pageList,pathList})=> {
   // State để quản lý việc đóng/mở menu trên mobile
+const listNameAndPage=Array<listNameAndPageInterface>();
+
+    pageList.forEach((value,index)=>{
+        listNameAndPage.push({name:value,path:pathList[index]});
+});
+
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
 
@@ -87,14 +98,14 @@ const  ResponsiveAppBar:React.FC<responsiveListProps>=({listPage,listPath})=> {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-               {listPage.map((page) => (
+               {listNameAndPage.map((element) => (
                   <MenuItem 
-                    key={page} 
+                    key={element.name}
                     onClick={handleCloseNavMenu} 
                     component="a" // Chuyển MenuItem thành thẻ <a>
-                    href={`/home/${page.toLowerCase().replace(' ', '-')}`} // Tạo href hợp lệ
+                    href={`/home/${element.path.toLowerCase().replace(' ', '-')}`} // Tạo href hợp lệ
                   >
-                    <Typography textAlign="center">{page}</Typography>
+                    <Typography textAlign="center">{element.name}</Typography>
                   </MenuItem>
                   
                 ))}
@@ -125,18 +136,18 @@ const  ResponsiveAppBar:React.FC<responsiveListProps>=({listPage,listPath})=> {
 
           {/* --- CÁC LIÊN KẾT (DESKTOP) --- */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {listPage.map((page) => (
+            {listNameAndPage.map((element) => (
 
 
                
 
                   <MenuItem 
-                    key={page} 
+                    key={element.name}
                     onClick={handleCloseNavMenu} 
                     component="a" // Chuyển MenuItem thành thẻ <a>
-                    href={`/home/${page.toLowerCase().replace(' ', '-')}`} // Tạo href hợp lệ
+                    href={`/home/${element.path.toLowerCase().replace(' ', '-')}`} // Tạo href hợp lệ
                   >
-                    <Typography textAlign="center">{page}</Typography>
+                    <Typography textAlign="center">{element.name}</Typography>
                   </MenuItem>
                   
                 ))}

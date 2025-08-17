@@ -1,88 +1,91 @@
-import Box from "@mui/material/Box";
-import {ChildrenInterface} from "../OrchestraLayer/ChildrenComponent";
-import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router";
-import HomePage from "../UILayer/pages/Home/HomePage";
-import NotFoundPage from "../UILayer/pages/Error/NotFoundPage";
-import WidgetMainPage from "../UILayer/pages/Home/Widget/WidgetMainPage";
-import ResponsiveAppBar from "../UILayer/components/ResponsiveAppbar";
-import HomeLayout from "../UILayer/pages/Home/HomeLayout";
-import LoginPage from "../UILayer/pages/Login/LoginPage";
-import PersonPage from "../UILayer/pages/Home/Personal/PersonPage";
-import AdminLayout from "../UILayer/pages/Admin/AdminLayout";
-import BlogLayout from "../UILayer/pages/Blog/BlogLayout";
+import { Outlet, Route, Routes} from "react-router-dom";
+import type { ChildrenInterface } from "../OrchestraLayer/ChildrenComponent";
+import {domainRoutes, pageRoutes, routesJson} from "./RouterProtocol.ts";
+import { Box } from "@mui/material";
+import React from "react";
+import NotFoundPage from "../UILayer/pages/Error/NotFoundPage.tsx";
+
+const componentMap: Record<string, React.FC> = {
+    // Map of component names to actual React components
+    // Example:
+    // 'HomePage': HomePageComponent,
+    // 'NotFoundPage': NotFoundPageComponent,
+    "PersonalPage": React.lazy(() => import("../UILayer/pages/Home/Personal/PersonPage.tsx")),
+  "LoginPage": React.lazy(() => import("../UILayer/pages/Login/LoginPage.tsx")),
+  "HomePage": React.lazy(() => import("../UILayer/pages/Home/HomePage.tsx")),
+  "HomeLayout": React.lazy(() => import("../UILayer/pages/Home/HomeLayout.tsx")),
+  "WidgetMainPage": React.lazy(() => import("../UILayer/pages/Home/Widget/WidgetMainPage.tsx")),
+  "NotFoundPage": NotFoundPage,
+  "BlankPage":()=><Box><h1>This is blank page</h1></Box>,
+  "ContactPage": React.lazy(() => import("../UILayer/pages/Home/Contact/ContactPage.tsx")),
+};
+
+const AppRouterLayer: React.FC<ChildrenInterface> = ({ children }) => {
 
 
-
-
-const RegisterPage = () => <div>Register Page</div>;
-
-
-const ContactPage = () => <div>Contact Page</div>;
-const ProfilePage = () => <div>Profile Page</div>;
-
-const AdminDashboard = () => <div>Admin Dashboard</div>;
-const CreateAccountPage = () => <div>Admin: Create Account</div>;
-const ChangeUIPage = () => <div>Admin: Change UI</div>;
-const ThemePage = () => <div>Admin: Theme</div>;
-const BlogEditorPage = () => <div>Blog Editor</div>;
-const BlogFindPage = () => <div>Find Blog Post</div>;
-const BlogPostPage = () => <div>Viewing a Blog Post</div>;
-const BlogDraftsPage = () => <div>Blog Drafts</div>;
-
-const AppRouterLayer:React.FC<ChildrenInterface>=({children})=>{
+  const ErrorComponent = componentMap[routesJson.error.component] || NotFoundPage;
+console.log("Domain Routes in react:", domainRoutes);
   return (
-    <Box>
-    <Routes>
-      {/* --- REDIRECT --- */}
-      {/* Redirect from the root path to the home index page */}
-      <Route path="/" element={<Navigate to="/home/index" replace />} />
+      <Box>
+        <Routes>
+          {/* --- DYNAMICALLY GENERATED ROUTES --- */}
 
-      {/* --- AUTHENTICATION ROUTES --- */}
-      {/* These are top-level routes without a shared layout */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      {/* A logout route would typically be a function call that redirects, not a page */}
+          {/* 1. Generate Redirect Routes */}
+          {/*{redirectRoutes.map((route) => (*/}
+          {/*    <Route*/}
+          {/*        key={route.from}*/}
+          {/*        path={route.from}*/}
+          {/*        element={<Navigate to={route.to} replace />}*/}
+          {/*    />*/}
+          {/*))}*/}
 
-      {/* --- HOME ROUTES --- */}
-      {/* All routes inside here will render within the <HomeLayout> component */}
-      <Route path="/home" element={<HomeLayout />}>
-        <Route path="index" element={<HomePage />} />
-        <Route path="widget" element={<WidgetMainPage />} />
-        <Route path="contact" element={<ContactPage />} />
-        <Route path="profile" element={<ProfilePage />} />
-        <Route path="personal" element={<PersonPage />} />
-      </Route>
+          {/* 2. Generate Standalone Page Routes */}
+          {pageRoutes.map((route) => {
+            const Component = componentMap[route.component] || NotFoundPage;
+            return <Route key={route.path} path={route.path} element={<Component />} />;
+          })}
 
-      {/* --- ADMIN ROUTES --- */}
-      {/* All admin routes are nested under /admin and use the <AdminLayout> */}
-      <Route path="/admin" element={<AdminLayout />}>
-        {/* You can have a default/index page for the admin section */}
-        <Route index element={<AdminDashboard />} /> 
-        <Route path="create-account" element={<CreateAccountPage />} />
-        <Route path="change-ui" element={<ChangeUIPage />} />
-        <Route path="theme" element={<ThemePage />} />
-      </Route>
+          {/* 3. Generate Domain (Layout) Routes with Children */}
+          {domainRoutes.map((domainRoute) => {
+            console.log("Domain children route", domainRoute);
+            const LayoutComponent = componentMap[domainRoute.component] || Outlet;
+            return (
+                <Route
+                    key={domainRoute.path}
+                    path={domainRoute.path}
+                    element={<LayoutComponent />}
+                >
+                  {domainRoute.children.map((childRoute) => {
 
-      {/* --- BLOG ROUTES --- */}
-      {/* All blog routes are nested under /blog and use the <BlogLayout> */}
-      <Route path="/blog" element={<BlogLayout />}>
-        {/* The "write" route could have its own nested routes for different editor modes */}
-        <Route path="write" element={<BlogEditorPage />}>
-            {/* Example: /blog/write/page or /blog/write/diagram */}
-            {/* These would require another <Outlet> in the BlogEditorPage component */}
-        </Route>
-        <Route path="find" element={<BlogFindPage />} />
-        <Route path="drafts" element={<BlogDraftsPage />} />
-        {/* Routes with parameters like :id */}
-        <Route path="open/:id" element={<BlogPostPage />} />
-        <Route path="edit/:id" element={<BlogEditorPage />} />
-      </Route>
-</Routes>
+                    const ChildComponent = componentMap[childRoute.component] || NotFoundPage;
+                    if (childRoute.isIndex) {
+                      return (
+                          <Route
+                              key={`${domainRoute.path}-index`}
+                              index
+                              element={<ChildComponent />}
+                          />
+                      );
+                    }
+                    return (
+                        <Route
+                            key={`${domainRoute.path}-${childRoute.path}`}
+                            path={childRoute.path}
+                            element={<ChildComponent />}
+                        />
+                    );
+                  })}
+                </Route>
+            );
+          })}
+
+          {/* 4. Generate the Error Route */}
+          <Route path="*" element={<ErrorComponent />} />
+        </Routes>
         {children}
-    
-</Box>
-)
-}
-export default AppRouterLayer;
+      </Box>
+  );
+};
 
+export default AppRouterLayer;
 

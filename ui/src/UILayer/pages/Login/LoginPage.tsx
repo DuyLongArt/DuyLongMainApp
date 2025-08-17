@@ -15,7 +15,7 @@ import { Avatar } from '@mui/material'; // Import Avatar for the icon
 import { useDispatch, useSelector } from 'react-redux';
 import { authSlice } from '../../../OrchestraLayer/ReduxToolkit/slice/AuthSlice';
 import { RootState } from '../../../OrchestraLayer/ReduxToolkit/Store';
-import { AuthContext, authenState } from '../../../OrchestraLayer/XState/AuthenState';
+import { AuthContext, authenState } from '../../../OrchestraLayer/StateManager/XState/AuthenState';
 import { StateMachine, MachineContext, AnyEventObject, AnyActorRef, ProvidedActor, ParameterizedObject, StateValue, NonReducibleUnknown, EventObject, MetaObject } from 'xstate';
 import { useMachine } from "@xstate/react";
 // Define a custom theme for the login page (optional, but good practice)

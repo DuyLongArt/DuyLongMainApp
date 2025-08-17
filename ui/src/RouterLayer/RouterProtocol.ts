@@ -11,7 +11,7 @@ interface ChildRoute {
 
 // A base interface that all top-level route objects will extend
 interface BaseRoute {
-    type: 'redirect' | 'standalone' | 'layout';
+    type: 'redirect' | 'domain' | 'page';
 }
 
 // Specific type for redirect routes
@@ -22,23 +22,24 @@ interface RedirectRoute extends BaseRoute {
 }
 
 // Specific type for standalone routes
-interface StandAloneRoute extends BaseRoute {
-    type: 'standalone';
+interface DomainRoute extends BaseRoute {
+    type: 'domain';
     path: string;
     component: string;
+    children: ChildRoute[];
     title?: string;
 }
 
 // Specific type for layout routes
-interface LayoutRoute extends BaseRoute {
-    type: 'layout';
+interface PageRoute extends BaseRoute {
+    type: 'page';
     path: string;
     component: string;
-    children: ChildRoute[];
+
 }
 
 // A union type for any possible route object in the array
-type Route = RedirectRoute | StandAloneRoute | LayoutRoute;
+type Route = RedirectRoute | DomainRoute | PageRoute;
 
 // The root structure of the JSON file
 interface RoutesConfig {
@@ -58,11 +59,11 @@ interface RoutesConfig {
  * @param config - The parsed JSON object from routes.json
  * @returns An array of LayoutRoute objects.
  */
-function getLayoutRoutes(config: RoutesConfig): LayoutRoute[] {
+function getDomainRoutes(config: RoutesConfig): DomainRoute[] {
     // This is a type guard: it filters the array and tells TypeScript
     // the new array's type is LayoutRoute[]
     return config.routes.filter(
-        (route): route is LayoutRoute => route.type === 'layout'
+        (route): route is DomainRoute => route.type === 'domain'
     );
 }
 
@@ -71,9 +72,9 @@ function getLayoutRoutes(config: RoutesConfig): LayoutRoute[] {
  * @param config - The parsed JSON object from routes.json
  * @returns An array of StandAloneRoute objects.
  */
-function getStandAloneRoutes(config: RoutesConfig): StandAloneRoute[] {
+function getPageRoutes(config: RoutesConfig): PageRoute[] {
     return config.routes.filter(
-        (route): route is StandAloneRoute => route.type === 'standalone'
+        (route): route is PageRoute => route.type === 'page'
     );
 }
 
@@ -92,22 +93,24 @@ function getRedirectRoutes(config: RoutesConfig): RedirectRoute[] {
 // --- Example Usage ---
 
 // Assume 'routesJson' is the JSON content from your Canvas file
-const routesJson = RouterConfig as unknown as RoutesConfig;
-const layoutRoutes = getLayoutRoutes(routesJson);
-const standAloneRoutes = getStandAloneRoutes(routesJson);
-const redirectRoutes = getRedirectRoutes(routesJson);
+export const routesJson = RouterConfig as unknown as RoutesConfig;
+console.log(routesJson);
+export const pageRoutes = getPageRoutes(routesJson);
+export const domainRoutes = getDomainRoutes(routesJson);
+// const redirectRoutes = getRedirectRoutes(routesJson);
 
 // Now you can safely access properties specific to each type
-const layoutPaths = layoutRoutes.map(route => route.path);
-const standAlonePaths = standAloneRoutes.map(route => route.path);
-export const navigatorList= layoutRoutes.map(route=>route.path==="/home" ? route.children.map(child => child.title) : []).flat();
-export const pathList=layoutRoutes.map(route=>route.path==="/home" ? route.children.map(child => child.path) : []).flat();
-console.log("Layout Paths:", layoutPaths);
+export const domainPaths = domainRoutes.map(route => route.path);
+
+export const pageList= domainRoutes.map(route=>route.path==="/home" ? route.children.map(element=>element.title) : []).flat();
+export const pathList=domainRoutes.map(route=>route.path==="/home" ? route.children.map(element=>element.path) : []).flat();
+export const redirectRoutes = getRedirectRoutes(routesJson);
+
+console.log("Domain Paths:", domainPaths);
 // Expected Output: [ "/home", "/admin", "/blog" ]
 
-console.log("Standalone Paths:", standAlonePaths);
+console.log("Page Paths:", pathList);
 // Expected Output: [ "/login", "/register" ]
 
-console.log("Redirect Routes:", redirectRoutes);
 // Expected Output: [ { type: 'redirect', from: '/', to: '/home/index' } ]
-console.log("Widget Routes:", navigatorList);
+console.log("Widget Routes:", pageList);

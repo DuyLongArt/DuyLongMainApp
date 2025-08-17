@@ -1,7 +1,7 @@
 import { IconButton, ThemeProvider } from '@mui/material';
 import React, { Children } from 'react';
-import containerTheme from './styles/ContainerStyle';
-import {ChildrenInterface as ChildrenComponent} from '../OrchestraLayer/ChildrenComponent';
+import containerTheme from './StyleSetting/ContainerStyle.tsx';
+import {ChildrenInterface as ChildrenComponent} from '../ChildrenComponent.tsx';
 const ThemeMaster:React.FC<ChildrenComponent>=({children})=>{
 return (
 <ThemeProvider theme={containerTheme}>

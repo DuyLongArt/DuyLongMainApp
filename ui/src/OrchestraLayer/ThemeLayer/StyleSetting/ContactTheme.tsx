@@ -1,0 +1,49 @@
+import {createTheme} from "@mui/material/styles";
+
+export const  ContactTheme = createTheme({
+    palette: {
+        primary: {
+            main: '#1976d2',
+        },
+        secondary: {
+            main: '#dc004e',
+        },
+        background: {
+            default: '#f4f6f8',
+        },
+    },
+    typography: {
+        fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+        h3: {
+            fontWeight: 600,
+            color: '#333',
+        },
+        h5: {
+            fontWeight: 500,
+            marginBottom: '1rem',
+            color: '#555',
+        },
+        body1: {
+            fontSize: '1rem',
+            lineHeight: 1.5,
+            color: '#444',
+        },
+    },
+    components: {
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 8,
+                    textTransform: 'none',
+                },
+            },
+        },
+        MuiTextField: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 8,
+                },
+            },
+        },
+    },
+});

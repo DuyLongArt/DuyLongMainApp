@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import './App.css'
 
 import HomePage from "./UILayer/pages/Home/HomePage";
-import { authenState } from './OrchestraLayer/XState/AuthenState';
+import { authenState } from './OrchestraLayer/StateManager/XState/AuthenState';
 import { BrowserRouter } from 'react-router-dom';
 import AppRouterLayer from './RouterLayer/AppRouterLayer';
 import SecurityLayer from './SecurityLayer/SecurityLayer';

@@ -1,11 +1,11 @@
 import Box from '@mui/material/Box';
 import ResponsiveAppBar from '../../components/ResponsiveAppbar';
 import {ChildrenInterface} from '../../../OrchestraLayer/ChildrenComponent';
-import { navigatorList } from '../../../RouterLayer/NavigatorList.ts';
+import { pageList ,pathList} from '../../../RouterLayer/RouterProtocol.ts';
 import { Outlet } from 'react-router-dom';
 import OrchestraButton from '../../components/OrchestraButton.tsx';
 import CustomDrawer from '../../components/CustomDrawer';
-import { orchestraButton } from '../../../OrchestraLayer/XState/OrchestraButton';
+import { orchestraButton } from '../../../OrchestraLayer/StateManager/XState/OrchestraButton';
 import { useMachine } from '@xstate/react';
 
 const HomeLayout: React.FC <ChildrenInterface>= ({children}) => {
@@ -14,7 +14,7 @@ const [state,send]=useMachine(orchestraButton);
         <Box sx={{border:"1px solid blue"}}>
       <Box sx={{display:"flex",flexDirection:"row"}}>
            <OrchestraButton onClick={() => send({ type: 'CLICK' })} />
-                    <ResponsiveAppBar listPageName={navigatorList} listPath={pathList}/>
+                    <ResponsiveAppBar pageList={pageList} pathList={pathList}/>
                     </Box>
           <Box>
               <CustomDrawer isOpen={state.matches("onButtonOpen")}  onClose={() => send({ type: 'CLOSE' })}/>
