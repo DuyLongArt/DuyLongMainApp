@@ -17,8 +17,9 @@ interface BaseRoute {
 // Specific type for redirect routes
 interface RedirectRoute extends BaseRoute {
     type: 'redirect';
-    from: string;
-    to: string;
+    host: string;
+    path: string;
+    title:string;
 }
 
 // Specific type for standalone routes

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "person_account", schema = "person")
-public class AccountEntity implements Account
+public class AccountEntity implements AccountStructure
 {
     @Column(name = "id", nullable = false)
     private int id;

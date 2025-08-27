@@ -35,7 +35,7 @@ const NotFoundPage: React.FC<ErrorPageProps> = ({
   errorCode = '404',
   errorMessage = 'Page Not Found',
   errorDescription = "Sorry, we couldn't find the page you're looking for. It might have been moved, deleted, or maybe you just mistyped the URL.",
-  homePath = '#', // In a real app, this would be '/'
+  homePath = '/home', // In a real app, this would be '/'
 }) => {
   return (
     <div className="bg-gray-900 font-sans text-white">

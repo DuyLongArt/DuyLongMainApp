@@ -1,19 +1,27 @@
-import {createTheme} from "@mui/material/styles";
+import React from 'react';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
-export const  ContactTheme = createTheme({
+// Your custom theme definition
+export const ContactTheme = createTheme({
     palette: {
         primary: {
-            main: '#1976d2',
+            main: '#481de4ff', // Note: I removed the extra 'ff' which is valid but often used for opacity
         },
         secondary: {
             main: '#dc004e',
         },
         background: {
-            default: '#f4f6f8',
+            default: '#ffffffff', //
         },
+        
     },
     typography: {
         fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+        
         h3: {
             fontWeight: 600,
             color: '#333',
@@ -26,7 +34,12 @@ export const  ContactTheme = createTheme({
         body1: {
             fontSize: '1rem',
             lineHeight: 1.5,
-            color: '#444',
+            color: '#21004fff',
+        },
+         body2: {
+            fontSize: '1rem',
+            lineHeight: 1.5,
+            color: '#ffffffff',
         },
     },
     components: {
@@ -45,5 +58,20 @@ export const  ContactTheme = createTheme({
                 },
             },
         },
+       MuiAppBar: {
+  styleOverrides: {
+    // This rule applies to <AppBar color="primary">
+    colorPrimary: '#481de4ff',
+    
+    // This rule applies to <AppBar color="default">
+    colorDefault: {
+      // This correctly sets the text color for the default AppBar
+      color: 'white',
+      // You would typically define a backgroundColor here as well
+      backgroundColor: '#424242', // Example: a dark grey
+    },
+  },
+},
+    
     },
 });

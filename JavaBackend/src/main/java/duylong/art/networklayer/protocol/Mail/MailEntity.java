@@ -3,13 +3,15 @@ package duylong.art.networklayer.protocol.Mail;
 import duylong.art.networklayer.protocol.Person.PersonEntity;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+
 @Entity
-@Table(name="person_mail")
-public class MailEntity
+@Table(name = "person_mail")
+public class MailEntity implements MailStructure
 {
 
     @Id
-    @Column(name="id")
+    @Column(name = "id")
     private Integer id;
 
     @Column(name = "mail", nullable = false)
@@ -56,7 +58,6 @@ public class MailEntity
     {
         this.id = id;
     }
-
 
 
     public Integer getId()

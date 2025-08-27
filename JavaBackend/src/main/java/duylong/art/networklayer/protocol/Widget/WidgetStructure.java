@@ -1,4 +1,4 @@
-package duylong.art.networklayer.protocol;
+package duylong.art.networklayer.protocol.Widget;
 
 public interface WidgetStructure
 {
@@ -8,7 +8,7 @@ public interface WidgetStructure
 
     String getType();
 
-    String getUrl();
-    String getRole();
-    
+    String getUrlId();
+    String getRoleId();
+
 }

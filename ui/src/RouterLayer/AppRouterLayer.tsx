@@ -1,10 +1,10 @@
 import { Outlet, Route, Routes} from "react-router-dom";
 import type { ChildrenInterface } from "../OrchestraLayer/ChildrenComponent";
-import {domainRoutes, pageRoutes, routesJson} from "./RouterProtocol.ts";
+import {domainRoutes, pageRoutes, redirectRoutes, routesJson} from "./RouterProtocol.ts";
 import { Box } from "@mui/material";
 import React from "react";
 import NotFoundPage from "../UILayer/pages/Error/NotFoundPage.tsx";
-
+import { Navigate } from 'react-router-dom';
 const componentMap: Record<string, React.FC> = {
     // Map of component names to actual React components
     // Example:
@@ -16,30 +16,26 @@ const componentMap: Record<string, React.FC> = {
   "HomeLayout": React.lazy(() => import("../UILayer/pages/Home/HomeLayout.tsx")),
   "WidgetMainPage": React.lazy(() => import("../UILayer/pages/Home/Widget/WidgetMainPage.tsx")),
   "NotFoundPage": NotFoundPage,
+    "Widget1Page": React.lazy(() => import("../UILayer/pages/Home/Widget/Widget1Page.tsx")),
   "BlankPage":()=><Box><h1>This is blank page</h1></Box>,
   "ContactPage": React.lazy(() => import("../UILayer/pages/Home/Contact/ContactPage.tsx")),
 };
 
-const AppRouterLayer: React.FC<ChildrenInterface> = ({ children }) => {
 
+const AppRouterLayer: React.FC<ChildrenInterface> = ({ children }) => {
 
   const ErrorComponent = componentMap[routesJson.error.component] || NotFoundPage;
 console.log("Domain Routes in react:", domainRoutes);
+
+
+
   return (
       <Box>
         <Routes>
-          {/* --- DYNAMICALLY GENERATED ROUTES --- */}
 
-          {/* 1. Generate Redirect Routes */}
-          {/*{redirectRoutes.map((route) => (*/}
-          {/*    <Route*/}
-          {/*        key={route.from}*/}
-          {/*        path={route.from}*/}
-          {/*        element={<Navigate to={route.to} replace />}*/}
-          {/*    />*/}
-          {/*))}*/}
 
-          {/* 2. Generate Standalone Page Routes */}
+
+
           {pageRoutes.map((route) => {
             const Component = componentMap[route.component] || NotFoundPage;
             return <Route key={route.path} path={route.path} element={<Component />} />;

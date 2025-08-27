@@ -1,169 +1,206 @@
-import React from "react";
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb'; // Icon ví dụ cho logo
+import React, { useState } from "react";
+import {
+  Navbar,
+  Typography,
+  Button,
+  IconButton,
+  Collapse,
+} from "@material-tailwind/react";
 
-// Danh sách các trang để hiển thị trên thanh đi hướng
-// theme.js
-interface listNameAndPageInterface {
-    name:string;
-    path:string;
+// Interface definitions
+interface ListNameAndPageInterface {
+  name: string;
+  path: string;
 }
-interface responsiveListProps{
-    pageList:string[];
-    pathList:string[]
+
+interface ResponsiveListProps {
+  pageList: string[];
+  pathList: string[];
 }
-const  ResponsiveAppBar:React.FC<responsiveListProps>=({pageList,pathList})=> {
-  // State để quản lý việc đóng/mở menu trên mobile
-const listNameAndPage=Array<listNameAndPageInterface>();
 
-    pageList.forEach((value,index)=>{
-        listNameAndPage.push({name:value,path:pathList[index]});
-});
+const ResponsiveAppBar: React.FC<ResponsiveListProps> = ({ pageList, pathList }) => {
+  // State for mobile menu toggle
+  const [openNav, setOpenNav] = useState(false);
 
+  // Create navigation list
+  // console.log("page list: "+pageList);
+  const listNameAndPage: ListNameAndPageInterface[] = [];
+  pageList.forEach((value, index) => {
+  if(!(value==="Index")) {
+    listNameAndPage.push({name: value, path: pathList[index]});
+  }
+  });
 
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+  // Handle window resize
+  React.useEffect(() => {
+    const handleResize = () => window.innerWidth >= 960 && setOpenNav(false);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+  // Desktop navigation list
+  const navList = (
+    <ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
+      {listNameAndPage.map((element) => (
+        <Typography
+          key={element.name}
+          as="li"
+          variant="small"
+          className="font-black"
+          style={{ color: 'white' }}
+        >
+          <a
+            href={`/home/${element.path.toLowerCase().replace(' ', '-')}`}
+            className="flex items-center px-3 py-2 rounded-lg text-white hover:text-purple-900 hover:bg-purple-50 duration-200 font-medium"
+          >
+            {element.name}
+          </a>
+        </Typography>
+      ))}
+    </ul>
+  );
 
   return (
-    // AppBar là container chính, 'sticky' để nó dính lại khi cuộn
-      // <ThemeProvider theme={DefaultTheme}>
-
-<Box sx={{border:"1px red solid",width:"100%"}}>
-    <AppBar position="sticky"  >
-    
-        <Toolbar disableGutters>
-          {/* --- LOGO (DESKTOP) --- */}
-         
-
+    <div className="w-full border border-red-500"> {/* Debug border - remove in production */}
+      <Navbar className="sticky top-0 z-10 h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-4 bg-gradient-to-r bg-indigo-700 border-none shadow-xl">
+        <div className="flex items-center justify-end text-white">
+          
+          {/* Desktop Logo */}
           <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/home"
-            sx={{
-             
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'timenewroman',
-              fontWeight: 700,
-      
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
+            as="a"
+            href="/home/index"
+            className="mr-4 cursor-pointer py-1.5  font-bold text-xl lg:text-2xl hidden md:block hover:text-purple-200  duration-200"
+            style={{ fontFamily: 'Times New Roman, serif', color: 'white' }}
           >
             DuyLongApp
           </Typography>
 
-          {/* --- MENU (MOBILE) --- */}
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+          {/* Mobile Logo */}
+          <div className="flex items-center md:hidden">
+            <svg
+              className="w-6 h-6 mr-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M10 2L3 7v11h4v-6h6v6h4V7l-7-5z" />
+            </svg>
+            <Typography
+              as="a"
+              href="/"
+              className="cursor-pointer py-1.5 font-bold text-lg hover:text-purple-200 text-white duration-200"
+              style={{ fontFamily: 'monospace', letterSpacing: '0.3rem' ,color:'white'}}
+            >
+              LOGO
+            </Typography>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="mr-4 hidden lg:block">
+            {navList}
+          </div>
+
+          {/* Call to Action Buttons - Desktop */}
+          <div className="flex items-center gap-4">
+            <div className="hidden lg:flex items-center gap-2">
+
+              <Button
+                variant="filled"
+                size="sm"
+                className="bg-white text-purple-600 hover:bg-gray-100 transition-colors duration-200"
+              >
+                 Settings
+              </Button>
+            </div>
+
+            {/* Mobile Menu Button */}
             <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
+              variant="text"
+              className="ml-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
+              ripple={false}
+              onClick={() => setOpenNav(!openNav)}
             >
-              <MenuIcon />
+              {openNav ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  className="h-6 w-6"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              )}
             </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: 'block', md: 'none' },
-              }}
-            >
-               {listNameAndPage.map((element) => (
-                  <MenuItem 
-                    key={element.name}
-                    onClick={handleCloseNavMenu} 
-                    component="a" // Chuyển MenuItem thành thẻ <a>
-                    href={`/home/${element.path.toLowerCase().replace(' ', '-')}`} // Tạo href hợp lệ
+          </div>
+        </div>
+
+        {/* Mobile Navigation Collapse */}
+        <Collapse open={openNav}>
+          <div className="container mx-auto">
+            {/* Mobile Navigation Links */}
+            <ul className="mt-2 mb-4 flex flex-col gap-2">
+              {listNameAndPage.map((element) => (
+                <Typography
+                  key={element.name}
+                  as="li"
+                  variant="small"
+                  color="blue-gray"
+                  className="font-medium"
+                >
+                  <a
+                    href={`/home/${element.path.toLowerCase().replace(' ', '-')}`}
+                    className="flex items-center px-3 py-2 rounded-lg text-white hover:text-purple-200 hover:bg-white/10 transition-colors duration-200 font-medium"
+                    onClick={() => setOpenNav(false)}
                   >
-                    <Typography textAlign="center">{element.name}</Typography>
-                  </MenuItem>
-                  
-                ))}
-            </Menu>
-          </Box>
-          
-          {/* --- LOGO (MOBILE) --- */}
-           
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            LOGO
-          </Typography>
+                    {element.name}
+                  </a>
+                </Typography>
+              ))}
+            </ul>
 
-          {/* --- CÁC LIÊN KẾT (DESKTOP) --- */}
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {listNameAndPage.map((element) => (
-
-
-               
-
-                  <MenuItem 
-                    key={element.name}
-                    onClick={handleCloseNavMenu} 
-                    component="a" // Chuyển MenuItem thành thẻ <a>
-                    href={`/home/${element.path.toLowerCase().replace(' ', '-')}`} // Tạo href hợp lệ
-                  >
-                    <Typography textAlign="center">{element.name}</Typography>
-                  </MenuItem>
-                  
-                ))}
-          </Box>
-
-          {/* --- NÚT HÀNH ĐỘNG (CTA) --- */}
-          <Box sx={{ flexGrow: 0 }}>
-             <Button variant="contained" color="secondary">
-                Login
-             </Button>
-          </Box>
-        </Toolbar>
-
-    </AppBar>
-     </Box>
+            {/* Mobile Call to Action Buttons */}
+            <div className="flex items-center gap-2 mb-4">
+              <Button
+                variant="outlined"
+                size="sm"
+                fullWidth
+                className="border-white/30 text-white hover:bg-white/10 transition-colors duration-200"
+              >
+                💼 Hire Me
+              </Button>
+              <Button
+                variant="filled"
+                size="sm"
+                fullWidth
+                className="bg-white text-purple-600 hover:bg-gray-100 transition-colors duration-200"
+              >
+                📱 Contact
+              </Button>
+            </div>
+          </div>
+        </Collapse>
+      </Navbar>
+    </div>
   );
-}
-export default ResponsiveAppBar;
+};
 
+export default ResponsiveAppBar;

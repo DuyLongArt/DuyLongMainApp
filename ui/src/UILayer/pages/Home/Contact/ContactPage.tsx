@@ -41,7 +41,7 @@ const ContactPage = () => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     p: 2,
-                    backgroundColor: 'background.default',
+                    backgroundColor: (theme)=>theme.palette.background,
                 }}
             >
                 <Container maxWidth="md">

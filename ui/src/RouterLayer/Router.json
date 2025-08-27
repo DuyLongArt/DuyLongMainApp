@@ -1,6 +1,6 @@
 {
     "routes": [
-        { "type": "redirect", "from": "/", "to": "/home/" },
+        { "type": "redirect", "host": "192.168.3.1:6699", "path": "/apps/dashboard/","title": "nextcloud" },
         { "type": "domain", "path": "/login", "component": "LoginPage", "title": "Login",
             "children": [  { "path": "blank", "component": "LoginPage", "title": "Login" ,"type": "page"}]},
         { "type": "domain", "path": "/register", "component": "RegisterPage", "title": "Register",
@@ -10,10 +10,12 @@
             "path": "/home",
             "component": "HomeLayout",
             "children": [
+                { "path": "index", "component": "HomePage", "title": "Index","type": "page"},
                 { "path": "personal", "component": "PersonalPage", "title": "Personal" ,"type": "page"},
                 { "path": "widget", "component": "WidgetMainPage", "title": "Widget" ,"type": "page"},
                 { "path": "contact", "component": "ContactPage", "title": "Contact" ,"type": "page"},
                 { "path": "profile", "component": "ProfilePage", "title": "Profile","type": "page"}
+
             ]
         },
         {
@@ -27,6 +29,17 @@
             "path": "/blog",
             "component": "BlogLayout",
             "children": [  { "path": "blank", "component": "BlankPage", "title": "Blank" ,"type": "page"}]
+        },
+        {
+            "type": "domain",
+            "path": "/widget",
+            "component": "WidgetLayout",
+            "children": [
+                { "path": "blank", "component": "BlankPage", "title": "Blank" ,"type": "page"},
+                { "path": "1", "component": "Widget1Page", "title": "Widget 1" ,"type": "page"},
+                {"path":"2", "type": "redirect", "host": "", "path": "/widget/widget2"},
+                { "path": "widget2", "component": "Widget2Page", "title": "Widget 2" ,"type": "page"}
+            ]
         }
     ],
     "error": {

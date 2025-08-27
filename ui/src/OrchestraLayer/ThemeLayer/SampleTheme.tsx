@@ -1,17 +1,23 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
+import {
+  ThemeProvider,
+  Button,
+  Typography,
+  Card,
+  CardBody,
+} from "@material-tailwind/react";
 
-// 1. Create a Theme Mode Context
-// This context will hold the current theme mode ('light' or 'dark') and the function to toggle it.
-const ThemeModeContext = createContext(null);
+// Type definitions for better TypeScript support
+interface ThemeMode {
+  mode: 'light' | 'dark';
+  toggleThemeMode: () => void;
+}
 
-// 2. Create a custom hook to easily consume the theme mode context
-export const useThemeMode = () => {
+// Create a Theme Mode Context
+const ThemeModeContext = createContext<ThemeMode | null>(null);
+
+// Custom hook to easily consume the theme mode context
+export const useThemeMode = (): ThemeMode => {
   const context = useContext(ThemeModeContext);
   if (!context) {
     throw new Error('useThemeMode must be used within a ThemeModeProvider');
@@ -19,109 +25,99 @@ export const useThemeMode = () => {
   return context;
 };
 
-// Define your light and dark themes using Material-UI's createTheme
-const lightTheme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#1976d2', // Blue
+// Custom theme configuration for Material Tailwind
+const customTheme = {
+  button: {
+    defaultProps: {
+      size: "md",
+      variant: "filled",
+      color: "blue",
+      fullWidth: false,
+      ripple: true,
     },
-    secondary: {
-      main: '#dc004e', // Red
-    },
-    background: {
-      default: '#f4f6f8',
-      paper: '#ffffff',
-    },
-    text: {
-      primary: '#212121',
-      secondary: '#757575',
-    },
-  },
-  typography: {
-    fontFamily: 'Inter, sans-serif',
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 999, // Rounded full
-          padding: '12px 24px',
-          fontWeight: 600,
-          transition: 'all 0.3s ease-in-out',
-          '&:hover': {
-            transform: 'scale(1.05)',
+    styles: {
+      base: {
+        initial: {
+          verticalAlign: "align-middle",
+          userSelect: "select-none",
+          fontFamily: "font-sans",
+          fontWeight: "font-bold",
+          textAlign: "text-center",
+          textTransform: "uppercase",
+          transition: "transition-all",
+          disabled: "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none",
+          borderRadius: "rounded-full",
+          padding: "px-6 py-3",
+        },
+        variants: {
+          filled: {
+            blue: {
+              background: "bg-blue-500 hover:bg-blue-600 active:bg-blue-700",
+              color: "text-white",
+              shadow: "shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40",
+            },
+            purple: {
+              background: "bg-purple-500 hover:bg-purple-600 active:bg-purple-700",
+              color: "text-white",
+              shadow: "shadow-md shadow-purple-500/20 hover:shadow-lg hover:shadow-purple-500/40",
+            },
           },
         },
       },
     },
-    MuiPaper: {
-        styleOverrides: {
-            root: {
-                borderRadius: 8, // Rounded corners for Paper components
-            }
-        }
-    }
-  }
-});
-
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#9c27b0', // Purple
-    },
-    secondary: {
-      main: '#ff4081', // Pink
-    },
-    background: {
-      default: '#121212',
-      paper: '#1e1e1e',
-    },
-    text: {
-      primary: '#ffffff',
-      secondary: '#b0b0b0',
-    },
   },
-  typography: {
-    fontFamily: 'Inter, sans-serif',
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 999, // Rounded full
-          padding: '12px 24px',
-          fontWeight: 600,
-          transition: 'all 0.3s ease-in-out',
-          '&:hover': {
-            transform: 'scale(1.05)',
+  card: {
+    defaultProps: {
+      variant: "filled",
+      color: "white",
+      shadow: true,
+    },
+    styles: {
+      base: {
+        initial: {
+          position: "relative",
+          display: "flex",
+          flexDirection: "flex-col",
+          backgroundClip: "bg-clip-border",
+          borderRadius: "rounded-xl",
+        },
+        variants: {
+          filled: {
+            white: {
+              background: "bg-white dark:bg-gray-800",
+              color: "text-gray-700 dark:text-gray-200",
+              shadow: "shadow-md",
+            },
           },
         },
       },
     },
-    MuiPaper: {
-        styleOverrides: {
-            root: {
-                borderRadius: 8, // Rounded corners for Paper components
-            }
-        }
-    }
-  }
-});
+  },
+};
 
-// 3. Create the Theme Mode Provider component
-// This component will wrap your application and provide the theme mode context.
+// Main App Component
 export default function App() {
   // Initialize theme mode from localStorage or default to 'light'
-  const [mode, setMode] = useState(() => {
-    const storedMode = localStorage.getItem('themeMode');
-    return storedMode || 'light';
+  const [mode, setMode] = useState<'light' | 'dark'>(() => {
+    if (typeof window !== 'undefined') {
+      const storedMode = localStorage.getItem('themeMode');
+      return (storedMode as 'light' | 'dark') || 'light';
+    }
+    return 'light';
   });
 
-  // Effect to save the theme mode to localStorage whenever it changes
+  // Effect to save the theme mode to localStorage and update document class
   useEffect(() => {
-    localStorage.setItem('themeMode', mode);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('themeMode', mode);
+      
+      // Add or remove dark class from document element
+      if (mode === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
   }, [mode]);
 
   // Function to toggle the theme mode
@@ -129,33 +125,29 @@ export default function App() {
     setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
   };
 
-  // Memoize the theme object to prevent unnecessary re-renders
-  const theme = useMemo(() => (mode === 'light' ? lightTheme : darkTheme), [mode]);
+  // Memoize the context value
+  const contextValue = useMemo(() => ({ mode, toggleThemeMode }), [mode]);
 
   return (
-    <ThemeModeContext.Provider value={{ mode, toggleThemeMode }}>
-      <ThemeProvider theme={theme}>
-        {/* CssBaseline provides a consistent baseline for styling */}
-        <CssBaseline />
-        <Box
-          sx={{
-            minHeight: '100vh',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            p: 2, // Padding
-            bgcolor: 'background.default', // Use theme background color
-            color: 'text.primary', // Use theme text color
-            transition: 'background-color 0.3s ease-in-out, color 0.3s ease-in-out',
-          }}
-        >
-          <Typography variant="h3" component="h1" gutterBottom sx={{ mb: 4, fontWeight: 'bold' }}>
-            Material-UI Theme Manager
-          </Typography>
-          <ThemeToggler />
-          <ContentSection />
-        </Box>
+    <ThemeModeContext.Provider value={contextValue}>
+      <ThemeProvider value={customTheme}>
+        <div className={`min-h-screen transition-colors duration-300 ${
+          mode === 'dark' 
+            ? 'bg-gray-900 text-white' 
+            : 'bg-gray-50 text-gray-900'
+        }`}>
+          <div className="flex flex-col items-center justify-center min-h-screen p-4">
+            <Typography
+              variant="h1"
+              className="mb-8 text-center font-bold text-4xl md:text-5xl bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent"
+            >
+              Material Tailwind Theme Manager
+            </Typography>
+            
+            <ThemeToggler />
+            <ContentSection />
+          </div>
+        </div>
       </ThemeProvider>
     </ThemeModeContext.Provider>
   );
@@ -166,25 +158,19 @@ const ThemeToggler = () => {
   const { mode, toggleThemeMode } = useThemeMode();
 
   return (
-    <Button
-      variant="contained"
-      color="primary"
-      onClick={toggleThemeMode}
-      sx={{
-        mb: 4, // Margin bottom
-        boxShadow: 3, // Shadow
-        '&:focus': {
-          outline: 'none',
-          boxShadow: '0 0 0 4px rgba(25, 118, 210, 0.3)', // Example focus ring for primary
-          // For dark mode, you might want a different focus ring color
-          '.Mui-dark &': {
-            boxShadow: '0 0 0 4px rgba(156, 39, 176, 0.3)', // Example focus ring for dark mode primary
-          }
-        },
-      }}
-    >
-      Switch to {mode === 'light' ? 'Dark' : 'Light'} Mode
-    </Button>
+    <div className="mb-8">
+      <Button
+        onClick={toggleThemeMode}
+        className={`transition-all duration-300 transform hover:scale-105 focus:scale-105 shadow-lg ${
+          mode === 'dark'
+            ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-500/25 hover:shadow-purple-500/50'
+            : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/25 hover:shadow-blue-500/50'
+        } text-white font-semibold py-3 px-6 rounded-full`}
+        ripple={true}
+      >
+        🌙 Switch to {mode === 'light' ? 'Dark' : 'Light'} Mode ☀️
+      </Button>
+    </div>
   );
 };
 
@@ -193,31 +179,64 @@ const ContentSection = () => {
   const { mode } = useThemeMode();
 
   return (
-    <Paper
-      elevation={6} // Shadow
-      sx={{
-        mt: 4, // Margin top
-        p: 4, // Padding
-        bgcolor: 'background.paper', // Use theme paper background color
-        color: 'text.primary', // Use theme text color
-        textAlign: 'center',
-        maxWidth: 500,
-        width: '100%',
-        transition: 'background-color 0.3s ease-in-out, color 0.3s ease-in-out',
-      }}
-    >
-      <Typography variant="h5" component="h2" gutterBottom sx={{ fontWeight: 'semibold' }}>
-        Current Theme: <span style={{ textTransform: 'capitalize' }}>{mode}</span>
-      </Typography>
-      <Typography variant="body1" sx={{ mt: 2 }}>
-        This content dynamically changes its appearance based on the selected theme.
-        Observe the background, text color, and button style adapting.
-      </Typography>
-      <Box sx={{ mt: 3 }}>
-        <Typography variant="body2" color="text.secondary">
-          You can extend this to apply different styles to any Material-UI component in your app.
+    <Card className={`w-full max-w-lg transition-all duration-300 ${
+      mode === 'dark' 
+        ? 'bg-gray-800 border-gray-700' 
+        : 'bg-white border-gray-200'
+    } shadow-xl hover:shadow-2xl transform hover:-translate-y-1`}>
+      <CardBody className="text-center p-8">
+        <Typography 
+          variant="h3" 
+          className={`mb-4 font-semibold ${
+            mode === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}
+        >
+          Current Theme: 
+          <span className={`ml-2 capitalize ${
+            mode === 'dark' 
+              ? 'text-purple-400' 
+              : 'text-blue-600'
+          }`}>
+            {mode}
+          </span>
         </Typography>
-      </Box>
-    </Paper>
+        
+        <Typography 
+          variant="paragraph" 
+          className={`mb-6 leading-relaxed ${
+            mode === 'dark' ? 'text-gray-300' : 'text-gray-600'
+          }`}
+        >
+          This content dynamically changes its appearance based on the selected theme.
+          Observe the background, text color, and button style adapting smoothly with Tailwind CSS transitions.
+        </Typography>
+        
+        <div className={`mt-4 p-4 rounded-lg border-l-4 ${
+          mode === 'dark'
+            ? 'bg-gray-700 border-purple-500 text-gray-200'
+            : 'bg-blue-50 border-blue-500 text-gray-700'
+        }`}>
+          <Typography variant="small" className="font-medium">
+            💡 Pro Tip: You can extend this theming system to any component in your app using Tailwind CSS classes and the dark: modifier!
+          </Typography>
+        </div>
+        
+        {/* Demo color palette */}
+        <div className="flex justify-center gap-3 mt-6">
+          <div className={`w-8 h-8 rounded-full ${
+            mode === 'dark' ? 'bg-purple-500' : 'bg-blue-500'
+          } shadow-lg`}></div>
+          <div className={`w-8 h-8 rounded-full ${
+            mode === 'dark' ? 'bg-purple-400' : 'bg-blue-400'
+          } shadow-lg`}></div>
+          <div className={`w-8 h-8 rounded-full ${
+            mode === 'dark' ? 'bg-purple-300' : 'bg-blue-300'
+          } shadow-lg`}></div>
+          <div className={`w-8 h-8 rounded-full ${
+            mode === 'dark' ? 'bg-gray-600' : 'bg-gray-400'
+          } shadow-lg`}></div>
+        </div>
+      </CardBody>
+    </Card>
   );
 };
