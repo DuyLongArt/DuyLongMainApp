@@ -5,7 +5,7 @@ interface ChildRoute {
     path: string;
     component: string;
     title?: string;
-    isIndex?: boolean;
+    // isIndex?: boolean;
     isDynamic?: boolean;
 }
 

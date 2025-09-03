@@ -11,7 +11,7 @@ const componentMap: Record<string, React.FC> = {
     // 'HomePage': HomePageComponent,
     // 'NotFoundPage': NotFoundPageComponent,
     "PersonalPage": React.lazy(() => import("../UILayer/pages/Home/Personal/PersonPage.tsx")),
-  "LoginPage": React.lazy(() => import("../UILayer/pages/Login/LoginPage.tsx")),
+  "LoginPage": React.lazy(() => import("../UILayer/pages/Login/LoginForm.tsx")),
   "HomePage": React.lazy(() => import("../UILayer/pages/Home/HomePage.tsx")),
   "HomeLayout": React.lazy(() => import("../UILayer/pages/Home/HomeLayout.tsx")),
   "WidgetMainPage": React.lazy(() => import("../UILayer/pages/Home/Widget/WidgetMainPage.tsx")),
@@ -19,6 +19,15 @@ const componentMap: Record<string, React.FC> = {
     "Widget1Page": React.lazy(() => import("../UILayer/pages/Home/Widget/Widget1Page.tsx")),
   "BlankPage":()=><Box><h1>This is blank page</h1></Box>,
   "ContactPage": React.lazy(() => import("../UILayer/pages/Home/Contact/ContactPage.tsx")),
+    "LoginForm": React.lazy(() => import("../UILayer/pages/Login/LoginForm.tsx")),
+    "Widget2Page": React.lazy(() => import("../UILayer/pages/Home/Widget/Widget2Page.tsx")),
+    "Widget3Page": React.lazy(() => import("../UILayer/pages/Home/Widget/Widget3Page.tsx")),
+    "Widget4Page": React.lazy(() => import("../UILayer/pages/Home/Widget/Widget4Page.tsx")),
+    "Widget5Page": React.lazy(() => import("../UILayer/pages/Home/Widget/Widget5Page.tsx")),
+
+
+    // "ErrorPage": React.lazy(() => import("../UILayer/pages/Error/ErrorPage.tsx")),
+  
 };
 
 
@@ -51,18 +60,11 @@ console.log("Domain Routes in react:", domainRoutes);
                     path={domainRoute.path}
                     element={<LayoutComponent />}
                 >
+                    <Route element={<Navigate to={domainRoute.children[0]?.path || '/not-found'} replace />} index />
                   {domainRoute.children.map((childRoute) => {
 
                     const ChildComponent = componentMap[childRoute.component] || NotFoundPage;
-                    if (childRoute.isIndex) {
-                      return (
-                          <Route
-                              key={`${domainRoute.path}-index`}
-                              index
-                              element={<ChildComponent />}
-                          />
-                      );
-                    }
+
                     return (
                         <Route
                             key={`${domainRoute.path}-${childRoute.path}`}

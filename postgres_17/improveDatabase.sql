@@ -11,7 +11,7 @@ COMMENT ON SCHEMA person IS 'Person management system with improved structure an
 -- =============================================================================
 
 -- Consolidated role enum (removed duplicate role_data)
-CREATE TYPE person.user_role AS ENUM ('user', 'admin', 'moderator', 'guest');
+CREATE TYPE person.user_role AS ENUM ('user', 'admin', 'viewer');
 
 -- Post status enum
 CREATE TYPE person.post_status AS ENUM ('draft', 'published', 'archived', 'deleted');
@@ -52,7 +52,7 @@ CREATE TABLE person.email_addresses (
     id SERIAL PRIMARY KEY,
     person_id INTEGER NOT NULL REFERENCES person.persons(id) ON DELETE CASCADE,
     email_address VARCHAR(320) NOT NULL, -- RFC 5321 max length
-    email_type VARCHAR(50) DEFAULT 'personal' CHECK (email_type IN ('personal', 'work', 'other')),
+    email_type VARCHAR(50) DEFAULT 'personal' CHECK (email_type IN ('personal', 'work','company' 'other')),
     is_primary BOOLEAN DEFAULT false NOT NULL,
     status person.email_status DEFAULT 'pending' NOT NULL,
     verified_at TIMESTAMPTZ,
@@ -134,7 +134,7 @@ CREATE TABLE person.financial_accounts (
     person_id INTEGER NOT NULL REFERENCES person.persons(id) ON DELETE CASCADE,
     account_name VARCHAR(255) NOT NULL,
     account_type VARCHAR(50) DEFAULT 'checking' 
-        CHECK (account_type IN ('checking', 'savings', 'investment', 'credit', 'cash', 'other')),
+        CHECK (account_type IN ('analysis', 'savings', 'investment', 'credit', 'cash', 'other')),
     balance DECIMAL(15,2) DEFAULT 0.00 NOT NULL,
     currency person.currency_type DEFAULT 'USD' NOT NULL,
     is_primary BOOLEAN DEFAULT false NOT NULL,
@@ -151,7 +151,7 @@ CREATE TABLE person.assets (
     person_id INTEGER NOT NULL REFERENCES person.persons(id) ON DELETE CASCADE,
     asset_name VARCHAR(255) NOT NULL,
     asset_category VARCHAR(100) NOT NULL 
-        CHECK (asset_category IN ('real_estate', 'vehicle', 'electronics', 'jewelry', 'art', 'collectibles', 'other')),
+        CHECK (asset_category IN ('real_estate', 'vehicle', 'electronics','duylong_technology', 'jewelry', 'art', 'collectibles', 'other')),
     purchase_date DATE,
     purchase_price DECIMAL(15,2),
     current_estimated_value DECIMAL(15,2),
@@ -266,7 +266,6 @@ CREATE TABLE person.urls (
     port_number INTEGER CHECK (port_number BETWEEN 1 AND 65535),
     category VARCHAR(100) DEFAULT 'general' 
         CHECK (category IN ('social', 'professional', 'personal', 'reference', 'tool', 'entertainment', 'general')),
-    is_public BOOLEAN DEFAULT true NOT NULL,
     is_active BOOLEAN DEFAULT true NOT NULL,
     click_count INTEGER DEFAULT 0 NOT NULL,
     last_accessed_at TIMESTAMPTZ,
@@ -283,10 +282,11 @@ CREATE TABLE person.widgets (
     person_id INTEGER NOT NULL REFERENCES person.persons(id) ON DELETE CASCADE,
     widget_name VARCHAR(255) NOT NULL,
     widget_type VARCHAR(100) NOT NULL 
-        CHECK (widget_type IN ('url_shortener', 'calendar', 'weather', 'notes', 'links', 'social_feed', 'custom')),
+        CHECK (widget_type IN ('important_url', 'custom', 'page', 'domain', 'links','drive', 'custom')),
     configuration JSONB NOT NULL DEFAULT '{}',
     display_order INTEGER DEFAULT 0,
     is_active BOOLEAN DEFAULT true NOT NULL,
+    role person.user_role DEFAULT 'admin',
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     

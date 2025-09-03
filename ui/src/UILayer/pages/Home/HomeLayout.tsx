@@ -2,17 +2,18 @@ import React from 'react';
 import ResponsiveAppBar from '../../components/ResponsiveAppbar';
 import { ChildrenInterface } from '../../../OrchestraLayer/ChildrenComponent';
 import { pageList, pathList } from '../../../RouterLayer/RouterProtocol.ts';
-import { Outlet } from 'react-router-dom';
+import {Outlet, useLocation} from 'react-router-dom';
 import OrchestraButton from '../../components/OrchestraButton.tsx';
 import CustomDrawer from '../../components/CustomDrawer';
 import { orchestraButton } from '../../../OrchestraLayer/StateManager/XState/OrchestraButton';
 import { useMachine } from '@xstate/react';
 import AvatarFloatButton, {ColaborateIcon} from '../../components/AvatarFloatButton.tsx';
-import {AvatarImage} from "../../../DataLayer/LocalDataLayer/assets/AvatarImage.tsx";
+
 
 const HomeLayout: React.FC<ChildrenInterface> = ({ children }) => {
   const [state, send] = useMachine(orchestraButton);
-
+    const location = useLocation();
+    console.log(location.pathname);
   return (
     <div className="border border-blue-500 h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50">
       {/* Header Section */}
@@ -31,14 +32,15 @@ const HomeLayout: React.FC<ChildrenInterface> = ({ children }) => {
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-auto">
+
         <Outlet />
         {children}
+
+
       </div>
 
-      {/* Floating Action Button */}
-
         <AvatarFloatButton x={100} y={80} sizeScale={1.5} collaboratorDistance={100} />
-{/*<AvatarImage/>*/}
+
     </div>
   );
 };

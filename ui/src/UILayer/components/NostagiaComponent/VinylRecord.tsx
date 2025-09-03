@@ -1,0 +1,87 @@
+import React, {useState} from "react";
+import {AnalogButton} from "../../pages/Home/Widget/Widget5Page.tsx";
+
+export  const VinylRecord = () => {
+    const [isSpinning, setIsSpinning] = useState(false);
+    const [rpm, setRpm] = useState(33);
+
+    return (
+        <div className="bg-gradient-to-br from-amber-900 to-orange-900 border-4 border-yellow-500 rounded-2xl p-6 shadow-2xl">
+            <div className="text-center mb-4">
+                <h3 className="text-lg font-bold text-yellow-200">
+                    🎵 TECHNICS SL-1200
+                </h3>
+                <div className="text-yellow-400 font-mono text-xs">Direct Drive Turntable</div>
+            </div>
+
+            {/* Vinyl record */}
+            <div className="relative w-48 h-48 mx-auto mb-6">
+                <div
+                    className={`absolute inset-0 rounded-full bg-black border-4 border-yellow-600 ${
+                        isSpinning ? 'animate-spin' : ''
+                    }`}
+                    style={{
+                        background: 'radial-gradient(circle, #1f2937 30%, #000000 70%)',
+                        animationDuration: rpm === 33 ? '1.8s' : '1.3s'
+                    }}
+                >
+                    {/* Record grooves */}
+                    {Array.from({ length: 8 }, (_, i) => (
+                        <div
+                            key={i}
+                            className="absolute border border-gray-600 rounded-full"
+                            style={{
+                                top: `${10 + i * 5}%`,
+                                left: `${10 + i * 5}%`,
+                                right: `${10 + i * 5}%`,
+                                bottom: `${10 + i * 5}%`
+                            }}
+                        />
+                    ))}
+
+                    {/* Center label */}
+                    <div className="absolute top-1/2 left-1/2 w-20 h-20 bg-gradient-to-br from-red-500 to-red-700 rounded-full transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center border-2 border-yellow-400">
+                        <div className="text-center text-yellow-100">
+                            <div className="font-bold text-xs">CITY POP</div>
+                            <div className="text-xs">CLASSICS</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Turntable controls */}
+            <div className="grid grid-cols-3 gap-3 mb-4">
+                <AnalogButton
+                    variant="sepia"
+                    size="sm"
+                    onClick={() => setRpm(33)}
+                    isPressed={rpm === 33}
+                >
+                    33 RPM
+                </AnalogButton>
+
+                <AnalogButton
+                    variant="amber"
+                    onClick={() => setIsSpinning(!isSpinning)}
+                    isPressed={isSpinning}
+                >
+                    {isSpinning ? 'STOP' : 'START'}
+                </AnalogButton>
+
+                <AnalogButton
+                    variant="sepia"
+                    size="sm"
+                    onClick={() => setRpm(45)}
+                    isPressed={rpm === 45}
+                >
+                    45 RPM
+                </AnalogButton>
+            </div>
+
+            <div className="text-center text-yellow-600 font-mono text-sm">
+                Now Playing: Plastic Love<br/>
+                今聴いている：プラスチック・ラブ
+            </div>
+        </div>
+    );
+};

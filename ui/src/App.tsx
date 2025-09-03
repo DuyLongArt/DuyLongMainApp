@@ -29,7 +29,7 @@ const  App:React.FC=()=> {
              
                 <AppRouterLayer>
                   
-  <HomePage/>
+
                     
                   
                 </AppRouterLayer>

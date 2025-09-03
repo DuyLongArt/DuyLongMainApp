@@ -8,6 +8,7 @@ const authenState = createMachine({
     context:{
         username:"",
         password:"",
+        token:""
     },
     
     states: {
@@ -20,12 +21,18 @@ const authenState = createMachine({
     on: {
         // Mình quay lại dùng mảng [] như ban đầu của chủ nhân nha!
         // Nó rất mạnh mẽ để xử lý các trường hợp khác nhau.
+       
         SUBMIT: [
           {
             target: 'onLogin',
+
+            actions:
+             assign({token:(event)=>{event.data}}),
+         
+
             // XState v5
             guard: ({ event }) =>
-              event?.username === 'admin' && event?.password === '123',
+              event?.username === 'admin@ss' && event?.password === '123',
           },
           {
             target: 'onAuthen',
