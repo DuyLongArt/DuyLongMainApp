@@ -1,0 +1,187 @@
+version: '3.8'
+
+services:
+  # Load Balancer
+  nginx-lb:
+    image: nginx:alpine
+    container_name: nextcloud-lb
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - nextcloud-node1
+      - nextcloud-node2
+      - nextcloud-node3
+    networks:
+      - nextcloud-network
+
+  # Shared Database (Primary PostgreSQL)
+  nextcloud-db-primary:
+    image: postgres:17
+    container_name: nextcloud-db-primary
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: nextcloud_db
+      POSTGRES_USER: duylong
+      POSTGRES_PASSWORD: duylongpass
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
+      # PostgreSQL replication settings
+      POSTGRES_REPLICATION_MODE: master
+      POSTGRES_REPLICATION_USER: replicator
+      POSTGRES_REPLICATION_PASSWORD: replicator_password
+    volumes:
+      - nextcloud_db_primary:/var/lib/postgresql/data
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      - ./pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    ports:
+      - "5432:5432"
+    networks:
+      - nextcloud-network
+
+  # Database Replica (Optional for read scaling)
+  nextcloud-db-replica:
+    image: postgres:17
+    container_name: nextcloud-db-replica
+    restart: unless-stopped
+    environment:
+      POSTGRES_REPLICATION_MODE: slave
+      POSTGRES_REPLICATION_USER: replicator
+      POSTGRES_REPLICATION_PASSWORD: replicator_password
+      POSTGRES_MASTER_HOST: nextcloud-db-primary
+      POSTGRES_MASTER_PORT_NUMBER: 5432
+      PGUSER: duylong
+    depends_on:
+      - nextcloud-db-primary
+    volumes:
+      - nextcloud_db_replica:/var/lib/postgresql/data
+    networks:
+      - nextcloud-network
+
+  # Shared Redis for sessions and caching
+  nextcloud-redis:
+    image: redis:7-alpine
+    container_name: nextcloud-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - nextcloud_redis:/data
+    networks:
+      - nextcloud-network
+
+  # Nextcloud Node 1
+  nextcloud-node1:
+    image: nextcloud:28-apache
+    container_name: nextcloud-node1
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST: nextcloud-db-primary
+      POSTGRES_DB: nextcloud_db
+      POSTGRES_USER: duylong
+      POSTGRES_PASSWORD: duylongpass
+      REDIS_HOST: nextcloud-redis
+      NEXTCLOUD_ADMIN_USER: admin
+      NEXTCLOUD_ADMIN_PASSWORD: adminpass
+      NEXTCLOUD_TRUSTED_DOMAINS: duylong.art
+      # PostgreSQL specific settings
+      NEXTCLOUD_DB_TYPE: pgsql
+      NEXTCLOUD_DB_HOST: nextcloud-db-primary
+      NEXTCLOUD_DB_NAME: nextcloud
+      NEXTCLOUD_DB_USER: duylong
+      NEXTCLOUD_DB_PASSWORD: duylongpass
+    volumes:
+      - nextcloud_shared_data:/var/www/html/data
+      - nextcloud_shared_apps:/var/www/html/custom_apps
+      - nextcloud_shared_config:/var/www/html/config
+    depends_on:
+      - nextcloud-db-primary
+      - nextcloud-redis
+    networks:
+      - nextcloud-network
+
+  # Nextcloud Node 2
+  nextcloud-node2:
+    image: nextcloud:28-apache
+    container_name: nextcloud-node2
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST: nextcloud-db-primary
+      POSTGRES_DB: nextcloud_db
+      POSTGRES_USER: duylong
+      POSTGRES_PASSWORD: duylongpass
+      REDIS_HOST: nextcloud-redis
+      NEXTCLOUD_TRUSTED_DOMAINS: yourdomain.com
+      # PostgreSQL specific settings
+      NEXTCLOUD_DB_TYPE: pgsql
+      NEXTCLOUD_DB_HOST: nextcloud-db-primary
+      NEXTCLOUD_DB_NAME: nextcloud
+      NEXTCLOUD_DB_USER: duylong
+      NEXTCLOUD_DB_PASSWORD: duylongpass
+    volumes:
+      - nextcloud_shared_data:/var/www/html/data
+      - nextcloud_shared_apps:/var/www/html/custom_apps
+      - nextcloud_shared_config:/var/www/html/config
+    depends_on:
+      - nextcloud-db-primary
+      - nextcloud-redis
+    networks:
+      - nextcloud-network
+
+  # Nextcloud Node 3
+  nextcloud-node3:
+    image: nextcloud:28-apache
+    container_name: nextcloud-node3
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST: nextcloud-db-primary
+      POSTGRES_DB: nextcloud_db
+      POSTGRES_USER: duylong
+      POSTGRES_PASSWORD: duylongpass
+      REDIS_HOST: nextcloud-redis
+      NEXTCLOUD_TRUSTED_DOMAINS: yourdomain.com
+      # PostgreSQL specific settings
+      NEXTCLOUD_DB_TYPE: pgsql
+      NEXTCLOUD_DB_HOST: nextcloud-db-primary
+      NEXTCLOUD_DB_NAME: nextcloud
+      NEXTCLOUD_DB_USER: duylong
+      NEXTCLOUD_DB_PASSWORD: duylongpass
+    volumes:
+      - nextcloud_shared_data:/var/www/html/data
+      - nextcloud_shared_apps:/var/www/html/custom_apps
+      - nextcloud_shared_config:/var/www/html/config
+    depends_on:
+      - nextcloud-db-primary
+      - nextcloud-redis
+    networks:
+      - nextcloud-network
+
+volumes:
+  nextcloud_db_primary:
+  nextcloud_db_replica:
+  nextcloud_redis:
+  nextcloud_shared_data:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=your-nfs-server,rw
+      device: ":/path/to/nextcloud/data"
+  nextcloud_shared_apps:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=your-nfs-server,rw
+      device: ":/path/to/nextcloud/apps"
+  nextcloud_shared_config:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=your-nfs-server,rw
+      device: ":/path/to/nextcloud/config"
+
+networks:
+  nextcloud-network:
+    driver: bridge

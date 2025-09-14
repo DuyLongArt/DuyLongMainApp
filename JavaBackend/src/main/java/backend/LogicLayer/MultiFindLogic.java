@@ -1,8 +1,10 @@
 package backend.LogicLayer;
 
+import org.springframework.stereotype.Service;
+
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
-
+@Service
 public class MultiFindLogic
 {
     public String buildMultiFindQuery(String[] cell1, String[] cell2, String[] cell3, Integer maxLength)

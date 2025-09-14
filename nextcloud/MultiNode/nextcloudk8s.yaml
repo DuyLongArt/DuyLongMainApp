@@ -1,0 +1,696 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nextcloud
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nextcloud-config
+  namespace: nextcloud
+data:
+  POSTGRES_HOST: "nextcloud-db"
+  POSTGRES_DB: "nextcloud"
+  POSTGRES_USER: "duylong"
+  REDIS_HOST: "nextcloud-redis"
+  NEXTCLOUD_TRUSTED_DOMAINS: "duylong.art"
+  NEXTCLOUD_DB_TYPE: "pgsql"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: nextcloud
+data:
+  postgresql.conf: |
+    # PostgreSQL Configuration for Nextcloud
+    listen_addresses = '*'
+    port = 5432
+    max_connections = 200
+    
+    # Memory Settings
+    shared_buffers = 256MB
+    effective_cache_size = 1GB
+    work_mem = 4MB
+    maintenance_work_mem = 64MB
+    
+    # Performance Settings
+    checkpoint_completion_target = 0.9
+    wal_buffers = 16MB
+    random_page_cost = 1.1
+    effective_io_concurrency = 200
+    
+    # Autovacuum Settings
+    autovacuum = on
+    autovacuum_max_workers = 3
+    autovacuum_naptime = 1min
+    autovacuum_vacuum_threshold = 50
+    autovacuum_analyze_threshold = 50
+    autovacuum_vacuum_scale_factor = 0.1
+    autovacuum_analyze_scale_factor = 0.05
+    
+    # Logging
+    log_min_duration_statement = 1000
+    log_checkpoints = on
+    log_connections = on
+    log_disconnections = on
+    log_lock_waits = on
+    
+    # Locale Settings
+    lc_messages = 'en_US.utf8'
+    lc_monetary = 'en_US.utf8'
+    lc_numeric = 'en_US.utf8'
+    lc_time = 'en_US.utf8'
+    default_text_search_config = 'pg_catalog.english'
+
+  pg_hba.conf: |
+    # PostgreSQL Client Authentication Configuration
+    # TYPE  DATABASE        USER            ADDRESS                 METHOD
+    local   all             all                                     trust
+    host    all             all             127.0.0.1/32            scram-sha-256
+    host    all             all             ::1/128                 scram-sha-256
+    host    all             all             10.0.0.0/8              scram-sha-256
+    host    all             all             172.16.0.0/12           scram-sha-256
+    host    all             all             192.168.0.0/16          scram-sha-256
+    host    nextcloud       nextcloud       10.0.0.0/8              scram-sha-256
+    host    nextcloud       nextcloud       172.16.0.0/12           scram-sha-256
+    host    nextcloud       nextcloud       192.168.0.0/16          scram-sha-256
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: nextcloud-secrets
+  namespace: nextcloud
+type: Opaque
+data:
+  postgres-password: bmV4dGNsb3Vk  # base64 encoded "nextcloud"
+  postgres-user: ZHV5bG9uZw==      # base64 encoded "nextcloud"
+  nextcloud-admin-password: ZHV5bG9uZ3Bhc3M=  # base64 encoded "admin"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-data-pvc
+  namespace: nextcloud
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: nfs-client  # Use appropriate storage class
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-config-pvc
+  namespace: nextcloud
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: nfs-client
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-db-pvc
+  namespace: nextcloud
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-redis-pvc
+  namespace: nextcloud
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextcloud-db
+  namespace: nextcloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nextcloud-db
+  template:
+    metadata:
+      labels:
+        app: nextcloud-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15
+        env:
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud-config
+              key: POSTGRES_DB
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud-config
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: postgres-password
+        - name: POSTGRES_INITDB_ARGS
+          value: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        ports:
+        - containerPort: 5432
+          name: postgres
+        volumeMounts:
+        - name: db-storage
+          mountPath: /var/lib/postgresql/data
+        - name: postgres-config-vol
+          mountPath: /etc/postgresql
+        - name: init-scripts
+          mountPath: /docker-entrypoint-initdb.d
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+              - pg_isready
+              - -U
+              - nextcloud
+              - -d
+              - nextcloud
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+              - pg_isready
+              - -U
+              - nextcloud
+              - -d
+              - nextcloud
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: db-storage
+        persistentVolumeClaim:
+          claimName: nextcloud-db-pvc
+      - name: postgres-config-vol
+        configMap:
+          name: postgres-config
+      - name: init-scripts
+        configMap:
+          name: postgres-init-scripts
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-scripts
+  namespace: nextcloud
+data:
+  01-init.sql: |
+    -- PostgreSQL Initialization Script for Nextcloud
+    
+    -- Create extensions that Nextcloud can benefit from
+    CREATE EXTENSION IF NOT EXISTS btree_gin;
+    CREATE EXTENSION IF NOT EXISTS btree_gist;
+    CREATE EXTENSION IF NOT EXISTS pg_trgm;
+    CREATE EXTENSION IF NOT EXISTS unaccent;
+    
+    -- Set timezone
+    SET timezone = 'UTC';
+    
+    -- Grant necessary permissions to nextcloud user
+    GRANT ALL PRIVILEGES ON DATABASE nextcloud TO nextcloud;
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO nextcloud;
+    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO nextcloud;
+    GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO nextcloud;
+    
+    -- Set default privileges for future objects
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO nextcloud;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO nextcloud;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON FUNCTIONS TO nextcloud;
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextcloud-redis
+  namespace: nextcloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nextcloud-redis
+  template:
+    metadata:
+      labels:
+        app: nextcloud-redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        ports:
+        - containerPort: 6379
+          name: redis
+        command: 
+          - redis-server
+          - --appendonly
+          - "yes"
+          - --maxmemory
+          - "256mb"
+          - --maxmemory-policy
+          - "allkeys-lru"
+        volumeMounts:
+        - name: redis-storage
+          mountPath: /data
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
+        livenessProbe:
+          exec:
+            command:
+              - redis-cli
+              - ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+              - redis-cli
+              - ping
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: redis-storage
+        persistentVolumeClaim:
+          claimName: nextcloud-redis-pvc
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+spec:
+  replicas: 3  # Multiple nodes for high availability
+  selector:
+    matchLabels:
+      app: nextcloud
+  template:
+    metadata:
+      labels:
+        app: nextcloud
+    spec:
+      initContainers:
+      - name: wait-for-db
+        image: postgres:15
+        command:
+          - sh
+          - -c
+          - |
+            until pg_isready -h nextcloud-db -p 5432 -U nextcloud; do
+              echo "Waiting for PostgreSQL to be ready..."
+              sleep 2
+            done
+            echo "PostgreSQL is ready!"
+      containers:
+      - name: nextcloud
+        image: nextcloud:28-apache
+        env:
+        - name: POSTGRES_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud-config
+              key: POSTGRES_HOST
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud-config
+              key: POSTGRES_DB
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud-config
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: postgres-password
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud-config
+              key: REDIS_HOST
+        - name: REDIS_HOST_PORT
+          value: "6379"
+        - name: NEXTCLOUD_ADMIN_USER
+          value: "admin"
+        - name: NEXTCLOUD_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: nextcloud-admin-password
+        - name: NEXTCLOUD_TRUSTED_DOMAINS
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud-config
+              key: NEXTCLOUD_TRUSTED_DOMAINS
+        - name: NEXTCLOUD_DB_TYPE
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud-config
+              key: NEXTCLOUD_DB_TYPE
+        - name: NEXTCLOUD_DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud-config
+              key: POSTGRES_HOST
+        - name: NEXTCLOUD_DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud-config
+              key: POSTGRES_DB
+        - name: NEXTCLOUD_DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud-config
+              key: POSTGRES_USER
+        - name: NEXTCLOUD_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: postgres-password
+        - name: NEXTCLOUD_OVERWRITEPROTOCOL
+          value: "https"
+        - name: NEXTCLOUD_OVERWRITEHOST
+          valueFrom:
+            configMapKeyRef:
+              name: nextcloud-config
+              key: NEXTCLOUD_TRUSTED_DOMAINS
+        ports:
+        - containerPort: 80
+          name: http
+        volumeMounts:
+        - name: nextcloud-data
+          mountPath: /var/www/html/data
+        - name: nextcloud-config-vol
+          mountPath: /var/www/html/config
+        - name: nextcloud-apps
+          mountPath: /var/www/html/custom_apps
+        - name: nextcloud-themes
+          mountPath: /var/www/html/themes
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /status.php
+            port: 80
+            httpHeaders:
+            - name: Host
+              value: "nextcloud.local"
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /status.php
+            port: 80
+            httpHeaders:
+            - name: Host
+              value: "nextcloud.local"
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+        lifecycle:
+          postStart:
+            exec:
+              command:
+                - sh
+                - -c
+                - |
+                  # Wait for Nextcloud to be ready and configure Redis
+                  sleep 30
+                  php occ config:system:set redis host --value="nextcloud-redis"
+                  php occ config:system:set redis port --value="6379"
+                  php occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
+                  php occ config:system:set memcache.distributed --value="\\OC\\Memcache\\Redis"
+                  php occ config:system:set memcache.locking --value="\\OC\\Memcache\\Redis"
+                  php occ config:system:set filelocking.enabled --value="true"
+                  php occ config:system:set default_phone_region --value="US"
+                  php occ background:cron
+      volumes:
+      - name: nextcloud-data
+        persistentVolumeClaim:
+          claimName: nextcloud-data-pvc
+      - name: nextcloud-config-vol
+        persistentVolumeClaim:
+          claimName: nextcloud-config-pvc
+      - name: nextcloud-apps
+        emptyDir: {}
+      - name: nextcloud-themes
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nextcloud-db
+  namespace: nextcloud
+spec:
+  selector:
+    app: nextcloud-db
+  ports:
+  - port: 5432
+    targetPort: 5432
+    name: postgres
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nextcloud-redis
+  namespace: nextcloud
+spec:
+  selector:
+    app: nextcloud-redis
+  ports:
+  - port: 6379
+    targetPort: 6379
+    name: redis
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+spec:
+  selector:
+    app: nextcloud
+  ports:
+  - port: 80
+    targetPort: 80
+    name: http
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nextcloud-ingress
+  namespace: nextcloud
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: "512m"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/client-max-body-size: "512m"
+    nginx.ingress.kubernetes.io/server-snippet: |
+      client_body_buffer_size 400M;
+      client_body_timeout 120s;
+      client_header_timeout 120s;
+spec:
+  tls:
+  - hosts:
+    - yourdomain.com
+    secretName: nextcloud-tls
+  rules:
+  - host: yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nextcloud
+            port:
+              number: 80
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nextcloud-hpa
+  namespace: nextcloud
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nextcloud
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nextcloud-cron
+  namespace: nextcloud
+spec:
+  schedule: "*/5 * * * *"  # Every 5 minutes
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: nextcloud-cron
+            image: nextcloud:28-apache
+            command:
+            - php
+            - -f
+            - /var/www/html/cron.php
+            volumeMounts:
+            - name: nextcloud-data
+              mountPath: /var/www/html/data
+            - name: nextcloud-config-vol
+              mountPath: /var/www/html/config
+            env:
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: nextcloud-config
+                  key: POSTGRES_HOST
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: nextcloud-config
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: nextcloud-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud-secrets
+                  key: postgres-password
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: nextcloud-config
+                  key: REDIS_HOST
+          restartPolicy: OnFailure
+          volumes:
+          - name: nextcloud-data
+            persistentVolumeClaim:
+              claimName: nextcloud-data-pvc
+          - name: nextcloud-config-vol
+            persistentVolumeClaim:
+              claimName: nextcloud-config-pvc
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nextcloud-maintenance
+  namespace: nextcloud
+data:
+  maintenance.sh: |
+    #!/bin/bash
+    # Nextcloud maintenance script
+    
+    echo "Starting Nextcloud maintenance..."
+    
+    # Database maintenance
+    kubectl exec -n nextcloud deployment/nextcloud-db -- psql -U nextcloud -d nextcloud -c "VACUUM ANALYZE;"
+    
+    # Nextcloud maintenance
+    kubectl exec -n nextcloud deployment/nextcloud -- php occ db:add-missing-indices
+    kubectl exec -n nextcloud deployment/nextcloud -- php occ db:add-missing-columns
+    kubectl exec -n nextcloud deployment/nextcloud -- php occ db:add-missing-primary-keys
+    kubectl exec -n nextcloud deployment/nextcloud -- php occ files:scan --all
+    kubectl exec -n nextcloud deployment/nextcloud -- php occ files:cleanup
+    
+    echo "Maintenance completed!"

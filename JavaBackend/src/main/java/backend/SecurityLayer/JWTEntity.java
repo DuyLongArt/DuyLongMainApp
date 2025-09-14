@@ -3,6 +3,7 @@ package backend.SecurityLayer;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
-public class JWTService
+@ComponentScan(basePackages = "backend.DataLayer.protocol")
+public class JWTEntity
 {
 
     @Value("${app.jwt.secret}")
@@ -57,13 +59,13 @@ public class JWTService
     /**
      * Extract all claims from JWT token
      */
+
     private Claims extractAllClaims(String token) {
         try {
             return Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+                    .setSigningKey(getSigningKey())
+                    .parseClaimsJwt(token).getBody();
+
         } catch (ExpiredJwtException e) {
             throw new RuntimeException("JWT token is expired", e);
         } catch (UnsupportedJwtException e) {
@@ -78,8 +80,8 @@ public class JWTService
     /**
      * Check if JWT token is expired
      */
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    private boolean isTokenExpired(String token) {
+        return (boolean) extractExpiration(token).before(new Date());
     }
 
     /**
@@ -102,23 +104,26 @@ public class JWTService
     /**
      * Create JWT token with claims and expiration
      */
+
+
     private String createToken(Map<String, Object> claims, String subject, Long expiration) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
-                .claims(claims)
-                .subject(subject)
-                .issuedAt(now)
-                .expiration(expiryDate)
-                .signWith(getSigningKey())
+
+                .addClaims(claims)
+                .setSubject(subject)// Add all claims from the map// Set the subject
+                .setIssuedAt(now)                     // Set issued at
+                .setExpiration(expiryDate)            // Set expiration
+                .signWith(getSigningKey())         // Sign with key (remove the empty .signWith())
                 .compact();
     }
 
     /**
      * Validate JWT token
      */
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    public boolean validateToken(String token, UserDetails userDetails) {
         try {
             final String username = extractUsername(token);
             return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
@@ -130,10 +135,10 @@ public class JWTService
     /**
      * Validate JWT token without UserDetails
      */
-    public Boolean validateToken(String token) {
+    public boolean validateToken(String token) {
         try {
             extractAllClaims(token);
-            return !isTokenExpired(token);
+            return  !(isTokenExpired(token));
         } catch (Exception e) {
             return false;
         }
@@ -144,6 +149,6 @@ public class JWTService
      */
     public Long getExpirationTime(String token) {
         Date expiration = extractExpiration(token);
-        return expiration.getTime() - new Date().getTime();
+        return (Long) (expiration.getTime() - new Date().getTime());
     }
 }
