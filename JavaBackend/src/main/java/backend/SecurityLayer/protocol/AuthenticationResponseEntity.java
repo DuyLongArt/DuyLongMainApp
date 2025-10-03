@@ -4,11 +4,12 @@ import backend.DataLayer.protocol.Account.AccountEntity;
 
 public class AuthenticationResponseEntity
 {
+
     public AuthenticationResponseEntity(AccountEntity account)
     {
-        this.account = account;
+        this.accountEntity = account;
     }
-    private AccountEntity account;
+    private final AccountEntity accountEntity;
     String getAccessToken()
     {
         return null;
@@ -20,6 +21,6 @@ public class AuthenticationResponseEntity
 
     String getInformation()
     {
-        return account.getInformation();
+        return accountEntity.getAllInformation();
     }
 }

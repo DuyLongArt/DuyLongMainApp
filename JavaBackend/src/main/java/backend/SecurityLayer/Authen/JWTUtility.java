@@ -1,5 +1,7 @@
 package backend.SecurityLayer;
 
+import backend.DataLayer.protocol.Account.AccountEntity;
+import backend.DataLayer.protocol.Credential.LoginCredential;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +17,7 @@ import java.util.function.Function;
 
 @Component
 @ComponentScan(basePackages = "backend.DataLayer.protocol")
-public class JWTEntity
+public class JWTUtility
 {
 
     @Value("${app.jwt.secret}")
@@ -87,9 +89,13 @@ public class JWTEntity
     /**
      * Generate JWT token for user
      */
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(LoginCredential loginCredential) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername(), jwtExpiration);
+        claims.put("device", loginCredential.getDevice());
+        claims.put("ip", loginCredential.getDeviceIP());
+        claims.put("role", loginCredential.getRole().toString());
+
+        return createToken(claims, loginCredential.getUserName(), jwtExpiration);
     }
 
     /**
@@ -123,10 +129,10 @@ public class JWTEntity
     /**
      * Validate JWT token
      */
-    public boolean validateToken(String token, UserDetails userDetails) {
+    public boolean validateToken(String token, AccountEntity accountEntity) {
         try {
             final String username = extractUsername(token);
-            return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+            return (username.equals(accountEntity.getUserName()) && !isTokenExpired(token));
         } catch (Exception e) {
             return false;
         }
