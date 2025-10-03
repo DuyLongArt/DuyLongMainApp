@@ -18,14 +18,21 @@ public class AccountController
 
     // SỬA LỖI 1: Sử dụng PathVariable để xác định tài nguyên cụ thể.
     // Đường dẫn đúng: /person/1
-    @GetMapping("/{id}")
-    public String getPersonById(@PathVariable("id") Integer id) {
-        return personRepo.findNameById(id);
+    @GetMapping("/{alias}")
+    public String getPersonById(@PathVariable("alias") String alias) {
+
+        String aliasResult=personRepo.findAccountByAlias(alias);
+        if(alias==null) {
+            return "No such alias";
+        }else{
+            return alias;
+        }
+
     }
 
     // SỬA LỖI 2: Tạo một endpoint riêng và rõ ràng hơn để lấy tên.
     // Đường dẫn đúng: /person/1/name
-    @GetMapping("/{id}/name")
+    @GetMapping("/{alias}/name")
     public ResponseEntity<String> getPersonNameById(@PathVariable("id") Integer id) {
         String name = personRepo.findNameById(id);
         if (name != null) {

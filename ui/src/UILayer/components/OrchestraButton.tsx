@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@material-tailwind/react";
-import { MainAppIcon } from '../../DataLayer/LocalDataLayer/IconAssets.tsx';
+import { MainAppIcon } from '../../DataLayer/LocalDataLayer/assets/IconAssets.tsx';
 import MotionImageSpinner from "../UILogics/Spin.tsx";
 
 // Interface for props

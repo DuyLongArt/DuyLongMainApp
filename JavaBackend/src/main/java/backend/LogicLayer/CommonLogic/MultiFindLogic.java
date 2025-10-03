@@ -1,4 +1,4 @@
-package backend.LogicLayer;
+package backend.LogicLayer.CommonLogic;
 
 import org.springframework.stereotype.Service;
 

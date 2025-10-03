@@ -1,4 +1,4 @@
-package backend.SecurityLayer;
+package backend.SecurityLayer.protocol;
 
 import backend.DataLayer.protocol.Account.AccountEntity;
 

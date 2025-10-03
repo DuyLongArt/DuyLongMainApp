@@ -25,7 +25,7 @@ public  class RoleEntity implements RoleStructure
 
     @Override
     @Column(name="person_id", nullable = false)
-    public int getPersonId() {
+    public Integer getPersonId() {
         return personId;
     }
 

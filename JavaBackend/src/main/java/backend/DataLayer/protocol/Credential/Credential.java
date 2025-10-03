@@ -1,19 +1,21 @@
 package backend.DataLayer.protocol.Credential;
 
-public interface CredentialStructure
+
+import backend.DataLayer.protocol.RoleTypes;
+
+import java.time.LocalDateTime;
+
+public interface Credential
 {
-    String getUsername();
+    String getUserName();
+    String getPassword(); // Assuming this is also defined
+    String getDevice();
+    String getDeviceIP();
 
-    String getPassword();
+    RoleTypes getRole();
 
-    boolean getRememberMe();
-
-    String getDeviceid();
-
-    String getIpAddress();
-
+    default String jsonWebToken() { return ""; }
     //optionanl field
-    String getAccessJWT();
 
-    void setAccessJWT(String accessJWT);
+    default LocalDateTime createdAt() { return LocalDateTime.now(); }
 }

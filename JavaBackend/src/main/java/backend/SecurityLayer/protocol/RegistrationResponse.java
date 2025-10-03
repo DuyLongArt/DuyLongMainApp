@@ -1,4 +1,4 @@
-package backend.SecurityLayer;
+package backend.SecurityLayer.protocol;
 
 public class RegistrationResponse {
     private String message;

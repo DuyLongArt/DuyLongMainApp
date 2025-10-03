@@ -1,5 +1,5 @@
 
-package backend.SecurityLayer;
+package backend.SecurityLayer.protocol;
 
 import backend.DataLayer.protocol.Credential.Credential;
 import backend.DataLayer.protocol.RoleTypes;

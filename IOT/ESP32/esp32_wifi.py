@@ -1,63 +1,65 @@
+# boot.py
+# This script runs on boot and configures the ESP32 as a Wi-Fi access point.
+
 import network
 import time
+import machine 
+import sys
 
-# Customize your network credentials here
-ssid = "RasberryRouter"
-password = "duylongpass"
+# --- Wi-Fi Access Point Configuration ---
+# Replace these with your desired Wi-Fi network credentials for the access point.
+WIFI_SSID = 'ESP32_Access_Point'
+WIFI_PASSWORD = 'duylongpass'
 
-def connect_to_dhcp():
-    """Connects the ESP32 to a Wi-Fi network using DHCP."""
-    
-    # Instantiate the station interface
-    sta_if = network.WLAN(network.STA_IF)
-    
-    # If already connected, do nothing
-    if sta_if.isconnected():
-        print("Already connected to the network.")
-        return sta_if
-
-    # Activate the station interface
-    print("Activating STA mode...")
-    sta_if.active(True)
-    
-    # Connect to the specified Wi-Fi network
-    print(f"Connecting to network '{ssid}'...")
-    sta_if.connect(ssid, password)
-    
-    # Wait for the connection to be established
-    timeout_seconds = 10
-    start_time = time.time()
-    
-    while not sta_if.isconnected() and (time.time() - start_time) < timeout_seconds:
-        print(".", end="")
+# --- LED Configuration (Optional) ---
+# Replace with the GPIO pin number for your board's built-in LED.
+# ESP32 development boards often have an onboard LED connected to GPIO2.
+LED_PIN = 2
+led = machine.Pin(LED_PIN, machine.Pin.OUT)
+# --- Code ---
+def display_information():
+    print("System platform: "+sys.platform)
+    while True:
         time.sleep(1)
-
-    # Check if the connection was successful
-    if sta_if.isconnected():
-        print("\nConnection successful!")
-        print("Network configuration:", sta_if.ifconfig())
-    else:
-        print("\nFailed to connect to the network.")
-        sta_if.active(False) # Deactivate to save power
-        return None
+        led.value(0)
+        time.sleep(1)
+        led.value(1)
+        
+    return 0
+def do_start_ap():
+    """
+    Starts the ESP32 as a Wi-Fi access point.
+    """
+    # Initialize the on-board LED as an output
     
-    return sta_if
+    led.value(0) # Turn LED off initially
 
-if __name__ == "__main__":
-    try:
-        # Disable the AP interface to avoid conflicts
-        ap_if = network.WLAN(network.AP_IF)
-        if ap_if.active():
-            ap_if.active(False)
-        
-        connected_interface = connect_to_dhcp()
-        
-        if connected_interface:
-            while True:
-                time.sleep(5)
-                # Your main application logic runs here
-                print("Connected and running...")
-            
-    except Exception as e:
-        print("An error occurred:", e)
+    print('Starting Wi-Fi Access Point...')
 
+    # Create a Wi-Fi access point interface
+    ap = network.WLAN(network.AP_IF)
+    
+    # Configure and activate the access point
+    ap.active(True)
+    ap.config(essid=WIFI_SSID, password=WIFI_PASSWORD)
+    
+    # Flash LED to indicate starting AP
+    timeout_start = time.time()
+    while ap.active() and not ap.ifconfig()[0] and (time.time() - timeout_start) < 20:
+        led.value(not led.value())
+        time.sleep(0.5)
+        led.value(0)
+
+    if ap.ifconfig()[0] != '0.0.0.0':
+        # Turn LED on to indicate a successful connection
+        led.value(1) 
+        print('Access Point started successfully!')
+        print('Network config:', ap.ifconfig())
+    else:
+        # Turn LED off to indicate a failed start
+        led.value(0)
+        print('Failed to start access point.')
+
+# Automatically call the function on startup
+display_information()
+do_start_ap()

@@ -1,16 +1,29 @@
 package backend.DataLayer.protocol.Credential;
 
+import backend.DataLayer.protocol.RoleTypes;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.math.BigInteger;
+import java.time.LocalDateTime;
 
 @Entity
-public class CredentialEntity implements CredentialStructure
+@Setter
+@Getter
+public class CredentialEntity implements Credential
 {
+    @Id
+    private BigInteger credentialId;
     private String username;
     private String password;
     private boolean rememberMe;
     private String deviceid;
     private String ipAddress;
     private String accessJWT;
+    private String jsonWebToken;
+    private LocalDateTime createdAt = LocalDateTime.now();
     public CredentialEntity(String username, String password, boolean rememberMe, String deviceid, String ipAddress)
     {
         this.username = username;
@@ -20,14 +33,49 @@ public class CredentialEntity implements CredentialStructure
         this.ipAddress = ipAddress;
     }
 
+    public CredentialEntity()
+    {
+
+    }
+
     public String getUsername()
     {
         return username;
     }
 
+    @Override
+    public String getUserName()
+    {
+        return "";
+    }
+
     public String getPassword()
     {
         return password;
+    }
+
+    @Override
+    public String getDevice()
+    {
+        return "";
+    }
+
+    @Override
+    public String getDeviceIP()
+    {
+        return "";
+    }
+
+    @Override
+    public RoleTypes getRole()
+    {
+        return null;
+    }
+
+    @Override
+    public String jsonWebToken()
+    {
+        return "";
     }
 
     public boolean getRememberMe()

@@ -1,5 +1,5 @@
 // @ts-ignore
-import MainAppIcon from "./assets/AppMainIcon_White.png";
+import MainAppIcon from "./AppMainIcon_White.png";
 
 
 export {MainAppIcon};

@@ -1,5 +1,6 @@
 package backend.DataLayer.protocol.Account;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -8,14 +9,17 @@ import java.util.Optional;
 public interface AccountDAO extends CrudRepository<AccountEntity, Integer>
 {
 
-    @Query("SELECT p.fullName FROM PersonEntity p WHERE p.id = :id")
+    @Query("SELECT p.fullName FROM PersonEntity p WHERE p.person_id = :id")
     String findNameById(Integer id);
 
-    Optional<AccountEntity> findByUsername(String username);
+    @Query("SELECT entity.alias FROM AccountEntity entity WHERE entity.alias = :alias")
+    String findAccountByAlias(String alias);
 
-    Optional<AccountEntity> findByEmail(String email);
+    AccountEntity findAccountEntitiesByUserName(String userName);
 
-    Boolean existsByUsername(String username);
 
-    Boolean existsByEmail(String email);
+
+    Boolean existsByUserName(String userName);
+    Boolean existsByMailEntity_Mail(String mail);
+
 }

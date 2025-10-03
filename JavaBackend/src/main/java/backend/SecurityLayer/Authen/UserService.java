@@ -1,4 +1,4 @@
-package backend.SecurityLayer;
+package backend.SecurityLayer.Authen;
 
 import backend.DataLayer.protocol.Account.AccountDAO;
 import backend.DataLayer.protocol.Account.AccountEntity;
@@ -26,7 +26,7 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         // 1. Fetch the custom entity from the database
-        AccountEntity accountEntity = accountDAO.findAccountEntitiesByUsername(username);
+        AccountEntity accountEntity = accountDAO.findAccountEntitiesByUserName(username);
 
         if (accountEntity == null) {
             throw new UsernameNotFoundException("User not found: " + username);
@@ -39,7 +39,7 @@ public class UserService implements UserDetailsService {
         List<String> roles = Collections.singletonList(accountEntity.getRole()); // Example: ["ADMIN"] or ["USER"]
 
         List<SimpleGrantedAuthority> authorities = roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
+                .map(role -> new SimpleGrantedAuthority(role))
                 .collect(Collectors.toList());
 
         // B. Create and return the UserDetails object

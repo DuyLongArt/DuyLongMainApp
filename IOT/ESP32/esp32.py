@@ -57,4 +57,4 @@ def scheduled_control():
         current_time = time.ticks_diff(time.ticks_ms(), start_time) // 1000
 
         # Check if current time is in any scheduled periodt
-turn_off()
+turn_off()  

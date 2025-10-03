@@ -37,12 +37,12 @@ public class PersonEntity implements PersonStructure
 
     public Integer getId()
     {
-        return id;
+        return person_id;
     }
 
     public void setId(Integer id)
     {
-        this.id = id;
+        this.person_id = id;
     }
 
     public String getFullName()

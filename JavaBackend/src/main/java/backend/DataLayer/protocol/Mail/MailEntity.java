@@ -54,12 +54,12 @@ public class MailEntity implements MailStructure
 
     public void setId(Integer id)
     {
-        this.id = id;
+        this.mail_id = id;
     }
 
 
     public Integer getId()
     {
-        return id;
+        return mail_id;
     }
 }

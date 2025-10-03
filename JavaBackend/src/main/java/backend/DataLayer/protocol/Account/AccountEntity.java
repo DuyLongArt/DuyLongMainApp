@@ -3,12 +3,18 @@ package backend.DataLayer.protocol.Account;
 import backend.DataLayer.protocol.CreateUpdateTime;
 import backend.DataLayer.protocol.Mail.MailEntity;
 import backend.DataLayer.protocol.Person.PersonEntity;
+import backend.DataLayer.protocol.RoleTypes;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "accounts", schema = "person")
+@Getter
+@Setter
 public class AccountEntity implements AccountStructure, CreateUpdateTime
 {
 
@@ -17,22 +23,28 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
     @Column(name = "account_id", nullable = false)
     private int account_id;
 
-    @Column(name = "username", nullable = false, unique = true)
-    private String userName;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mail", referencedColumnName = "mail_id")
     private MailEntity mailEntity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "first_name", referencedColumnName = "id")
-    private PersonEntity personEntity;
+   public String getMail(){
+        return mailEntity != null ? mailEntity.getMail() : null;
+    }
+    ArrayList roleList;
+    @Column(name = "username", nullable = false, unique = true)
+    private String userName;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "person", referencedColumnName = "person_id")
+    @JoinColumn(name = "first_name", referencedColumnName = "person_id")
     private PersonEntity personEntity;
 
 
+
+
+    @Column(name = "alias", nullable = false)
+    private String alias;
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -63,10 +75,7 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
         return userName;
     }
 
-    @Override
-    public String getMail() {
-        return mailEntity != null ? mailEntity.getMail() : null;
-    }
+
 
     @Override
     public String getPassword() {
@@ -75,7 +84,7 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
 
     @Override
     public String getRole() {
-        return role;
+        return role.toString();
     }
 
     @Override
@@ -97,14 +106,12 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
         return isEnabled;
     }
 
-    public String getFullName() {
-        return personEntity != null ? personEntity.getFullName() : null;
-    }
+
 
     // Setters - Now properly implemented
     @Override
     public void setId(int id) {
-        this.id = id;
+        this.account_id = id;
     }
 
     @Override
@@ -118,6 +125,11 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
         // Consider removing this from the interface or implementing differently
         // For now, keeping it empty as mail is managed through the relationship
     }
+    public void addRole(RoleTypes role)
+    {
+         roleList=new ArrayList();
+        roleList.add(role);
+    }
 
     @Override
     public void setPassword(String password) {
@@ -130,6 +142,12 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
     }
 
     @Override
+    public void setFullName(String fullName)
+    {
+
+    }
+
+    @Override
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
@@ -139,6 +157,33 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
         this.updatedAt = updatedAt;
     }
 
+    @Override
+    public void setLastLogin(LocalDateTime lastLogin)
+    {
+
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+    public void setEmail(String email) {
+        if (this.mailEntity == null) {
+            this.mailEntity = new MailEntity();
+        }
+        this.mailEntity.setMail(email);
+    }
+    public void setFirstName(String firstName) {
+        if (this.personEntity == null) {
+            this.personEntity = new PersonEntity();
+        }
+        this.personEntity.setFirstName(firstName);
+    }
+    public void setLastName(String lastName) {
+        if (this.personEntity == null) {
+            this.personEntity = new PersonEntity();
+        }
+        this.personEntity.setLastName(lastName);
+    }
     public void setLastLoginAt(LocalDateTime lastLoginAt) {
         this.lastLoginAt = lastLoginAt;
     }
@@ -165,19 +210,7 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
         return personEntity;
     }
 
-    @Override
-    public String getInformation() {
-        return "AccountEntity{" +
-                "id=" + id +
-                ", userName='" + userName + '\'' +
-                ", mail='" + getMail() + '\'' +
-                ", role='" + role + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", lastLoginAt=" + lastLoginAt +
-                ", isEnabled=" + isEnabled +
-                '}';
-    }
+
 
     // JPA lifecycle methods (optional but recommended)
     @PrePersist
@@ -190,9 +223,22 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-    String getFullName()
+    public String getFullName()
     {
-        return this.personEntity != null ? this.personEntity.getFullName()||this.personEntity.getFirstName()+this.personEntity.getLastName() : null;
+        if (this.personEntity != null)
+        {
+            String fullName = this.personEntity.getFullName();
+            if (fullName != null && !fullName.trim().isEmpty())
+            {
+                return fullName;
+            } else
+            {
+                String firstName = this.personEntity.getFirstName() != null ? this.personEntity.getFirstName() : "";
+                String lastName = this.personEntity.getLastName() != null ? this.personEntity.getLastName() : "";
+                return (firstName + " " + lastName).trim();
+            }
+        }
+        return "";
     }
 
     @Override
@@ -218,4 +264,21 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
     {
 
     }
+
+    @Override
+    public String getAllInformation(){
+        return "AccountEntity{" +
+                "account_id=" + account_id +
+                ", userName='" + userName + '\'' +
+                ", mail='" + getMail() + '\'' +
+                ", alias='" + alias + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", lastLoginAt=" + lastLoginAt +
+                ", isEnabled=" + isEnabled +
+                '}';
+    }
+
 }
