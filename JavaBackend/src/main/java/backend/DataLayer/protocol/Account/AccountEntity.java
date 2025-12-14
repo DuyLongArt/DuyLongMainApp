@@ -1,18 +1,23 @@
 package backend.DataLayer.protocol.Account;
 
 import backend.DataLayer.protocol.CreateUpdateTime;
-import backend.DataLayer.protocol.Mail.MailEntity;
+import backend.DataLayer.protocol.Mail.EmailEntity;
 import backend.DataLayer.protocol.Person.PersonEntity;
 import backend.DataLayer.protocol.RoleTypes;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Entity
-@Table(name = "accounts", schema = "person")
+@Table(name = "accounts", schema = "users")
 @Getter
 @Setter
 public class AccountEntity implements AccountStructure, CreateUpdateTime
@@ -20,16 +25,45 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Added auto-generation
-    @Column(name = "account_id", nullable = false)
-    private int account_id;
+    @Column(name = "identity_id", nullable = false)
+    private int identity_id;
 
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mail", referencedColumnName = "mail_id")
-    private MailEntity mailEntity;
+    @JoinColumn(name = "mail", referencedColumnName = "email_address_id")
+    private EmailEntity EmailEntity;
 
-   public String getMail(){
-        return mailEntity != null ? mailEntity.getMail() : null;
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ColumnDefault("nextval('users.persons_person_id_seq')")
+    @JoinColumn(name = "identity_id", nullable = false)
+    private PersonEntity persons;
+
+    @NotNull
+    @Column(name = "password_hash", nullable = false, length = Integer.MAX_VALUE)
+    private String passwordHash;
+
+    @Column(name = "primary_email_id")
+    private Integer primaryEmailId;
+
+    @NotNull
+    @ColumnDefault("false")
+    @Column(name = "is_locked", nullable = false)
+    private Boolean isLocked = false;
+
+    @NotNull
+    @ColumnDefault("0")
+    @Column(name = "failed_login_attempts", nullable = false)
+    private Integer failedLoginAttempts;
+
+    @NotNull
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "password_changed_at", nullable = false)
+    private Instant passwordChangedAt;
+
+    public String getMail(){
+        return EmailEntity != null ? EmailEntity.getEmailAddress() : null;
     }
     ArrayList roleList;
     @Column(name = "username", nullable = false, unique = true)
@@ -37,7 +71,7 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "first_name", referencedColumnName = "person_id")
+    @JoinColumn(name = "first_name", referencedColumnName = "identity_id")
     private PersonEntity personEntity;
 
 
@@ -46,8 +80,8 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
     @Column(name = "alias", nullable = false)
     private String alias;
 
-    @Column(name = "password", nullable = false)
-    private String password;
+    @Column(name = "passwordhash", nullable = false)
+    private String passwordhash;
 
     @Column(name = "role")
     private String role;
@@ -67,7 +101,7 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
     // Getters
     @Override
     public int getId() {
-        return account_id;
+        return identity_id;
     }
 
     @Override
@@ -78,8 +112,8 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
 
 
     @Override
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordhash;
     }
 
     @Override
@@ -111,7 +145,7 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
     // Setters - Now properly implemented
     @Override
     public void setId(int id) {
-        this.account_id = id;
+        this.identity_id = id;
     }
 
     @Override
@@ -121,7 +155,7 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
 
     @Override
     public void setMail(String mail) {
-        // Note: This method might not be appropriate since mail comes from MailEntity
+        // Note: This method might not be appropriate since mail comes from EmailEntity
         // Consider removing this from the interface or implementing differently
         // For now, keeping it empty as mail is managed through the relationship
     }
@@ -132,8 +166,8 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
     }
 
     @Override
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(String value) {
+        this.passwordhash = value;
     }
 
     @Override
@@ -167,10 +201,10 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
         this.alias = alias;
     }
     public void setEmail(String email) {
-        if (this.mailEntity == null) {
-            this.mailEntity = new MailEntity();
+        if (this.EmailEntity == null) {
+            this.EmailEntity = new EmailEntity();
         }
-        this.mailEntity.setMail(email);
+        this.EmailEntity.setEmailAddress(email);
     }
     public void setFirstName(String firstName) {
         if (this.personEntity == null) {
@@ -193,8 +227,8 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
     }
 
     // Entity relationship setters
-    public void setMailEntity(MailEntity mailEntity) {
-        this.mailEntity = mailEntity;
+    public void setEmailEntity(EmailEntity EmailEntity) {
+        this.EmailEntity = EmailEntity;
     }
 
     public void setPersonEntity(PersonEntity personEntity) {
@@ -202,8 +236,8 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
     }
 
     // Getters for entity relationships
-    public MailEntity getMailEntity() {
-        return mailEntity;
+    public EmailEntity getEmailEntity() {
+        return EmailEntity;
     }
 
     public PersonEntity getPersonEntity() {
@@ -268,11 +302,11 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
     @Override
     public String getAllInformation(){
         return "AccountEntity{" +
-                "account_id=" + account_id +
+                "account_id=" + identity_id +
                 ", userName='" + userName + '\'' +
                 ", mail='" + getMail() + '\'' +
                 ", alias='" + alias + '\'' +
-                ", password='" + password + '\'' +
+                ", password='" + passwordhash + '\'' +
                 ", role='" + role + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
@@ -281,4 +315,11 @@ public class AccountEntity implements AccountStructure, CreateUpdateTime
                 '}';
     }
 
+/*
+ TODO [Reverse Engineering] create field to map the '\"ADMIN\"' column
+ Available actions: Define target Java type | Uncomment as is | Remove column mapping
+    @ColumnDefault("'ADMIN'")
+    @Column(name = "\"ADMIN\"", columnDefinition = "user_role not null")
+    private java.lang.Object admin;
+*/
 }

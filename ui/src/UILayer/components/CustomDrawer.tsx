@@ -1,16 +1,24 @@
 import React from "react";
 import { Inbox, Mail, X } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
 interface DrawerProps {
     isOpen: boolean;
     onClose: (isOpen: boolean) => void;
 }
 
 const CustomDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
+    const navigate = useNavigate();
     const handleClose = () => {
         onClose(false);
     };
-
+    const goHome=()=>{
+        if(window.location.pathname!="/home/index"){
+            navigate("/home/index")
+            onClose(false);
+        }else{
+            onClose(false);
+        }
+    }
     return (
         <>
             {/* Backdrop/Overlay */}
@@ -36,13 +44,29 @@ const CustomDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
                             className="p-2 rounded-full hover:bg-gray-100 transition-colors"
                             aria-label="Close drawer"
                         >
-                            <X size={20} className="text-gray-600" />
+                            <X size={20} className="text-white" />
                         </button>
                     </div>
 
                     {/* Menu Items */}
                     <nav>
                         <ul className="space-y-2">
+                             <li>
+                                <button
+                                    onClick={goHome}
+                                    className="w-full flex items-center p-3 text-left hover:bg-gray-100 rounded-lg transition-colors group"
+                                >
+                                    <div className="flex items-center justify-center w-10 h-10 mr-3">
+                                        <Inbox
+                                            size={20}
+                                            className="text-white group-hover:text-gray-800"
+                                        />
+                                    </div>
+                                    <span className="text-white font-medium">Home</span>
+                                </button>
+                            </li>
+
+
                             <li>
                                 <button
                                     onClick={handleClose}
@@ -51,10 +75,10 @@ const CustomDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
                                     <div className="flex items-center justify-center w-10 h-10 mr-3">
                                         <Inbox
                                             size={20}
-                                            className="text-gray-600 group-hover:text-gray-800"
+                                            className="text-white group-hover:text-gray-800"
                                         />
                                     </div>
-                                    <span className="text-gray-800 font-medium">Inbox</span>
+                                    <span className="text-white font-medium">Inbox</span>
                                 </button>
                             </li>
 
@@ -66,10 +90,10 @@ const CustomDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
                                     <div className="flex items-center justify-center w-10 h-10 mr-3">
                                         <Mail
                                             size={20}
-                                            className="text-gray-600 group-hover:text-gray-800"
+                                            className="text-white group-hover:text-gray-800"
                                         />
                                     </div>
-                                    <span className="text-gray-800 font-medium">Mail</span>
+                                    <span className="text-white font-medium">Mail</span>
                                 </button>
                             </li>
                         </ul>

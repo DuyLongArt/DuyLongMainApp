@@ -47,4 +47,4 @@ interface MotionComponentConfig {
 // Example usage:
 export const config: MotionComponentConfig =spinConfig;
 
-console.log("Config: "+config.general.name);
+// console.log("Config: "+config.general.name);

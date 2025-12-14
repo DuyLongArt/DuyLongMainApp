@@ -1,89 +1,121 @@
-import { Outlet, Route, Routes} from "react-router-dom";
+import { Outlet, Route, Routes, Navigate, useNavigate, useLocation } from "react-router-dom";
+import React, { Suspense, useEffect } from "react";
+import { Box, CircularProgress } from "@mui/material";
 import type { ChildrenInterface } from "../OrchestraLayer/ChildrenComponent";
-import {domainRoutes, pageRoutes, redirectRoutes, routesJson} from "./RouterProtocol.ts";
-import { Box } from "@mui/material";
-import React from "react";
-import NotFoundPage from "../UILayer/pages/Error/NotFoundPage.tsx";
-import { Navigate } from 'react-router-dom';
-const componentMap: Record<string, React.FC> = {
-    // Map of component names to actual React components
-    // Example:
-    // 'HomePage': HomePageComponent,
-    // 'NotFoundPage': NotFoundPageComponent,
-    "PersonalPage": React.lazy(() => import("../UILayer/pages/Home/Personal/PersonPage.tsx")),
-  "LoginPage": React.lazy(() => import("../UILayer/pages/Login/LoginForm.tsx")),
-  "HomePage": React.lazy(() => import("../UILayer/pages/Home/HomePage.tsx")),
-  "HomeLayout": React.lazy(() => import("../UILayer/pages/Home/HomeLayout.tsx")),
-  "WidgetMainPage": React.lazy(() => import("../UILayer/pages/Home/Widget/WidgetMainPage.tsx")),
-  "NotFoundPage": NotFoundPage,
-    "Widget1Page": React.lazy(() => import("../UILayer/pages/Home/Widget/Widget1Page.tsx")),
-  "BlankPage":()=><Box><h1>This is blank page</h1></Box>,
-  "ContactPage": React.lazy(() => import("../UILayer/pages/Home/Contact/ContactPage.tsx")),
-    "LoginForm": React.lazy(() => import("../UILayer/pages/Login/LoginForm.tsx")),
-    "Widget2Page": React.lazy(() => import("../UILayer/pages/Home/Widget/Widget2Page.tsx")),
-    "Widget3Page": React.lazy(() => import("../UILayer/pages/Home/Widget/Widget3Page.tsx")),
-    "Widget4Page": React.lazy(() => import("../UILayer/pages/Home/Widget/Widget4Page.tsx")),
-    "Widget5Page": React.lazy(() => import("../UILayer/pages/Home/Widget/Widget5Page.tsx")),
+import { appRoutes, errorRoute } from "./RouterConfig.tsx";
+import type { Route as RouteType, ChildRoute } from "./RouterProtocol.ts";
+import { AuthenticateFactor } from "../OrchestraLayer/StateManager/XState/AuthenticateMachine";
 
-
-    // "ErrorPage": React.lazy(() => import("../UILayer/pages/Error/ErrorPage.tsx")),
-  
-};
-
+// Loading fallback component
+const PageLoader = () => (
+  <Box
+    sx={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh",
+      flexDirection: "column",
+      gap: 2,
+    }}
+  >
+    <CircularProgress />
+    <Box>Loading page...</Box>
+  </Box>
+);
 
 const AppRouterLayer: React.FC<ChildrenInterface> = ({ children }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const authState = AuthenticateFactor.useSelector((state) => state);
 
-  const ErrorComponent = componentMap[routesJson.error.component] || NotFoundPage;
-console.log("Domain Routes in react:", domainRoutes);
+  useEffect(() => {
+    const isLoginPage = location.pathname.includes("/login");
 
+    // Redirect to login if logged out or auth failed
+    if ((authState.matches("onLogout") || authState.matches("onAuthenFailed")) && !isLoginPage) {
+      console.log("👋 Detected logout state, redirecting to login...");
+      navigate("/login/index");
+    }
+  }, [authState.value, location.pathname, navigate]);
 
+  const renderComponent = (component: React.ReactNode) => {
+    return (
+      <Suspense fallback={<PageLoader />}>
+        {component}
+      </Suspense>
+    )
+  }
+
+  const renderRoutesRecursive = (routes: (RouteType | ChildRoute)[]) => {
+
+    return routes.map((route, index) => {
+      // Handle Redirects
+
+      if ('type' in route && route.type === 'redirect') {
+
+        return (
+          <Route
+            key={`${route.path}-${index}`}
+            path={route.path}
+            element={<Navigate to={route.path} replace />} // Logic for external redirect might need customized component if it's external host
+          />
+        );
+      }
+
+      // Handle Pages and Domains (Layouts)
+      const hasChildren = route.children && route.children.length > 0;
+      // var element = null;
+      // // if (route.type === "domain") {
+      // //   element = route.component;
+      // // }
+      // // else if (route.type === "entry" && route.path === "index" || route.type === "page" || route.type === "component") {
+      // //   element =
+      // //     <>
+      // //       {route.component}
+      // //       <Outlet />
+      // //     </>
+      // // }
+      // element=route.component;
+      // // const element =!(route.type === 'entry')? route.component : <Outlet />;
+      var element = route.component;
+      return (
+        <Route
+          key={`${route.path}-${index}`}
+          path={route.path}
+          element={renderComponent(element)}
+        >
+          {/* If it has children, we might want a default index route behavior */}
+          {hasChildren && (
+            <>
+              {/* <Outlet /> */}
+              <Route
+                index
+                element={
+                  <Navigate
+                    to={route.children![0].path}
+                    replace
+                  />
+                }
+              />
+              {renderRoutesRecursive(route.children!)}
+            </>
+          )}
+        </Route>
+      );
+    });
+  };
 
   return (
-      <Box>
-        <Routes>
+    <Box>
+      <Routes>
+        {renderRoutesRecursive(appRoutes)}
 
-
-
-
-          {pageRoutes.map((route) => {
-            const Component = componentMap[route.component] || NotFoundPage;
-            return <Route key={route.path} path={route.path} element={<Component />} />;
-          })}
-
-          {/* 3. Generate Domain (Layout) Routes with Children */}
-          {domainRoutes.map((domainRoute) => {
-            console.log("Domain children route", domainRoute);
-            const LayoutComponent = componentMap[domainRoute.component] || Outlet;
-            return (
-                <Route
-                    key={domainRoute.path}
-                    path={domainRoute.path}
-                    element={<LayoutComponent />}
-                >
-                    <Route element={<Navigate to={domainRoute.children[0]?.path || '/not-found'} replace />} index />
-                  {domainRoute.children.map((childRoute) => {
-
-                    const ChildComponent = componentMap[childRoute.component] || NotFoundPage;
-
-                    return (
-                        <Route
-                            key={`${domainRoute.path}-${childRoute.path}`}
-                            path={childRoute.path}
-                            element={<ChildComponent />}
-                        />
-                    );
-                  })}
-                </Route>
-            );
-          })}
-
-          {/* 4. Generate the Error Route */}
-          <Route path="*" element={<ErrorComponent />} />
-        </Routes>
-        {children}
-      </Box>
+        {/* Error/404 Route */}
+        <Route path={errorRoute?.path} element={renderComponent(errorRoute?.component)} />
+      </Routes>
+      {children}
+    </Box>
   );
 };
 
 export default AppRouterLayer;
-

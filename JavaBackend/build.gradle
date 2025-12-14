@@ -38,6 +38,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.session:spring-session-jdbc'
     implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     compileOnly 'org.projectlombok:lombok:1.18.36'
     annotationProcessor 'org.projectlombok:lombok:1.18.36'
 
@@ -51,7 +52,7 @@ dependencies {
 	implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final'
 
 	runtimeOnly 'org.postgresql:postgresql'
-	runtimeOnly 'org.postgresql:jdbc-postgresql'
+
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

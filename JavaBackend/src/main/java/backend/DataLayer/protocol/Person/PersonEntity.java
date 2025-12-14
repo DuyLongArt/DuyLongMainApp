@@ -1,17 +1,21 @@
 package backend.DataLayer.protocol.Person;
 import backend.DataLayer.protocol.Account.AccountEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.ColumnDefault;
 
+import java.time.Instant;
 import java.time.LocalDate;
 @Entity
 
-@Table(name = "persons" ,schema = "person_improve")
+@Table(name = "persons" ,schema = "users")
 
 public class PersonEntity implements PersonStructure
 {
     @Id
-    @Column(name = "person_id", nullable = false)
-    private Integer person_id;
+    @Column(name = "identity_id", nullable = false)
+    private Integer identity_id;
 
 
     @Column(name = "full_name", length = 100, nullable = false)
@@ -30,19 +34,113 @@ public class PersonEntity implements PersonStructure
     private String sex;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "accounts", referencedColumnName = "account_id")
+    @JoinColumn(name = "accounts", referencedColumnName = "identity_id")
     private AccountEntity accounts;
 
+    @Column(name = "date_of_birth")
+    private Instant dateOfBirth;
+
+    @Column(name = "gender", length = Integer.MAX_VALUE)
+    private String gender;
+
+    @Size(max = 20)
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
+    @Column(name = "profile_image_url", length = Integer.MAX_VALUE)
+    private String profileImageUrl;
+
+    @NotNull
+    @ColumnDefault("true")
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = false;
+
+    @NotNull
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
+
+    @NotNull
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
+    public Instant getUpdatedAt()
+    {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt)
+    {
+        this.updatedAt = updatedAt;
+    }
+
+    public Instant getCreatedAt()
+    {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt)
+    {
+        this.createdAt = createdAt;
+    }
+
+    public Boolean getIsActive()
+    {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive)
+    {
+        this.isActive = isActive;
+    }
+
+
+
+    public void setProfileImageUrl(String profileImageUrl)
+    {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public String getPhoneNumber()
+    {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber)
+    {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getGender()
+    {
+        return gender;
+    }
+
+    public void setGender(String gender)
+    {
+        this.gender = gender;
+    }
+
+    public Instant getDateOfBirth()
+    {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Instant dateOfBirth)
+    {
+        this.dateOfBirth = dateOfBirth;
+    }
 
 
     public Integer getId()
     {
-        return person_id;
+        return identity_id;
     }
 
     public void setId(Integer id)
     {
-        this.person_id = id;
+        this.identity_id = id;
     }
 
     public String getFullName()
@@ -117,11 +215,7 @@ public class PersonEntity implements PersonStructure
         this.sex = sex;
     }
 
-    @Override
-    public void setProfileImageUrl(String profileImageUrl)
-    {
 
-    }
 
     @Override
     public void setAddressId(String firstName)

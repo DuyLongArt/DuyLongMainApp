@@ -12,8 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Setter
 @Getter
-public class CredentialEntity implements Credential
-{
+public class CredentialEntity implements Credential {
     @Id
     private BigInteger credentialId;
     private String username;
@@ -24,8 +23,8 @@ public class CredentialEntity implements Credential
     private String accessJWT;
     private String jsonWebToken;
     private LocalDateTime createdAt = LocalDateTime.now();
-    public CredentialEntity(String username, String password, boolean rememberMe, String deviceid, String ipAddress)
-    {
+
+    public CredentialEntity(String username, String password, boolean rememberMe, String deviceid, String ipAddress) {
         this.username = username;
         this.password = password;
         this.rememberMe = rememberMe;
@@ -33,75 +32,58 @@ public class CredentialEntity implements Credential
         this.ipAddress = ipAddress;
     }
 
-    public CredentialEntity()
-    {
+    public CredentialEntity() {
 
     }
 
-    public String getUsername()
-    {
+    public String getUsername() {
         return username;
     }
 
     @Override
-    public String getUserName()
-    {
-        return "";
+    public String getUserName() {
+        return username;
     }
 
-    public String getPassword()
-    {
+    public String getPassword() {
         return password;
     }
 
     @Override
-    public String getDevice()
-    {
-        return "";
-    }
-
-    @Override
-    public String getDeviceIP()
-    {
-        return "";
-    }
-
-    @Override
-    public RoleTypes getRole()
-    {
-        return null;
-    }
-
-    @Override
-    public String jsonWebToken()
-    {
-        return "";
-    }
-
-    public boolean getRememberMe()
-    {
-        return rememberMe;
-    }
-
-    public String getDeviceid()
-    {
+    public String getDevice() {
         return deviceid;
     }
 
-    public String getIpAddress()
-    {
+    @Override
+    public String getDeviceIP() {
         return ipAddress;
     }
 
-    public String getAccessJWT()
-    {
+    public RoleTypes getRole() {
+        return null;
+    }
+
+    public String jsonWebToken() {
+        return "";
+    }
+
+    public boolean getRememberMe() {
+        return rememberMe;
+    }
+
+    public String getDeviceid() {
+        return deviceid;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public String getAccessJWT() {
         return accessJWT;
     }
 
-
-
-    public void setAccessJWT(String accessJWT)
-    {
+    public void setAccessJWT(String accessJWT) {
         this.accessJWT = accessJWT;
     }
 }

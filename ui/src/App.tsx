@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
-import './App.css'
-import './index.css'
-import HomePage from "./UILayer/pages/Home/HomePage";
+// import './App.css'
+// import './index.css'
+// import HomePage from "./UILayer/pages/Home/HomePage";
 import { BrowserRouter } from 'react-router-dom';
 import AppRouterLayer from './RouterLayer/AppRouterLayer';
 import SecurityLayer from './SecurityLayer/SecurityLayer';
@@ -23,18 +23,22 @@ const  App:React.FC=()=> {
 
            
 
+                
               
-                <SecurityLayer>
+              
           
              
-                <AppRouterLayer>
+            
                   
+<AppRouterLayer>
+ <SecurityLayer>
 
+ </SecurityLayer>
+                </AppRouterLayer>
                     
                   
-                </AppRouterLayer>
-                   </SecurityLayer>
-                      
+           
+               
  
 
               </OrchestraLayer>

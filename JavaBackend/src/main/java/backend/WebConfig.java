@@ -1,4 +1,4 @@
-package backend.DataLayer;
+package backend;
 
 
 import org.springframework.context.annotation.Bean;
@@ -11,13 +11,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 // Place this in a file like 'WebConfig.java' in your configuration package.
 
 @Configuration
-class WebConfig {
+class WebConfig
+{
 
     @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
+    public WebMvcConfigurer corsConfigurer()
+    {
+        return new WebMvcConfigurer()
+        {
             @Override
-            public void addCorsMappings(CorsRegistry registry) {
+            public void addCorsMappings(CorsRegistry registry)
+            {
                 registry.addMapping("/**") // Applies CORS configuration to all endpoints
                         .allowedOrigins(
                                 "http://localhost",

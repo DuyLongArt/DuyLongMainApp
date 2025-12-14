@@ -64,8 +64,8 @@ const config: Config = {
         '4xl': '2rem',
       },
       boxShadow: {
-        'inner-lg': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.1)',
-        'outline': '0 0 0 3px rgba(59, 130, 246, 0.5)',
+        'inner-lg': 'none',
+        'outline': 'none',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',

@@ -1,14 +1,13 @@
-package backend.RouterLayer;
+package backend.DataLayer.protocol.Account;
 
-import backend.DataLayer.protocol.Account.AccountDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 //Router Layer
 @RestController
-@RequestMapping("/person") // Đường dẫn cơ sở cho tất cả các API trong controller này
-public class AccountController
-{
+@RequestMapping("/account") // Đường dẫn cơ sở cho tất cả các API trong controller này
+public class AccountController {
 
     private final AccountDAO personRepo;
 
@@ -22,13 +21,17 @@ public class AccountController
     @GetMapping("/{alias}")
     public String getPersonById(@PathVariable("alias") String alias) {
 
-        String aliasResult=personRepo.findAccountByAlias(alias);
-        if(alias==null) {
+        String aliasResult = personRepo.findAccountByAlias(alias);
+        if (alias == null) {
             return "No such alias";
-        }else{
+        } else {
             return alias;
         }
 
+    }
+    @GetMapping("/test")
+    public String test() {
+        return "test";
     }
 
     // SỬA LỖI 2: Tạo một endpoint riêng và rõ ràng hơn để lấy tên.
@@ -41,5 +44,12 @@ public class AccountController
         } else {
             return ResponseEntity.notFound().build(); // Nếu không, trả về 404 Not Found
         }
+    }
+
+    @PostMapping("/registation")
+    public ResponseEntity<String> registation(
+            @RequestBody backend.DataLayer.protocol.Credential.RegistrationCredential credential) {
+        // TODO: Implement registration logic
+        return ResponseEntity.ok("Registration implementation pending");
     }
 }

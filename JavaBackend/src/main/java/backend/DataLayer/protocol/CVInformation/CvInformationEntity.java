@@ -1,4 +1,4 @@
-package backend;
+package backend.DataLayer.protocol.CVInformation;
 
 import backend.DataLayer.protocol.Person.PersonEntity;
 import jakarta.persistence.*;
@@ -17,7 +17,7 @@ import java.time.Instant;
 @Table(name = "cv_informations", schema = "users", uniqueConstraints = {
         @UniqueConstraint(name = "cv_informations_identity_id_key", columnNames = {"identity_id"})
 })
-public class CvInformation
+public class CvInformationEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

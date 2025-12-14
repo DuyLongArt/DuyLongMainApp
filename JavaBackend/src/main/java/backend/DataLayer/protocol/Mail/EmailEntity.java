@@ -1,4 +1,4 @@
-package backend;
+package backend.DataLayer.protocol.Mail;
 
 import backend.DataLayer.protocol.Person.PersonEntity;
 import jakarta.persistence.*;
@@ -16,7 +16,7 @@ import java.time.Instant;
 @Setter
 @Entity
 @Table(name = "emails", schema = "users")
-public class Email
+public class EmailEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

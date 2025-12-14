@@ -19,9 +19,11 @@ const GridItem: React.FC<GridItemProps> = ({ children, url ,imageUrl}) => {
 
 
     return (
-        <div className="bg-indigo-600 text-white border border-black hover:saturate-50 min-h-[150px] h-[200px] flex items-center justify-center rounded-2xl">
-            <a href={url} target="_blank" rel="noopener noreferrer" className="bg-indigo-600 text-white w-full h-full border border-black hover:saturate-50 flex items-center justify-center rounded-2xl gap-2 flex-col">
-                <div className="border-1 border-black h-[150px] w-full rounded-t-2xl">
+        <div className="bg-indigo-600 text-white border-2 border-black hover:saturate-50 min-h-[150px] h-[200px] flex items-center justify-center ">
+            <a href={url} target="_blank" rel="noopener noreferrer" className="bg-indigo-600 text-white w-full 
+            h-full border border-black hover:saturate-50 flex items-center 
+            justify-center  gap-2 flex-col">
+                <div className=" h-[150px] w-full ">
                     <img alt={imageUrl} />
                 </div>
                 <div className=" text-white font-bold justify-center align-top">

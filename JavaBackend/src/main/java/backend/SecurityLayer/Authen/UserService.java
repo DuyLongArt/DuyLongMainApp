@@ -39,14 +39,14 @@ public class UserService implements UserDetailsService {
         List<String> roles = Collections.singletonList(accountEntity.getRole()); // Example: ["ADMIN"] or ["USER"]
 
         List<SimpleGrantedAuthority> authorities = roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toList());
 
         // B. Create and return the UserDetails object
         return new User(
                 accountEntity.getUserName(),
-                accountEntity.getPassword(), // The stored (hashed) password
-                accountEntity.isEnabled(),   // Boolean flag for enabled status
+                accountEntity.getPasswordHash(), // The stored (hashed) password
+                accountEntity.isEnabled(), // Boolean flag for enabled status
                 true, // accountNonExpired
                 true, // credentialsNonExpired
                 true, // accountNonLocked

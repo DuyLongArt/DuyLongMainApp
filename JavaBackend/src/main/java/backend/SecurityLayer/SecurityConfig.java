@@ -1,8 +1,7 @@
-package backend.SecurityLayer.Middleware;
+package backend.SecurityLayer; // FIX 1: Move to a dedicated 'Config' package
 
-import backend.DataLayer.protocol.RoleTypes;
+import backend.SecurityLayer.Middleware.UserJWTFilter; // Import the filter
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,18 +18,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-//@ComponentScan("backend") // This scans all backend.* packages
-@ComponentScan({"backend"}) // Scan both!
+// FIX 2: Removed redundant @ComponentScan and move to Configuration package
 public class SecurityConfig {
 
     private final UserJWTFilter userJWTFilter;
 
+    // FIX 3: Ensure correct package path for the filter and remove unused imports
     public SecurityConfig(UserJWTFilter userJWTFilter) {
-//        System.out.println("SecurityConfig: Setting up security filter chain");
         this.userJWTFilter = userJWTFilter;
     }
 
-    // CRITICAL: This bean MUST be uncommented for LoginController to work!
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
@@ -48,14 +45,20 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-//                .addFilterBefore(userJWTFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // --- FIX 4: UNCOMMENT AND ACTIVATE THE JWT FILTER ---
+                .addFilterBefore(userJWTFilter, UsernamePasswordAuthenticationFilter.class)
+
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/backend/auth/login", "/backend/auth/test","/login").permitAll()
+                        // FIX 5: Use a clear base path /api/auth/* for public endpoints
+                        .requestMatchers("/api/auth/**", "/login", "/backend/auth/**","/person/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(e -> e
+                        // Handles unauthorized access attempts
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 );
 

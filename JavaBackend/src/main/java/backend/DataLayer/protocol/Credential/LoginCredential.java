@@ -1,21 +1,38 @@
 package backend.DataLayer.protocol.Credential;
 
-
 import backend.DataLayer.protocol.RoleTypes;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class LoginCredential implements Credential {
+    private String userName;
+    private String password;
+    private String device;
+    private String deviceIP;
+    private RoleTypes role;
+    private boolean isMock;
 
-public interface Credential
-{
-    String getUserName();
-    String getPassword(); // Assuming this is also defined
-    String getDevice();
-    String getDeviceIP();
+    @Override
+    public String getUserName() {
+        return userName;
+    }
 
-    RoleTypes getRole();
+    @Override
+    public String getPassword() {
+        return password;
+    }
 
-    default String jsonWebToken() { return ""; }
-    //optionanl field
+    @Override
+    public String getDevice() {
+        return device;
+    }
 
-    default LocalDateTime createdAt() { return LocalDateTime.now(); }
+    @Override
+    public String getDeviceIP() {
+        return deviceIP;
+    }
 }

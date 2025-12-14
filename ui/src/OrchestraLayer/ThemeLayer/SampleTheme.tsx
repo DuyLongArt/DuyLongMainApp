@@ -33,7 +33,7 @@ const customTheme = {
       variant: "filled",
       color: "blue",
       fullWidth: false,
-      ripple: true,
+      ripple: false,
     },
     styles: {
       base: {
@@ -54,12 +54,12 @@ const customTheme = {
             blue: {
               background: "bg-blue-500 hover:bg-blue-600 active:bg-blue-700",
               color: "text-white",
-              shadow: "shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40",
+              shadow: "shadow-none",
             },
             purple: {
               background: "bg-purple-500 hover:bg-purple-600 active:bg-purple-700",
               color: "text-white",
-              shadow: "shadow-md shadow-purple-500/20 hover:shadow-lg hover:shadow-purple-500/40",
+              shadow: "shadow-none",
             },
           },
         },
@@ -70,7 +70,8 @@ const customTheme = {
     defaultProps: {
       variant: "filled",
       color: "white",
-      shadow: true,
+      color: "white",
+      shadow: false,
     },
     styles: {
       base: {
@@ -79,14 +80,17 @@ const customTheme = {
           display: "flex",
           flexDirection: "flex-col",
           backgroundClip: "bg-clip-border",
-          borderRadius: "rounded-xl",
+          backgroundClip: "bg-clip-border",
+          borderRadius: "rounded-xl border border-gray-200 dark:border-gray-700",
         },
         variants: {
           filled: {
             white: {
               background: "bg-white dark:bg-gray-800",
               color: "text-gray-700 dark:text-gray-200",
-              shadow: "shadow-md",
+              background: "bg-white dark:bg-gray-800",
+              color: "text-gray-700 dark:text-gray-200",
+              shadow: "shadow-none",
             },
           },
         },
@@ -110,7 +114,7 @@ export default function App() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('themeMode', mode);
-      
+
       // Add or remove dark class from document element
       if (mode === 'dark') {
         document.documentElement.classList.add('dark');
@@ -131,19 +135,18 @@ export default function App() {
   return (
     <ThemeModeContext.Provider value={contextValue}>
       <ThemeProvider value={customTheme}>
-        <div className={`min-h-screen transition-colors duration-300 ${
-          mode === 'dark' 
-            ? 'bg-gray-900 text-white' 
-            : 'bg-gray-50 text-gray-900'
-        }`}>
+        <div className={`min-h-screen transition-colors duration-300 ${mode === 'dark'
+          ? 'bg-gray-900 text-white'
+          : 'bg-gray-50 text-gray-900'
+          }`}>
           <div className="flex flex-col items-center justify-center min-h-screen p-4">
             <Typography
               variant="h1"
-              className="mb-8 text-center font-bold text-4xl md:text-5xl bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent"
+              className="mb-8 text-center font-bold text-4xl md:text-5xl text-gray-900 dark:text-white"
             >
               Material Tailwind Theme Manager
             </Typography>
-            
+
             <ThemeToggler />
             <ContentSection />
           </div>
@@ -161,12 +164,11 @@ const ThemeToggler = () => {
     <div className="mb-8">
       <Button
         onClick={toggleThemeMode}
-        className={`transition-all duration-300 transform hover:scale-105 focus:scale-105 shadow-lg ${
-          mode === 'dark'
-            ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-500/25 hover:shadow-purple-500/50'
-            : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/25 hover:shadow-blue-500/50'
-        } text-white font-semibold py-3 px-6 rounded-full`}
-        ripple={true}
+        className={`transition-all duration-300 transform ${mode === 'dark'
+          ? 'bg-purple-600 hover:bg-purple-700'
+          : 'bg-blue-600 hover:bg-blue-700'
+          } text-white font-semibold py-3 px-6 rounded-full`}
+        ripple={false}
       >
         🌙 Switch to {mode === 'light' ? 'Dark' : 'Light'} Mode ☀️
       </Button>
@@ -179,62 +181,53 @@ const ContentSection = () => {
   const { mode } = useThemeMode();
 
   return (
-    <Card className={`w-full max-w-lg transition-all duration-300 ${
-      mode === 'dark' 
-        ? 'bg-gray-800 border-gray-700' 
-        : 'bg-white border-gray-200'
-    } shadow-xl hover:shadow-2xl transform hover:-translate-y-1`}>
+    <Card className={`w-full max-w-lg transition-all duration-300 ${mode === 'dark'
+      ? 'bg-gray-800 border-gray-700'
+      : 'bg-white border-gray-200'
+      }`}>
       <CardBody className="text-center p-8">
-        <Typography 
-          variant="h3" 
-          className={`mb-4 font-semibold ${
-            mode === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}
+        <Typography
+          variant="h3"
+          className={`mb-4 font-semibold ${mode === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}
         >
-          Current Theme: 
-          <span className={`ml-2 capitalize ${
-            mode === 'dark' 
-              ? 'text-purple-400' 
-              : 'text-blue-600'
-          }`}>
+          Current Theme:
+          <span className={`ml-2 capitalize ${mode === 'dark'
+            ? 'text-purple-400'
+            : 'text-blue-600'
+            }`}>
             {mode}
           </span>
         </Typography>
-        
-        <Typography 
-          variant="paragraph" 
-          className={`mb-6 leading-relaxed ${
-            mode === 'dark' ? 'text-gray-300' : 'text-gray-600'
-          }`}
+
+        <Typography
+          variant="paragraph"
+          className={`mb-6 leading-relaxed ${mode === 'dark' ? 'text-gray-300' : 'text-gray-600'
+            }`}
         >
           This content dynamically changes its appearance based on the selected theme.
           Observe the background, text color, and button style adapting smoothly with Tailwind CSS transitions.
         </Typography>
-        
-        <div className={`mt-4 p-4 rounded-lg border-l-4 ${
-          mode === 'dark'
-            ? 'bg-gray-700 border-purple-500 text-gray-200'
-            : 'bg-blue-50 border-blue-500 text-gray-700'
-        }`}>
+
+        <div className={`mt-4 p-4 rounded-lg border-l-4 ${mode === 'dark'
+          ? 'bg-gray-700 border-purple-500 text-gray-200'
+          : 'bg-blue-50 border-blue-500 text-gray-700'
+          }`}>
           <Typography variant="small" className="font-medium">
             💡 Pro Tip: You can extend this theming system to any component in your app using Tailwind CSS classes and the dark: modifier!
           </Typography>
         </div>
-        
+
         {/* Demo color palette */}
         <div className="flex justify-center gap-3 mt-6">
-          <div className={`w-8 h-8 rounded-full ${
-            mode === 'dark' ? 'bg-purple-500' : 'bg-blue-500'
-          } shadow-lg`}></div>
-          <div className={`w-8 h-8 rounded-full ${
-            mode === 'dark' ? 'bg-purple-400' : 'bg-blue-400'
-          } shadow-lg`}></div>
-          <div className={`w-8 h-8 rounded-full ${
-            mode === 'dark' ? 'bg-purple-300' : 'bg-blue-300'
-          } shadow-lg`}></div>
-          <div className={`w-8 h-8 rounded-full ${
-            mode === 'dark' ? 'bg-gray-600' : 'bg-gray-400'
-          } shadow-lg`}></div>
+          <div className={`w-8 h-8 rounded-full ${mode === 'dark' ? 'bg-purple-500' : 'bg-blue-500'
+            }`}></div>
+          <div className={`w-8 h-8 rounded-full ${mode === 'dark' ? 'bg-purple-400' : 'bg-blue-400'
+            }`}></div>
+          <div className={`w-8 h-8 rounded-full ${mode === 'dark' ? 'bg-purple-300' : 'bg-blue-300'
+            }`}></div>
+          <div className={`w-8 h-8 rounded-full ${mode === 'dark' ? 'bg-gray-600' : 'bg-gray-400'
+            }`}></div>
         </div>
       </CardBody>
     </Card>

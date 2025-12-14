@@ -22,7 +22,7 @@ public interface AccountStructure
 
     String getMail();
 
-    String getPassword();
+//    String getPasswordHash();
 
     String getRole();
 
@@ -40,7 +40,9 @@ public interface AccountStructure
 
     void setMail(String mail);
 
-    void setPassword(String password);
+    void setPasswordHash(String password);
+
+    String getPasswordHash();
 
     void setRole(String role);
 
@@ -69,7 +71,7 @@ public interface AccountStructure
         return getId() > 0 &&
                 isValidUserName(getUserName()) &&
                 isValidMail(getMail()) &&
-                getPassword() != null && !getPassword().trim().isEmpty() &&
+                getPasswordHash() != null && !getPasswordHash().trim().isEmpty() &&
                 getRole() != null && !getRole().trim().isEmpty() &&
                 getCreatedAt() != null;
     }

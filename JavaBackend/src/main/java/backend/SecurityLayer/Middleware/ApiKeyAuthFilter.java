@@ -1,4 +1,5 @@
 package backend.SecurityLayer.Middleware;
+
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,7 +11,7 @@ import java.io.IOException;
 public class ApiKeyAuthFilter implements Filter {
 
     private static final String API_KEY_HEADER = "X-API-KEY";
-    private static final String EXPECTED_API_KEY = "my-secret-key";
+    private static final String EXPECTED_API_KEY = "duylongapikey";
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -26,10 +27,15 @@ public class ApiKeyAuthFilter implements Filter {
         if (EXPECTED_API_KEY.equals(apiKey)) {
             // Key is valid, so let the request proceed to the next filter or controller
             chain.doFilter(request, response);
+            System.out.println("API Key is valid");
         } else {
+
+            System.out.println("API Key is notauto pass");
+            // chain.doFilter(request, response);
             // Key is invalid or missing, block the request
-            httpResponse.setStatus(HttpServletResponse.SC_FORBIDDEN); // Set 403 Forbidden status
-            httpResponse.getWriter().write("Error: Invalid or Missing API Key.");
+            // httpResponse.setStatus(HttpServletResponse.SC_FORBIDDEN); // Set 403
+            // Forbidden status
+            // httpResponse.getWriter().write("Error: Invalid or Missing API Key.");
             // IMPORTANT: Do NOT call chain.doFilter() here
         }
     }

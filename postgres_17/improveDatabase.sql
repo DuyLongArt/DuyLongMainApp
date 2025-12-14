@@ -254,27 +254,7 @@ CREATE TABLE person.blog_posts (
 -- =============================================================================
 
 -- URLs (improved with validation and categorization)
-CREATE TABLE person.urls (
-    id SERIAL PRIMARY KEY,
-    person_id INTEGER REFERENCES person.persons(id) ON DELETE SET NULL,
-    url_full TEXT NOT NULL,
-    url_title VARCHAR(255),
-    url_description TEXT,
-    domain_name VARCHAR(255) NOT NULL,
-    path_part TEXT DEFAULT '/' NOT NULL,
-    protocol VARCHAR(10) DEFAULT 'https' CHECK (protocol IN ('http', 'https', 'ftp')) NOT NULL,
-    port_number INTEGER CHECK (port_number BETWEEN 1 AND 65535),
-    category VARCHAR(100) DEFAULT 'general' 
-        CHECK (category IN ('social', 'professional', 'personal', 'reference', 'tool', 'entertainment', 'general')),
-    is_active BOOLEAN DEFAULT true NOT NULL,
-    click_count INTEGER DEFAULT 0 NOT NULL,
-    last_accessed_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    
-    CONSTRAINT valid_url_format CHECK (url_full ~* '^https?://[^\s/$.?#].[^\s]*$'),
-    CONSTRAINT valid_domain CHECK (LENGTH(TRIM(domain_name)) > 0)
-);
+
 
 -- Widgets (improved with configuration support)
 CREATE TABLE person.widgets (

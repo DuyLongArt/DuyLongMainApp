@@ -1,6 +1,6 @@
 -- DROP SCHEMA person;
 
-CREATE SCHEMA person AUTHORIZATION pg_database_owner;
+CREATE SCHEMA main AUTHORIZATION duylong;
 
 COMMENT ON SCHEMA person IS 'standard public schema';
 
@@ -25,7 +25,7 @@ CREATE TYPE person."role_data" AS ENUM (
 
 -- DROP SEQUENCE person.blog_id_seq;
 
-CREATE SEQUENCE person.blog_id_seq
+CREATE SEQUENCE main.blog_id_seq
 	INCREMENT BY 1
 	MINVALUE 1
 	MAXVALUE 9223372036854775807
@@ -457,5 +457,5 @@ GRANT ALL ON FUNCTION person.update_updated_at_column() TO duylong;
 
 -- Permissions
 
-GRANT ALL ON SCHEMA person TO pg_database_owner;
+GRANT ALL ON SCHEMA person TO duylong;
 GRANT USAGE ON SCHEMA person TO public;
