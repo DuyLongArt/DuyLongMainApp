@@ -1,9 +1,10 @@
-package backend.DataLayer.protocol.Account;
+package backend.RouterLayer;
 
+import backend.DataLayer.protocol.Account.AccountDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+//Router Layer
 @RestController
 @RequestMapping("/person") // Đường dẫn cơ sở cho tất cả các API trong controller này
 public class AccountController
