@@ -5,15 +5,28 @@ import axios from 'axios';
 // --- Types ---
 const mockDelay = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
 
+type RoleTypes = 'USER' | 'ADMIN'; // Default simple role types
+
 type AuthMachineContext = {
   username: string;
   password: string;
-  token: string;
+
   jwt: string;
 };
 
+type RegisterPayload = {
+  userName: string;
+  password: string;
+  email: string;
+  device: string;
+  deviceIP: string;
+  role: RoleTypes;
+  phone?: string; // Optional field mentioned by user
+};
+
 type AuthEvents =
-  | { type: 'SUBMIT'; username: string; password: string; token: string }
+  | { type: 'SUBMIT'; username: string; password: string; }
+  | { type: 'REGISTER'; payload: RegisterPayload }
   | { type: 'RETRY' }
   | { type: 'LOGOUT' };
 
@@ -56,7 +69,7 @@ const getJWT = fromPromise(async () => {
       return { jwt: MOCK_JWT_TOKEN };
     }
 
-    const response = await axios.get("http://localhost:8086/backend/auth");
+    const response = await axios.get("http://localhost:8086/backend/auth/login");
     return response.data;
   } catch (error) {
     console.error("❌ Error fetching JWT:", error);
@@ -65,7 +78,7 @@ const getJWT = fromPromise(async () => {
 });
 
 const authenticateWithCredentials = fromPromise(
-  async ({ input }: { input: { username: string; password: string; token: string } }) => {
+  async ({ input }: { input: { username: string; password: string; } }) => {
     try {
       if (ADMIN_MOCK_JWT) {
         console.log("⚠️ Using MOCK Login service.");
@@ -88,9 +101,27 @@ const authenticateWithCredentials = fromPromise(
   }
 );
 
+const registerWithCredentials = fromPromise(
+  async ({ input }: { input: { payload: RegisterPayload } }) => {
+    try {
+      if (ADMIN_MOCK_JWT) {
+        console.log("⚠️ Using MOCK Register service with payload:", input.payload);
+        await mockDelay(1000);
+        return { jwt: MOCK_JWT_TOKEN };
+      }
+
+      const response = await axios.post("http://localhost:8086/backend/auth/register", input.payload);
+      return response.data;
+    } catch (error) {
+      console.error("❌ Error registering:", error);
+      throw error;
+    }
+  }
+);
+
 // --- State Machine Definition ---
 const authenState = createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QEMCuAXAFmAdgZXWXTADoB7HASRwEt0BiAbQAYBdRUABzNjpoo4gAHogBMzZiQCcAVgDMARlEAWAOxyAHHOYzRAGhABPRAuZyZJZct2rRGgGxS5c+3IC+bg2iy4CRUhTUdEwK7Egg3Lzo-DiCIgjikrKKKupaOvpGJqYkSjLMynLKookyUvYeXhjY+ITE5DgAgtW49BAUpDQ4AG5kANakAGZg6ADGmABSAOoAKixhXDx8AuHx8qokGjIKMjKqzDvKGk4GxgiKG+KKMo5a5lqVIN41fvUUzT44bR0kXb0DJGGY0ms0YoUEkWWsVWiHWm22u32h2OclOiA0ChI+QkCiKhRkGg0oikj2evjqASaLS+YAATrSyLSSJwADZEQaMgC2gJG42mczYEKW0RWoDWcg2Wx2ewOMiOJyyCAUqmU0nkh3UqnsBWYolJ1NepG6yBZNAg-gAwmR+jQ4I1BsRaQAxXmYJiC8KQkXQsUmZj2DSWf2idaqLVSMNohDKZhSXJyOwSzQuYkyfWfQ0kY2m83EK02u0Ouku4EhBYRYUxOJ+gNB+whiVhxyRxUXXKqCMNjTKewKBQkzxPA0UhofGpO5A0FmQeh4ACqACEALKUAXlr1VmFKvuSXXOKQY5SHBRR-KY5hbKTKJxE+xqXHpl4jsk4aKjIhdKDfHCdHr9Ugvm+-jzEKUSbr6CBwlKiKyvKqKKhiFgIq41g7GYjiPuS-gkIBNDvtEOBfnSDJMqy7Jcjh1JAcQIGepWorCLCErwtKSJyiiUb2OoJCiPYNx9lI4i6EomG1Nh2Zmpa1p9LasD2o6AAyZBQF07rrvRPqMUq-qBjG9ahuGLZnFIzAbFYuhXjcfE9qoomZhJuZgPmMmFopymqWC6lgQx8SmLWekNmGhmqFGiGWIJChEjcqgWQodkjhQSkqV8CkAPIAOKpXOa6gVCgjGWY0iiJFIZyvIdgnlpOziDx6jFAUjgPoOL6ZolylkBg9BCLAz5FrSAAUpjMAAlPQLUJTgSUdegtGLN5mnxCGcZmHkUZ9vY9gkNq1V2I4ziuB4g44GQEBwII43+Ll3rVggAC0RxRrdFhSC9B6aI4ZgHISabNcO2GBLQ6BXeBWnFGtJS5LKgmiM4ph3PF-1Up8wM+YgLhyCQqjHAUCjFBGEq7FGV4sTcGgxeUYbyAj9QOVJBZyX1JbjCjC3ojV21yoUHZaGTUYJnGOz1pZVhqFZ1OUmOuATlOkAszdSi9jxxTKg1Ui4nz-Y8aIYa8WT2o6LZv0Zs+VF4R+hFy1u9yY9jR545qhOKrogYKHeOj+lYruyOLWYmpJebSbJ8l0klXSWxBRKSBzVgSm9vMIdrlgBqoO7EmTBw+21yXh1VvGYioxX7D2avwQVGMRVFZUJhimeTe1GA5-EzBrbimLmdru1OOjh1uEAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QEMCuAXAFmAdgZXWXTADoB7HASRwEt0BiAbQAYBdRUABzNjpoo4gAHogBMzAKwkAnBIDMARlEA2OcoDsAFgWa56gDQgAnogAcCkhObXmc06PUa5zUwF9XhtFlwEipCtR0TArsSCDcvOj8OIIiCOJSsooqalo6eoYmCJrK0iSm9vbKppqipnJyohLunhjY+ITE5DgAgnW49BAUpDQ4AG5kANakAGZg6ADGmABSAOoAKiyhXDx8AmFx8qL5EgoS5RJp0goKmWJqJJqOh+qmt8zKEppuHiBe9b5NFG3eOJ3dJF6A2GJDGkxmC0YIUEETWMQ2iC2Oz2ByOJzO2VyJAUlXspVMGjK0hqb3aDT8zR+9XoYAATrSyLSSJwADZEEaMgC2oPGUzmizYMNWUXWoE2lWR+zkh20x1OxkRym2+wksiuoj0TzkJPePkapD6yBZNAgfgAwmQhjQ4C0RsRaQAxXmYJiCsKwkXwsWIBTMdRyS4PUTSXQSeSHDEa5SXeQ4gph5QubWvXXkpqG42m4gWq02u10p3g4LLcLC6KxH1+gOaIMh6XhgwKhC4wNK5TaUzMUqaaTKHVkz7+Vpkh3IGgsyD0PAAVQAQgBZSgCkse8sIhAnPYkZga57qmumCTKDEh0yBgoEnEaYkpgf6ykjscTiD0ABKAFEAOKUPDzd+vpYhUiNdvQ3X1mEuHRfXUSR1CedRpAxJRVXyPY41EKMHmqW9fkHEhaTAKAaFge1eigf4cB6fohlIAiiJIulAPdMtRWEREJUPFFpTReUshOSQSGUJRrEOXZ1Dg7Dalw+86OI0icHIukGSZVl2S5fDCLkxi3RWYDWPFbZOKlGUFDlJDdAsaRTyUDUrHbdR+2kilUyiCYiDIiiqOBUgXJoNziCY3S4QrBAkSM1FZXRJsYIguCVA1DCEIqF4pI+e9fP8jylMZZk2XQDlaW5DK-EC0s9K9NjQo43ZjJ4jF7AsFE7ljK5JNJJz0yNE1zUtQZrVgW17QAGTIIi-lK1d9Mrf1W2DUMGwxdQt3MKpTJDDCNEctKKQzbrs16-rBrpEaxuLIDgvXaDq1rebuPqv0SGudsJBUGCDi2vUKQoE7enoIaAHlP3+6dl3Oz0Qp0ODt2kOwcTDOw9EbPi7BIXE4xrbQe2KD60yHE6yAweghBI5z81pAAKcCAEp6FTPDvtGgn0AmliKriSGpGYGHzHrBHxKQ1V1GxaQEN0dQHEeTRsNeHAyAgOBBDp-UwZAyqAFpjybDXtxsXW9b9HH6aoWh0BVqbslEDErgg311pKQ45F7aVDfvb4yTNtnEDUM9bmkKtNGeX3NCtp5BK573HBrX2XZ2rqszAHM+rze1CymD2QvsKREz2aR4tuUzNayURnkuYNcg0TcdyVGOvmHX5R3HSB08u5xo2LjDMdSSoMTUCDRAUISVX9S9ZBr2jNIY2kyOb0C1ADX3-cD0wQyQlQ++KDUYJF0pc7HkhiqiBSZ8qufHuXxe7mX4Om07PI4dlBD+733b48Tw6yZ+irJs9hBM7DnO87mF7ItBwZ8-biQQuJISmg94MzGsfdmzghY5GKC9O42h4JIS3GjaUVQuwYRSu1batd8YYAQT6RMeQVBHnWiccWVksEWG0DoF6IZB6OHcO4IAA */
   id: "authenState",
   types: {} as {
     context: AuthMachineContext;
@@ -100,7 +131,6 @@ const authenState = createMachine({
   context: {
     username: "",
     password: "",
-    token: "",
     jwt: ""
   },
 
@@ -210,10 +240,59 @@ const authenState = createMachine({
             assign({
               username: ({ event }) => event.username,
               password: ({ event }) => event.password,
-              token: ({ event }) => event.token || "",
             }),
             () => console.log("📝 User credentials received, starting authentication...")
           ]
+        },
+        REGISTER: {
+          target: 'registering',
+          actions: [
+            assign({
+              // Temporary store basic credentials in context if needed, or just pass payload directly to invoke
+              username: ({ event }) => event.payload.userName,
+              password: ({ event }) => event.payload.password,
+            }),
+            () => console.log("📝 Registration credentials received, starting registration...")
+          ]
+        }
+      }
+    },
+
+    registering: {
+      entry: () => console.log("📝 Registering user..."),
+      invoke: {
+        id: "register",
+        src: registerWithCredentials,
+        input: ({ event }) => {
+          // We need to access the event payload here.
+          // Since xstate v5 invoke input can access event, we cast relevant event type
+          const registerEvent = event as Extract<AuthEvents, { type: 'REGISTER' }>;
+          return {
+            payload: registerEvent.payload
+          };
+        },
+        onDone: {
+          target: "validateCookiesAfterLogin",
+          actions: [
+            assign({
+              jwt: ({ event }) => {
+                const output = event.output;
+                return output?.jwt || output || "";
+              }
+            }),
+            ({ event }) => {
+              console.log("✅ Registration successful.");
+              const jwt = event.output?.jwt;
+              if (jwt) {
+                console.log("💾 Saving JWT to cookies...");
+                saveJWTToCookies(jwt);
+              }
+            }
+          ]
+        },
+        onError: {
+          target: "onAuthenFailed",
+          actions: ({ event }) => console.log("❌ Registration failed:", event.error)
         }
       }
     },
@@ -229,7 +308,6 @@ const authenState = createMachine({
         input: ({ context }) => ({
           username: context.username,
           password: context.password,
-          token: context.token
         }),
         onDone: {
           target: "validateCookiesAfterLogin",
@@ -280,7 +358,6 @@ const authenState = createMachine({
 
     // Step 7: Final authenticated state
     onLogin: {
-      // type: "final",
       entry: ({ context }) => {
         console.log("🎉 Authentication successful - Final State Reached.");
         console.log("Current JWT in context:", context.jwt ? "✅ Present" : "❌ Missing");
@@ -302,11 +379,10 @@ const authenState = createMachine({
           jwt: "",
           username: "",
           password: "",
-          token: ""
         })
       ],
       after: {
-        100: { target: "onAuthenFailed" } // Short delay to ensure cleanup feels natural
+        100: { target: "onInit" } // Short delay to ensure cleanup feels natural
       }
     }
   }

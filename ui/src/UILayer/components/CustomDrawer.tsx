@@ -11,13 +11,17 @@ const CustomDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
     const handleClose = () => {
         onClose(false);
     };
-    const goHome=()=>{
-        if(window.location.pathname!="/home/index"){
+    const goHome = () => {
+        if (window.location.pathname != "/home/index") {
             navigate("/home/index")
             onClose(false);
-        }else{
+        } else {
             onClose(false);
         }
+    }
+    const go = (target: string) => {
+        navigate("/" + target)
+        onClose(false);
     }
     return (
         <>
@@ -31,9 +35,8 @@ const CustomDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
 
             {/* Drawer */}
             <div
-                className={`fixed left-0 top-0 h-full w-50 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
-                    isOpen ? "translate-x-0" : "-translate-x-full "
-                }`}
+                className={`fixed left-0 top-0 h-full w-50 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${isOpen ? "translate-x-0" : "-translate-x-full "
+                    }`}
             >
                 {/* Drawer Content */}
                 <div className="p-4">
@@ -51,7 +54,7 @@ const CustomDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
                     {/* Menu Items */}
                     <nav>
                         <ul className="space-y-2">
-                             <li>
+                            <li>
                                 <button
                                     onClick={goHome}
                                     className="w-full flex items-center p-3 text-left hover:bg-gray-100 rounded-lg transition-colors group"
@@ -69,7 +72,7 @@ const CustomDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
 
                             <li>
                                 <button
-                                    onClick={handleClose}
+                                    onClick={() => go("login/register")}
                                     className="w-full flex items-center p-3 text-left hover:bg-gray-100 rounded-lg transition-colors group"
                                 >
                                     <div className="flex items-center justify-center w-10 h-10 mr-3">
@@ -78,13 +81,13 @@ const CustomDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
                                             className="text-white group-hover:text-gray-800"
                                         />
                                     </div>
-                                    <span className="text-white font-medium">Inbox</span>
+                                    <span className="text-white font-medium">Register</span>
                                 </button>
                             </li>
 
                             <li>
                                 <button
-                                    onClick={handleClose}
+                                    onClick={() => go("entry/index")}
                                     className="w-full flex items-center p-3 text-left hover:bg-gray-100 rounded-lg transition-colors group"
                                 >
                                     <div className="flex items-center justify-center w-10 h-10 mr-3">
@@ -93,7 +96,7 @@ const CustomDrawer: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
                                             className="text-white group-hover:text-gray-800"
                                         />
                                     </div>
-                                    <span className="text-white font-medium">Mail</span>
+                                    <span className="text-white font-medium">Entry</span>
                                 </button>
                             </li>
                         </ul>

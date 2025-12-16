@@ -6,7 +6,7 @@ const PersonPage = lazy(() => import("../UILayer/pages/Home/Personal/PersonPage.
 const EntryPage = lazy(() => import("../UILayer/pages/Public/EntryPage.tsx"));
 const LoginIndex = lazy(() => import("../UILayer/pages/Login/LoginIndex.tsx"));
 const LoginForm = lazy(() => import("../UILayer/pages/Login/LoginForm.tsx"));
-// const RegisterPage = lazy(() => import("../UILayer/pages/Login/RegisterPage.tsx")); // Assuming this exists based on json
+const RegisterPage = lazy(() => import("../UILayer/pages/Register/RegisterPage.tsx")); // Updated import
 const HomePage = lazy(() => import("../UILayer/pages/Home/HomePage.tsx"));
 const HomeLayout = lazy(() => import("../UILayer/pages/Home/HomeLayout.tsx"));
 const WidgetMainPage = lazy(() => import("../UILayer/pages/Home/Widget/WidgetMainPage.tsx"));
@@ -18,6 +18,7 @@ const Widget5Page = lazy(() => import("../UILayer/pages/Home/Widget/Widget5Page.
 const ContactPage = lazy(() => import("../UILayer/pages/Home/Contact/ContactPage.tsx"));
 const PersonProfilePage = lazy(() => import("../UILayer/pages/Admin/PersonProfilePage.tsx"));
 const IOTPage = lazy(() => import("../UILayer/pages/Home/IOT/IOTPage.tsx"));
+const ApproveProcessPage = lazy(() => import("../UILayer/pages/ApproveProcess/ApproveProcessPage.tsx"));
 // const AdminLayout = lazy(() => import("../UILayer/pages/Admin/AdminLayout.tsx")); // Assuming exists
 // const BlogLayout = lazy(() => import("../UILayer/pages/Blog/BlogLayout.tsx")); // Assuming exists
 // const WidgetLayout = lazy(() => import("../UILayer/pages/Home/Widget/WidgetLayout.tsx")); // Assuming exists
@@ -59,7 +60,7 @@ export const appRoutes: Route[] = [
             },
             {
                 path: "register",
-                component: <BlankPage />,
+                component: <RegisterPage />,
                 title: "Register",
             },
         ],
@@ -219,6 +220,19 @@ export const appRoutes: Route[] = [
                 title: "Yellow City",
             },
         ],
+    },
+    {
+        type: "page",
+        path: "process-approval",
+        component: <OutletLayout />,
+        title: "Process Approval",
+        children: [
+            {
+                path: "index",
+                component: <ApproveProcessPage />,
+                title: "Process Approval",
+            }
+        ]
     },
     {
         type: 'error',
