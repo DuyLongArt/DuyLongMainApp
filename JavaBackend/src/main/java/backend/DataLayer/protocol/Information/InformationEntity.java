@@ -1,6 +1,5 @@
-package backend.DataLayer.protocol.CVInformation;
+package backend;
 
-import backend.DataLayer.protocol.Person.PersonEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -14,14 +13,14 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "cv_informations", schema = "users", uniqueConstraints = {
-        @UniqueConstraint(name = "cv_informations_identity_id_key", columnNames = {"identity_id"})
+@Table(name = "informations", schema = "users", uniqueConstraints = {
+        @UniqueConstraint(name = "informations_identity_id_key", columnNames = {"identity_id"})
 })
-public class CvInformationEntity
+public class InformationEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cv_information_id", nullable = false)
+    @Column(name = "cv_informations_id", nullable = false)
     private Integer id;
 
     @NotNull

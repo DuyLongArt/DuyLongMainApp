@@ -1,6 +1,5 @@
-package backend.DataLayer.protocol.Mail;
+package backend;
 
-import backend.DataLayer.protocol.Person.PersonEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -46,15 +45,20 @@ public class EmailEntity
 
     @Column(name = "verified_at")
     private Instant verifiedAt;
+
     @NotNull
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
+    @NotNull
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
 
 /*
  TODO [Reverse Engineering] create field to map the 'status' column
  Available actions: Define target Java type | Uncomment as is | Remove column mapping
-    @ColumnDefault("'PENDING'")
+    @ColumnDefault("'ACTIVE'")
     @Column(name = "status", columnDefinition = "email_status not null")
     private Object status;
 */

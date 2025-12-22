@@ -207,7 +207,7 @@ public class JWTUtility {
     public boolean validateToken(String token, AccountEntity accountEntity) {
         try {
             final String username = extractUsername(token);
-            return (username.equals(accountEntity.getUserName()) && !isTokenExpired(token));
+            return (username.equals(accountEntity.getUsername()) && !isTokenExpired(token));
         } catch (JwtException e) {
             // Log the exception if you have a logger
             return false;
