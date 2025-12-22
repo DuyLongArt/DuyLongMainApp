@@ -1,4 +1,4 @@
-package backend.DataLayer.protocol.IOT;
+package backend.DataLayer.protocol.Project.MultiOwner;
 
 public class ApprovalRepo
 {

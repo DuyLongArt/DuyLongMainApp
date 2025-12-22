@@ -1,4 +1,7 @@
 package backend.DataLayer.protocol.Project.MultiOwner;
 
-public class MultiOwner {
+public class MultiOwnerEntity
+{
+
+
 }

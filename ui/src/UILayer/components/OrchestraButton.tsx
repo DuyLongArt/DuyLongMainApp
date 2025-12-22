@@ -12,6 +12,7 @@ import { motion } from 'framer-motion';
 
 const OrchestraButton: React.FC<OrchestraButtonProps> = ({ onClick }) => {
 
+  const url = "http:192.168.22.4:9000/duylongwebappobjectdatabase/admin.png"
 
 
   return (

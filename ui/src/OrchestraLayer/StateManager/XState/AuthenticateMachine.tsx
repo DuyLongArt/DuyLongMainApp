@@ -1,37 +1,30 @@
 import { createActorContext } from "@xstate/react";
 import { assign, createMachine, type ActorRefFrom, fromPromise } from "xstate";
 import axios from 'axios';
+import type { RegistrationPayload, RoleTypes } from "../../../DataLayer/Protocol/RegistrationProtocol";
 
 // --- Types ---
 const mockDelay = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
-
-type RoleTypes = 'USER' | 'ADMIN'; // Default simple role types
 
 type AuthMachineContext = {
   username: string;
   password: string;
 
   jwt: string;
+  error?: string;
 };
 
-type RegisterPayload = {
-  userName: string;
-  password: string;
-  email: string;
-  device: string;
-  deviceIP: string;
-  role: RoleTypes;
-  phone?: string; // Optional field mentioned by user
-};
+// Re-export for backward compatibility
+export type { RegistrationPayload, RoleTypes };
 
 type AuthEvents =
   | { type: 'SUBMIT'; username: string; password: string; }
-  | { type: 'REGISTER'; payload: RegisterPayload }
+  | { type: 'REGISTER'; payload: RegistrationPayload }
   | { type: 'RETRY' }
   | { type: 'LOGOUT' };
 
 // --- Configuration ---
-const ADMIN_MOCK_JWT = true; // Toggle this for testing vs production
+const ADMIN_MOCK_JWT = false; // Toggle this for testing vs production
 const MOCK_JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJxdWFudHVtX2RldyIsIm5hbWUiOiJEdXkgTG9uZyIsImlhdCI6MTYxNjIzOTAyMiwiZXhwIjoxOTE2MjM5MDIyfQ.4n3f1o3_d3adK3y_sample_signature_verified";
 
 // --- Cookie Utilities ---
@@ -69,7 +62,7 @@ const getJWT = fromPromise(async () => {
       return { jwt: MOCK_JWT_TOKEN };
     }
 
-    const response = await axios.get("http://localhost:8086/backend/auth/login");
+    const response = await axios.get("/backend/auth/login");
     return response.data;
   } catch (error) {
     console.error("❌ Error fetching JWT:", error);
@@ -78,20 +71,21 @@ const getJWT = fromPromise(async () => {
 });
 
 const authenticateWithCredentials = fromPromise(
-  async ({ input }: { input: { username: string; password: string; } }) => {
+  async ({ input }: { input: { username: string; password: string; jwt?: string; } }) => {
     try {
-      if (ADMIN_MOCK_JWT) {
-        console.log("⚠️ Using MOCK Login service.");
-        await mockDelay(1000);
-        if (input.username === "duylong@duylong.art" && input.password === "duylongadminpass") {
-          return { jwt: MOCK_JWT_TOKEN };
-        }
-        throw new Error("Invalid mock credentials");
-      }
+      // if (ADMIN_MOCK_JWT) {
+      //   console.log("⚠️ Using MOCK Login service.");
+      //   await mockDelay(1000);
+      //   if (input.username === "duylong@duylong.art" && input.password === "duylongadminpass") {
+      //     return { jwt: MOCK_JWT_TOKEN };
+      //   }
+      //   throw new Error("Invalid mock credentials");
+      // }
 
-      const response = await axios.post("http://localhost:8086/backend/auth/login", {
-        username: input.username,
+      const response = await axios.post("/backend/auth/login", {
+        userName: input.username,
         password: input.password,
+        jwt: input.jwt || "", // Include JWT token if available
       });
       return response.data;
     } catch (error) {
@@ -102,7 +96,7 @@ const authenticateWithCredentials = fromPromise(
 );
 
 const registerWithCredentials = fromPromise(
-  async ({ input }: { input: { payload: RegisterPayload } }) => {
+  async ({ input }: { input: { payload: RegistrationPayload } }) => {
     try {
       if (ADMIN_MOCK_JWT) {
         console.log("⚠️ Using MOCK Register service with payload:", input.payload);
@@ -110,7 +104,7 @@ const registerWithCredentials = fromPromise(
         return { jwt: MOCK_JWT_TOKEN };
       }
 
-      const response = await axios.post("http://localhost:8086/backend/auth/register", input.payload);
+      const response = await axios.post("/backend/auth/signup", input.payload);
       return response.data;
     } catch (error) {
       console.error("❌ Error registering:", error);
@@ -131,7 +125,8 @@ const authenState = createMachine({
   context: {
     username: "",
     password: "",
-    jwt: ""
+    jwt: "",
+    error: undefined
   },
 
   states: {
@@ -173,7 +168,7 @@ const authenState = createMachine({
         onDone: [
           {
             guard: ({ event }) => {
-              const jwt = event.output?.jwt;
+              const jwt = event.output?.token;
               const hasValidJWT = jwt && jwt.length > 0;
               console.log(`API response: ${hasValidJWT ? '✅ JWT received' : '❌ No valid JWT'}`);
               return hasValidJWT;
@@ -238,8 +233,9 @@ const authenState = createMachine({
           target: 'authenticating',
           actions: [
             assign({
-              username: ({ event }) => event.username,
-              password: ({ event }) => event.password,
+              username: ({ event }) => (event as any).username,
+              password: ({ event }) => (event as any).password,
+              error: undefined
             }),
             () => console.log("📝 User credentials received, starting authentication...")
           ]
@@ -248,9 +244,9 @@ const authenState = createMachine({
           target: 'registering',
           actions: [
             assign({
-              // Temporary store basic credentials in context if needed, or just pass payload directly to invoke
-              username: ({ event }) => event.payload.userName,
-              password: ({ event }) => event.payload.password,
+              username: ({ event }) => (event as any).payload.userName,
+              password: ({ event }) => (event as any).payload.password,
+              error: undefined
             }),
             () => console.log("📝 Registration credentials received, starting registration...")
           ]
@@ -292,7 +288,10 @@ const authenState = createMachine({
         },
         onError: {
           target: "onAuthenFailed",
-          actions: ({ event }) => console.log("❌ Registration failed:", event.error)
+          actions: [
+            assign({ error: ({ event }) => (event.error as any)?.message || "Registration failed" }),
+            ({ event }) => console.log("❌ Registration failed:", event.error)
+          ]
         }
       }
     },
@@ -308,6 +307,7 @@ const authenState = createMachine({
         input: ({ context }) => ({
           username: context.username,
           password: context.password,
+          jwt: context.jwt, // Include JWT from context
         }),
         onDone: {
           target: "validateCookiesAfterLogin",
@@ -315,12 +315,12 @@ const authenState = createMachine({
             assign({
               jwt: ({ event }) => {
                 const output = event.output;
-                return output?.jwt || output || "";
+                return output?.token || output || "";
               }
             }),
             ({ event }) => {
               console.log("✅ Login successful with credentials.");
-              const jwt = event.output?.jwt;
+              const jwt = event.output?.token;
               if (jwt) {
                 console.log("💾 Saving JWT to cookies...");
                 saveJWTToCookies(jwt);
@@ -330,7 +330,10 @@ const authenState = createMachine({
         },
         onError: {
           target: "onAuthenFailed",
-          actions: ({ event }) => console.log("❌ Authentication failed:", event.error)
+          actions: [
+            assign({ error: ({ event }) => (event.error as any)?.message || "Login failed" }),
+            ({ event }) => console.log("❌ Authentication failed:", event.error)
+          ]
         }
       }
     },

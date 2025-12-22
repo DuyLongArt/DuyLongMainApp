@@ -10,42 +10,40 @@ import OrchestraLayer from './OrchestraLayer/OrchestraLayer';
 
 
 
-const  App:React.FC=()=> {
+const App: React.FC = () => {
   return (
     <Box>
-       
-              <BrowserRouter>
-              <LocalDataLayer>
-          
-             
-              <OrchestraLayer >
-       
 
-           
+      <BrowserRouter>
+        <LocalDataLayer>
 
-                
-              
-              
-          
-             
-            
-                  
-<AppRouterLayer>
- <SecurityLayer>
 
- </SecurityLayer>
-                </AppRouterLayer>
-                    
-                  
-           
-               
- 
+          <OrchestraLayer >
 
-              </OrchestraLayer>
-                
-               </LocalDataLayer>
-               </BrowserRouter>
-   
+
+
+
+
+
+
+
+
+
+
+            <SecurityLayer>
+              <AppRouterLayer />
+            </SecurityLayer>
+
+
+
+
+
+
+          </OrchestraLayer>
+
+        </LocalDataLayer>
+      </BrowserRouter>
+
 
     </Box>
   )

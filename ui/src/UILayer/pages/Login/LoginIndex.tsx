@@ -8,19 +8,7 @@ interface LoginPageProps {
 
 const LoginIndex: React.FC<LoginPageProps> = ({ children }) => {
   return (
-    <Box 
-      sx={{
-        minHeight: '100vh',
-        minWidth:'100vw',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-        background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-      }}
-    >
-      {/* <h1>hi</h1> */}
+    <Box>
       <LoginForm />
       {children}
     </Box>

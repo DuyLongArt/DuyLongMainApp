@@ -1,5 +1,6 @@
-package backend;
+package backend.DataLayer.protocol.Information;
 
+import backend.DataLayer.protocol.Person.PersonEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class InformationEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cv_informations_id", nullable = false)
+    @Column(name = "informations_id", nullable = false)
     private Integer id;
 
     @NotNull
@@ -62,14 +63,20 @@ public class InformationEntity
     @Column(name = "linkedin_url", length = Integer.MAX_VALUE)
     private String linkedinUrl;
 
-    @NotNull
+//    @NotNull
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at",insertable = false, nullable = false)
     private Instant createdAt;
 
-    @NotNull
+//    @NotNull
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", insertable = false, nullable = false)
     private Instant updatedAt;
 
+    public InformationEntity(String bio)
+    {
+        bio = bio;
+    }
+    public InformationEntity() {
+    }
 }

@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 
 // Sample avatar image - replace with your AvatarImage component
 import { AvatarImage } from "../../DataLayer/LocalDataLayer/assets/AvatarImage";
+import { useObjectImageEtagStore } from "../../OrchestraLayer/StateManager/Zustand/objectImageStore";
+import { useUserProfileStore } from "../../OrchestraLayer/StateManager/Zustand/userProfileStore";
 interface AvatarFloatButtonProps {
     x: number;
     y: number;
@@ -11,9 +13,9 @@ interface AvatarFloatButtonProps {
 }
 
 const CollaborateIcon: React.FC<{ size: number; collaboratorDistance: number }> = ({
-                                                                                       size,
-                                                                                       collaboratorDistance
-                                                                                   }) => {
+    size,
+    collaboratorDistance
+}) => {
     const collaborators = [
         { color: "bg-red-500", delay: 0 },
         { color: "bg-blue-500", delay: 0.1 },
@@ -93,93 +95,93 @@ const CollaborateIcon: React.FC<{ size: number; collaboratorDistance: number }> 
         </div>
     );
 };
-const StarEffect: React.FC<{ rotatingBorderSize: number; glowSize1: number ,glowSize2:number}> = ({ rotatingBorderSize, glowSize1 ,glowSize2}) => {
-    {/* Rotating Border */}
+const StarEffect: React.FC<{ rotatingBorderSize: number; glowSize1: number, glowSize2: number }> = ({ rotatingBorderSize, glowSize1, glowSize2 }) => {
+    {/* Rotating Border */ }
     return (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-    <motion.div
-        animate={{ rotate: 360 }}
-        transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "linear",
-        }}
-        className="absolute border-2 border-transparent border-t-blue-500 border-r-blue-500 rounded-full opacity-70"
-        style={{
-            width: `${rotatingBorderSize}px`,
-            height: `${rotatingBorderSize}px`,
-        }}
-    />
-
-
-
-    <motion.div
-        animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.1, 0.3]
-        }}
-        transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-        }}
-        className="absolute rounded-full bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 -z-10"
-        style={{
-            width: `${glowSize1}px`,
-            height: `${glowSize1}px`,
-        }}
-    />
-
-    <motion.div
-
-        animate={{
-            scale: [1.2, 1.4, 1.2],
-            opacity: [0.1, 0.05, 0.1]
-        }}
-        transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1,
-        }}
-        className="absolute rounded-full bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 -z-20"
-        style={{
-            width: `${glowSize2}px`,
-            height: `${glowSize2}px`,
-        }}
-    />
-        </div>
-);
-}
-const FloatingParticle: React.FC<{ size: number; delay: number }> = ({ size, delay }) => {
-    return(
-    <div className="absolute inset-0 pointer-events-none">
-        {[...Array(8)].map((_, i) => (
             <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+                animate={{ rotate: 360 }}
+                transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "linear",
+                }}
+                className="absolute border-2 border-transparent border-t-blue-500 border-r-blue-500 rounded-full opacity-70"
+                style={{
+                    width: `${rotatingBorderSize}px`,
+                    height: `${rotatingBorderSize}px`,
+                }}
+            />
+
+
+
+            <motion.div
                 animate={{
-                    opacity: [0, 1, 0],
-                    scale: [0, 1, 0],
-                    x: Math.cos((i * Math.PI * 2) / 8) * (size * 0.8),
-                    y: Math.sin((i * Math.PI * 2) / 8) * (size * 0.8),
+                    scale: [1, 1.2, 1],
+                    opacity: [0.3, 0.1, 0.3]
                 }}
                 transition={{
                     duration: 2,
                     repeat: Infinity,
-                    delay: i * 0.1,
-                    ease: "easeOut",
+                    ease: "easeInOut",
                 }}
-                className="absolute bg-blue-400 rounded-full left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                className="absolute rounded-full bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 -z-10"
                 style={{
-                    width: `${Math.max(size * 0.08, 4)}px`,
-                    height: `${Math.max(size * 0.08, 4)}px`,
+                    width: `${glowSize1}px`,
+                    height: `${glowSize1}px`,
                 }}
             />
-        ))}
-    </div>);
+
+            <motion.div
+
+                animate={{
+                    scale: [1.2, 1.4, 1.2],
+                    opacity: [0.1, 0.05, 0.1]
+                }}
+                transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 1,
+                }}
+                className="absolute rounded-full bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 -z-20"
+                style={{
+                    width: `${glowSize2}px`,
+                    height: `${glowSize2}px`,
+                }}
+            />
+        </div>
+    );
 }
-const RippleEffect:React.FC<{size:number}> = ({ size}) => {
+const FloatingParticle: React.FC<{ size: number; delay: number }> = ({ size, delay }) => {
+    return (
+        <div className="absolute inset-0 pointer-events-none">
+            {[...Array(8)].map((_, i) => (
+                <motion.div
+                    key={i}
+                    initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+                    animate={{
+                        opacity: [0, 1, 0],
+                        scale: [0, 1, 0],
+                        x: Math.cos((i * Math.PI * 2) / 8) * (size * 0.8),
+                        y: Math.sin((i * Math.PI * 2) / 8) * (size * 0.8),
+                    }}
+                    transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        delay: i * 0.1,
+                        ease: "easeOut",
+                    }}
+                    className="absolute bg-blue-400 rounded-full left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                    style={{
+                        width: `${Math.max(size * 0.08, 4)}px`,
+                        height: `${Math.max(size * 0.08, 4)}px`,
+                    }}
+                />
+            ))}
+        </div>);
+}
+const RippleEffect: React.FC<{ size: number }> = ({ size }) => {
     return (
         <motion.div
             initial={{ scale: 0, opacity: 0.8 }}
@@ -195,17 +197,17 @@ const RippleEffect:React.FC<{size:number}> = ({ size}) => {
     );
 }
 const AvatarFloatButton: React.FC<AvatarFloatButtonProps> = ({
-                                                                 x,
-                                                                 y,
-                                                                 sizeScale = 1,
-                                                                 collaboratorDistance = 60
-                                                             }) => {
+    x,
+    y,
+    sizeScale = 1,
+    collaboratorDistance = 60
+}) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     const handleToggle = () => {
         setIsExpanded(!isExpanded);
     };
-    const size=sizeScale*48;
+    const size = sizeScale * 48;
     // Calculate responsive sizes
     const borderWidth = Math.max(Math.floor(size * 0.08), 2); // 8% of size, min 2px
     const rotatingBorderSize = size + 16;
@@ -213,8 +215,14 @@ const AvatarFloatButton: React.FC<AvatarFloatButtonProps> = ({
     const glowSize2 = size + 24;
     const statusSize = Math.max(Math.floor(size * 0.25), 12); // 25% of size, min 12px
     const badgeSize = Math.max(Math.floor(size * 0.375), 18); // 37.5% of size, min 18px
-// Calculate avatar size properly
+    // Calculate avatar size properly
     const avatarSize = Math.max(size - borderWidth * 6, 20);
+
+
+    const imageObjectStore = useObjectImageEtagStore();
+    const userStore = useUserProfileStore();
+    // const admisnUrl = "http://192.168.22.4:9000/duylongwebappobjectdatabase/admin.png";
+    const adminUrl = `http://192.168.22.4:9000/duylongwebappobjectdatabase/${userStore.information.profiles.alias}/admin.png?v=${imageObjectStore.versions.avatarVersion}`;
     return (
         <div
             className="fixed z-50 border-2 border-red-500 rotate-45"
@@ -260,10 +268,10 @@ const AvatarFloatButton: React.FC<AvatarFloatButtonProps> = ({
                         animate={{ rotate: isExpanded ? 360 : 0 }}
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                         className=" rounded-full border-2 border-white/20"
-                        // style={{
-                        //     width: "50px",
-                        //     height:"50px",
-                        // }}
+                    // style={{
+                    //     width: "50px",
+                    //     height:"50px",
+                    // }}
                     >
                         <div
                             className=" rounded-full rotate-270 block "
@@ -272,7 +280,12 @@ const AvatarFloatButton: React.FC<AvatarFloatButtonProps> = ({
                                 height: `${avatarSize}px`,
                             }}
                         >
-                            <AvatarImage width={avatarSize} height={avatarSize} />
+
+
+                            <AvatarImage width={avatarSize} height={avatarSize}
+                                networkUrl={adminUrl}
+
+                            />
                         </div>
                     </motion.div>
                 </motion.button>
@@ -280,7 +293,7 @@ const AvatarFloatButton: React.FC<AvatarFloatButtonProps> = ({
                 {/* Ripple Effect on Click */}
                 <AnimatePresence>
                     {isExpanded && (
-                        <RippleEffect size={size+10}/>
+                        <RippleEffect size={size + 10} />
 
                     )}
                 </AnimatePresence>
@@ -323,7 +336,7 @@ const AvatarFloatButton: React.FC<AvatarFloatButtonProps> = ({
 
                 {/* Floating particles */}
                 {isExpanded && (
-                    <FloatingParticle size={size*1.5} delay={0}/>
+                    <FloatingParticle size={size * 1.5} delay={0} />
                 )}
             </div>
         </div>

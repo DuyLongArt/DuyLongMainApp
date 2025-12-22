@@ -21,14 +21,17 @@ export const ApproveProcessMachine = setup({
             return {};
         }),
         sendApproveToServer: () => {
-            axios.post();
+            axios.post("/backend/approve");
+        },
+        fetchStepFromServer: () => {
+            axios.get("/backend/step");
         }
     },
 
     // 2. KHAI BÁO TYPES (Sử dụng typeof để Typescript biết Context là gì)
     types: {} as {
         context: typeof stepContext;
-        events: { type: 'APPROVE' };
+        events: { type: 'APPROVE' } | { type: 'REJECT' };
     },
 }).createMachine({
     /** @xstate-layout N4IgpgJg5mDOIC5QEMAOqBOB7AbmACtgMZywB0WAdgJKUCWALgMQCC++ASgPIBqAogG0ADAF1EoVFliM6VcSAAeiAIwBmAOxllAFgAc21QFYAnMe1DjANgBMAGhABPFesNlrQ1cuXrv63caEdAF8g+zRMXAJiUgpKQiwSWGlKKFZ2bn5hMSQQSWkGWUp5JQRra20tdSF1AL9tH2MdeycEAFodazIbS11lY3Ua5WtjQ1UQsPRsPHjE8ioZ0joUtM5eQWVsiSkZORySkwqzK20DbUtDdUttZsRW1TITUaEhMpPtY08B8ZBwqaiEmLzaJJJapDh8ABSfAAwgAVLLyPI7Ip7RB6IRkdTWc6WAZmbTWVS6VQ3BDKXS6Mi6Sz9S6E9QGUyWEKhECULAQODyX6RBZJRHbAq7UAlVqWUmtQkYoY9QmWIQ9F7nb486bAuY0egMAX5QrFNF2RzOVxVTzknw+PTaFWTXnq2J85JQHXI-WlKxUkxEwyjVTPd6k8mdEaeaxYsM48k2iJqgFJWIsW14CAuoUokWIAaWLSGbp+ZQKrzKQPWZRUml0ly6Cz6YzRv6O2IcMAAKzARG1OSRabdWZzed6ha8gYpWj6lzOQgMPpsLKCQA */
@@ -45,6 +48,14 @@ export const ApproveProcessMachine = setup({
             }
         },
         onProcessing: {
+            invoke: {
+                src: 'fetchStepFromServer',
+                onDone: {
+                    target: 'onProcessing',
+                    actions: 'incrementStep',
+                    guard: ({ context }) => context.step < 4
+                }
+            },
             on: {
                 APPROVE: [
                     // Chuyển từ processing -> idle

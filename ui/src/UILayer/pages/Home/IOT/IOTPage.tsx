@@ -1,9 +1,8 @@
 
 import React, { useContext } from 'react';
 import { Typography, Card, CardBody, Button } from "@material-tailwind/react";
-import { useRootStore } from '../../../../OrchestraLayer/StateManager/MobX/RootStore';
-import { observer } from 'mobx-react-lite';
-import IOTSessionIcon from './IOTSessionIcon';
+import { useUserProfileStore } from '../../../../OrchestraLayer/StateManager/Zustand/userProfileStore';
+import IOTSessionIcon from '../IOT/IOTSessionIcon';
 import { useActorRef, useSelector } from '@xstate/react';
 import { ChangeIOTSessionActor } from '../../../../OrchestraLayer/StateManager/XState/ChangeIOTSession';
 
@@ -11,13 +10,13 @@ import { ChangeIOTSessionActor } from '../../../../OrchestraLayer/StateManager/X
 // For now, let's assume we might extend root store later, 
 // or just use local state for demo purposes + root store for user info.
 
-const IOTPage = observer(() => {
-    const { userProfileStore } = useRootStore();
+const IOTPage = () => {
+    const user = useUserProfileStore((state) => state.information);
 
 
     const changeSession = ChangeIOTSessionActor.useActorRef();
     // var state;
-    var room:string=useSelector(changeSession, (snapshot) => snapshot.value);
+    var room: string = useSelector(changeSession, (snapshot) => snapshot.value);
     // changeSession.subscribe((state) => {
     //     console.log("IOTPage | State:", state.value);
     //    room =state.value;
@@ -45,7 +44,7 @@ const IOTPage = observer(() => {
                         IOT Dashboard
                     </Typography>
                     <Typography className="text-gray-600">
-                        Welcome back, {userProfileStore.profile.name}. Here is your smart home status.
+                        Welcome back, {user.profiles.firstName}. Here is your smart home status.
                     </Typography>
                     {room === "onMyRoom" ? <MyRoom /> : <SubRoom />}
                 </div>
@@ -54,7 +53,7 @@ const IOTPage = observer(() => {
             </div>
         </div>
     );
-});
+};
 
 const MyRoom: React.FC = () => {
     return (

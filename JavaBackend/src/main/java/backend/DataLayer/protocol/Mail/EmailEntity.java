@@ -1,5 +1,6 @@
-package backend;
+package backend.DataLayer.protocol.Mail;
 
+import backend.DataLayer.protocol.Person.PersonEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -8,6 +9,8 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
+//import org.hibernate.annotations.EventType;
 
 import java.time.Instant;
 
@@ -33,9 +36,9 @@ public class EmailEntity
     @Column(name = "email_address", nullable = false, length = 320)
     private String emailAddress;
 
-    @NotNull
+//    @NotNull
     @ColumnDefault("'personal'")
-    @Column(name = "email_type", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "email_type", nullable = false,insertable = false, length = Integer.MAX_VALUE)
     private String emailType;
 
     @NotNull
@@ -46,13 +49,17 @@ public class EmailEntity
     @Column(name = "verified_at")
     private Instant verifiedAt;
 
-    @NotNull
+//    @NotNull
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", insertable = false, nullable = false)
     private Instant createdAt;
-    @NotNull
+//    @NotNull
+
+
+
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "updated_at", nullable = false)
+
+    @Column(name = "updated_at",insertable = false, nullable = false)
     private Instant updatedAt;
 
 /*
@@ -62,4 +69,14 @@ public class EmailEntity
     @Column(name = "status", columnDefinition = "email_status not null")
     private Object status;
 */
+
+
+
+    public EmailEntity() {
+
+    }
+    public EmailEntity(String emailAddress) {
+        this.emailAddress = emailAddress;
+
+    }
 }

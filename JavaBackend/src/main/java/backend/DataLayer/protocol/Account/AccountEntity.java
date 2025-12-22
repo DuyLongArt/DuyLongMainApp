@@ -1,13 +1,16 @@
-package backend;
+package backend.DataLayer.protocol.Account;
 
+import backend.DataLayer.protocol.Person.PersonEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.time.Instant;
 
@@ -27,7 +30,7 @@ public class AccountEntity
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "identity_id", nullable = false)
-    private PersonEntity persons;
+    private PersonEntity identity;
 
     @Size(max = 50)
     @NotNull
@@ -46,33 +49,41 @@ public class AccountEntity
     @Column(name = "is_locked", nullable = false)
     private Boolean isLocked = false;
 
-    @NotNull
+
     @ColumnDefault("0")
-    @Column(name = "failed_login_attempts", nullable = false)
+    @Column(name = "failed_login_attempts",insertable = false, nullable = false)
     private Integer failedLoginAttempts;
 
     @Column(name = "last_login_at")
     private Instant lastLoginAt;
 
-    @NotNull
+
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "password_changed_at", nullable = false)
+    @Column(name = "password_changed_at",insertable = false, nullable = false)
     private Instant passwordChangedAt;
 
-    @NotNull
+//    @NotNull
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", insertable = false, nullable = false)
     private Instant createdAt;
-    @NotNull
+//    @NotNull
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at",insertable = false, nullable = false)
     private Instant updatedAt;
 
-/*
- TODO [Reverse Engineering] create field to map the 'role' column
- Available actions: Define target Java type | Uncomment as is | Remove column mapping
-    @ColumnDefault("'USER'")
-    @Column(name = "role", columnDefinition = "user_role not null")
-    private Object role;
-*/
+
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class) // This tells Hibernate to use PG-specific casting
+    @Column(name = "role", columnDefinition = "users.user_role")
+    private UserRole role;
+    public AccountEntity() {
+    }
+
+    public AccountEntity(String username, String passwordHash, UserRole role, Integer primaryEmailId) {
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.role = role;
+        this.primaryEmailId=primaryEmailId;
+        // this.primaryEmailId = primaryEmailId;
+    }
 }

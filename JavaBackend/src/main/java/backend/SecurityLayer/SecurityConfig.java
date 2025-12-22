@@ -54,7 +54,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         // FIX 5: Use a clear base path /api/auth/* for public endpoints
-                        .requestMatchers("/api/auth/**", "/login", "/backend/auth/**","/person/**").permitAll()
+                        .requestMatchers("/backend/object/**","/backend/information/**","/backend/person/**" ,"/login", "/backend/auth/**","/person/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(e -> e

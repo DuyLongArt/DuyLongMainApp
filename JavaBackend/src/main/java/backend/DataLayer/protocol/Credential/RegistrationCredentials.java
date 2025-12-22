@@ -1,10 +1,12 @@
 
-package backend.SecurityLayer.protocol;
+package backend.DataLayer.protocol.Credential;
 
-import backend.DataLayer.protocol.Credential.Credential;
+import backend.DataLayer.protocol.Account.UserRole;
 import backend.DataLayer.protocol.RoleTypes;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.security.SecureRandom;
 
 @Getter
 @Setter
@@ -14,16 +16,17 @@ public class RegistrationCredentials implements Credential
     private String userName;
     private String password;
    
-    private RoleTypes role;
+    private UserRole role;
     private String email;
     private String firstName;
     private String lastName;
 
     private String bio;
+    private String location;
     public RegistrationCredentials() {
     }
 
-    public RegistrationCredentials(String userName, String password, RoleTypes role, String email, String firstName,
+    public RegistrationCredentials(String userName, String password, UserRole role, String email, String firstName,
                                    String bio,
                                    String lastName) {
         this.userName = userName;
@@ -33,6 +36,7 @@ public class RegistrationCredentials implements Credential
         this.firstName = firstName;
         this.lastName = lastName;
         this.bio = bio;
+        this.location= location;
     }
 
     public String getUserName() {
@@ -51,11 +55,11 @@ public class RegistrationCredentials implements Credential
         this.password = password;
     }
 
-    public RoleTypes getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(RoleTypes role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 
@@ -81,5 +85,18 @@ public class RegistrationCredentials implements Credential
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getBio()
+    {
+        return bio;
+    }
+
+    public String getLocation()
+    {
+        return location;
     }
 }

@@ -17,7 +17,7 @@ const Widget4Page = lazy(() => import("../UILayer/pages/Home/Widget/Widget4Page.
 const Widget5Page = lazy(() => import("../UILayer/pages/Home/Widget/Widget5Page.tsx"));
 const ContactPage = lazy(() => import("../UILayer/pages/Home/Contact/ContactPage.tsx"));
 const PersonProfilePage = lazy(() => import("../UILayer/pages/Admin/PersonProfilePage.tsx"));
-const IOTPage = lazy(() => import("../UILayer/pages/Home/IOT/IOTPage.tsx"));
+const IOTPage = lazy(() => import("../UILayer/pages/Home/Contact/IOTPage.tsx"));
 const ApproveProcessPage = lazy(() => import("../UILayer/pages/ApproveProcess/ApproveProcessPage.tsx"));
 // const AdminLayout = lazy(() => import("../UILayer/pages/Admin/AdminLayout.tsx")); // Assuming exists
 // const BlogLayout = lazy(() => import("../UILayer/pages/Blog/BlogLayout.tsx")); // Assuming exists
@@ -252,12 +252,17 @@ export const errorRoute = appRoutes.find(r => r.type === 'error');
 export const pathList=appRoutes.filter(r=>r.type==="domain" && !r.path.includes("login")
 
 && !r.path.includes("register")
-&& r.children?.filter(r=>r.path.includes("index"))
+// && !r.children?.filter(r=>r.path.includes("index"))
+&& !r.path.includes("entry")
+&& !r.path.includes("admin")
 ).map(r=>r.path);
 
 
 export const pageList=appRoutes.filter(r=>r.type==="domain" && !r.path.includes("login")
 && !r.path.includes("register")
+&& !r.path.includes("entry")
+&& !r.path.includes("admin")
+// && !r.children?.filter(r=>r.path.includes("index"))
 ).map(r=>r.title);
 
 // export const pathList=appRoutes.map(r=>

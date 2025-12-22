@@ -8,7 +8,8 @@ import java.time.format.DateTimeFormatter; // For optional formatting
 public class AccountServices {
 
     /**
-     * Creates and formats a String containing account credentials and an update timestamp.
+     * Creates and formats a String containing account credentials and an update
+     * timestamp.
      * Note: This method should ideally be used for logging or display,
      * not for storing the credentials themselves.
      *
@@ -29,7 +30,7 @@ public class AccountServices {
         // accountEntity.setUpdatedAt(now);
 
         // --- Return the formatted string ---
-        return "Username: " + accountEntity.getUserName() + "\n" +
+        return "Username: " + accountEntity.getUsername() + "\n" +
                 "PasswordHash: " + accountEntity.getPasswordHash() + "\n" +
                 "UpdatedAt: " + formattedDateTime;
     }

@@ -5,7 +5,5 @@ public interface Credential {
 
     String getPassword();
 
-    String getDevice();
 
-    String getDeviceIP();
 }

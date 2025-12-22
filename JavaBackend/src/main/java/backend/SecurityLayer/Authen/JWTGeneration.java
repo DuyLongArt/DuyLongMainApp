@@ -1,10 +1,13 @@
 package backend.SecurityLayer.Authen;
 
+import backend.DataLayer.protocol.Account.AccountDAO;
 import backend.DataLayer.protocol.Account.AccountEntity;
+import backend.DataLayer.protocol.Account.UserRole;
 import backend.DataLayer.protocol.Credential.LoginCredential;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,15 +17,18 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Component
-public class JWTUtility {
+public class JWTGeneration {
 
     private final SecretKey signingKey;
     private final Long jwtExpiration;
     private final Long refreshExpiration;
 
+    @Autowired
+    AccountDAO accountDAO;
     /**
      * Constructs the JWTUtility with required configuration properties.
      * This uses constructor injection, which is a Spring best practice.
@@ -34,10 +40,11 @@ public class JWTUtility {
      * @param refreshExpiration The expiration time for refresh tokens, from
      *                          application properties.
      */
-    public JWTUtility(@Value("${app.jwt.secret}") String secret,
-            @Value("${app.jwt.expiration}") Long jwtExpiration,
-            @Value("${app.jwt.refresh-expiration}") Long refreshExpiration) {
-        this.signingKey = Keys.hmacShaKeyFor(secret.getBytes());
+    public JWTGeneration(@Value("${app.jwt.secret}") String secret,
+                         @Value("${app.jwt.expiration}") Long jwtExpiration,
+                         @Value("${app.jwt.refresh-expiration}") Long refreshExpiration) {
+        // Specify StandardCharsets.UTF_8 to ensure consistency between signing and parsing
+        this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(java.nio.charset.StandardCharsets.UTF_8));
         this.jwtExpiration = jwtExpiration;
         this.refreshExpiration = refreshExpiration;
     }
@@ -56,9 +63,8 @@ public class JWTUtility {
      * @return The username.
      */
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        return extractClaim(token, Claims::getSubject); // This looks for the "sub" field
     }
-
     /**
      * Extracts the expiration date from a JWT token.
      *
@@ -132,18 +138,18 @@ public class JWTUtility {
      * @param loginCredential Additional details from the login request.
      * @return A signed JWT access token.
      */
-    public String generateToken(Authentication authentication, LoginCredential loginCredential) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String username = userDetails.getUsername();
-
-        String role = userDetails.getAuthorities().stream()
-                .filter(a -> a.getAuthority().startsWith("ROLE_"))
-                .findFirst()
-                .map(a -> a.getAuthority().substring(5)) // Strip "ROLE_" prefix
-                .orElse("USER");
-
-        return generateToken(username, role, loginCredential);
-    }
+//    public String generateToken(Authentication authentication, LoginCredential loginCredential) {
+//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+//        String username = userDetails.getUsername();
+//
+//        String role = userDetails.getAuthorities().stream()
+//                .filter(a -> a.getAuthority().startsWith("ROLE_"))
+//                .findFirst()
+//                .map(a -> a.getAuthority().substring(5)) // Strip "ROLE_" prefix
+//                .orElse("USER");
+//
+//        return generateToken( loginCredential);
+//    }
 
     /**
      * Generates a JWT access token given username and role directly.
@@ -154,11 +160,18 @@ public class JWTUtility {
      * @param loginCredential Additional details from the login request.
      * @return A signed JWT access token.
      */
-    public String generateToken(String username, String role, LoginCredential loginCredential) {
+    public String generateToken(LoginCredential loginCredential) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);
-        claims.put("device", loginCredential.getDevice());
-        claims.put("ip", loginCredential.getDeviceIP());
+        String username = loginCredential.getUserName();
+        String userRole=accountDAO.findAccountlByUsername(username).get().getRole().toString();
+
+
+
+        claims.put("username", username);
+        claims.put("role", userRole);
+//        claims.put("role", loginCredential.getUserRole().toString());
+
+
 
         return createToken(claims, username, jwtExpiration);
     }

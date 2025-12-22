@@ -1,4 +1,4 @@
-package backend.DataLayer.protocol.IOT;
+package backend.DataLayer.protocol.Project.MultiOwner;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

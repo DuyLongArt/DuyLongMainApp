@@ -2,9 +2,9 @@ import Box from "@mui/material/Box";
 import React, { useEffect, useRef, startTransition } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import type { ChildrenInterface } from "../OrchestraLayer/ChildrenComponent";
-import { AuthenticateFactor } from "../OrchestraLayer/StateManager/XState/AuthenticateMachine";
+import { AuthenticateFactor, checkCookies } from "../OrchestraLayer/StateManager/XState/AuthenticateMachine";
 import { useSelector } from "@xstate/react";
-import console from "console";
+// import console from "console";
 
 // Constants
 const AUTHENTICATED_STATE = "onLogin";
@@ -32,7 +32,6 @@ const SecurityLayer: React.FC<ChildrenInterface> = ({ children }) => {
   authActorRef.subscribe((snapshot) => {
     console.log("SecurityLayer | State:", snapshot.value);
   })
-  const jwt = useSelector(authActorRef, (snapshot) => snapshot.context.jwt);
   const isLoading = useSelector(authActorRef, (snapshot) =>
     LOADING_STATES.some(stateKey => snapshot.matches(stateKey))
   );
@@ -69,15 +68,19 @@ const SecurityLayer: React.FC<ChildrenInterface> = ({ children }) => {
   // var jwtValue ;
   // Handle authentication-based navigation
   useEffect(() => {
-    // Async function to check JWT from cookies
+    // Function to check JWT from cookies and navigate accordingly
     const checkAuthAndNavigate = async () => {
       try {
-        // Get JWT from cookie store
-        // const cookies = await cookieStore.getAll();
-        // const jwtCookie = cookies.find(cookie => cookie.name === 'auth_jwt');
-        //  jwtValue = jwtCookie?.value || "";
+        // Check if JWT exists in cookies
+        const cookieJWT = checkCookies();
+        const hasCookieJWT = !!(cookieJWT && cookieJWT.length > 0);
 
-        console.log("SecurityLayer Check | State:", currentStateValue, "| Loading:", isLoading, "| JWT:", jwt, "| Path:", location.pathname);
+        const isPublicPage = location.pathname === '/' ||
+          location.pathname.startsWith('/login') ||
+          location.pathname.startsWith('/register') ||
+          location.pathname.startsWith('/entry');
+
+        console.log("SecurityLayer Check | State:", currentStateValue, " | Loading:", isLoading, " | Cookie JWT:", hasCookieJWT ? "✅" : "❌", " | Path:", location.pathname, " | Public:", isPublicPage);
 
         // Skip if still loading
         if (isLoading) {
@@ -85,39 +88,36 @@ const SecurityLayer: React.FC<ChildrenInterface> = ({ children }) => {
           return;
         }
 
+        // If no cookies exist and user is trying to access protected routes, redirect to entry
+        if (!hasCookieJWT) {
+          if (!isPublicPage) {
+            console.log("❌ No JWT cookie found on protected route. Redirecting to entry.");
+            navigateToRoute(ROUTES.ENTRY);
+            return;
+          }
+        }
+
         // Handle authenticated state
         if (currentStateValue === AUTHENTICATED_STATE) {
-          // Only redirect if on login/register pages or root
-          const isPublicPage = location.pathname === '/' ||
-            location.pathname.startsWith('/login') ||
-            location.pathname.startsWith('/register');
-
           if (isPublicPage) {
-            console.log("Auth passed on public page. Navigating to home.");
+            console.log("✅ Auth passed on public page. Navigating to home.");
             navigateToRoute(ROUTES.HOME);
-          } else {
-            console.log("DUYLONG======================");
-            console.log("Current state: " + currentStateValue);
-            console.log("Auth passed. Staying on protected route:", location.pathname);
           }
         }
         // Handle unauthenticated state
         else if (currentStateValue === UNAUTHENTICATED_STATE) {
-          console.log("Auth failed or no JWT. Navigating to login.");
-          console.log("Current state: " + currentStateValue);
-          navigateToRoute(ROUTES.LOGIN);
+          if (!isPublicPage) {
+            console.log("❌ Auth failed or no JWT on protected route. Navigating to login.");
+            navigateToRoute(ROUTES.LOGIN);
+          }
         }
+        // Handle logout state
         else if (currentStateValue === LOGOUT_STATES) {
-          console.log("Auth failed or no JWT. Navigating to login.");
-
-
-          console.log("Current state: " + currentStateValue);
-
+          console.log("👋 Logout state. Navigating to entry.");
           navigateToRoute(ROUTES.ENTRY);
         }
       } catch (error) {
-        console.error("Error checking auth cookie:", error);
-        // Fallback: navigate to login on error
+        console.error("❌ Error in SecurityLayer auth check:", error);
         navigateToRoute(ROUTES.ENTRY);
       }
     };
@@ -137,12 +137,17 @@ const SecurityLayer: React.FC<ChildrenInterface> = ({ children }) => {
     );
   }
 
-  // Render protected content if authenticated
-  if (currentStateValue === AUTHENTICATED_STATE) {
+  // Render logic
+  const isPublicPage = location.pathname === '/' ||
+    location.pathname.startsWith('/login') ||
+    location.pathname.startsWith('/register') ||
+    location.pathname.startsWith('/entry');
+
+  if (currentStateValue === AUTHENTICATED_STATE || isPublicPage) {
     return <Box>{children}</Box>;
   }
 
-  // Fallback: wait for navigation
+  // Fallback: wait for navigation or show nothing if unauthorized
   return null;
 };
 

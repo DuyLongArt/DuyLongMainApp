@@ -1,10 +1,9 @@
-import { Outlet, Route, Routes, Navigate, useNavigate, useLocation } from "react-router-dom";
-import React, { Suspense, useEffect } from "react";
+import { Route, Routes, Navigate } from "react-router-dom";
+import React, { Suspense } from "react";
 import { Box, CircularProgress } from "@mui/material";
 import type { ChildrenInterface } from "../OrchestraLayer/ChildrenComponent";
 import { appRoutes, errorRoute } from "./RouterConfig.tsx";
-import type { Route as RouteType, ChildRoute } from "./RouterProtocol.ts";
-import { AuthenticateFactor } from "../OrchestraLayer/StateManager/XState/AuthenticateMachine";
+import type { Route as RouteType, ChildRoute, RedirectRoute, DomainRoute, PageRoute } from "./RouterProtocol.ts";
 
 // Loading fallback component
 const PageLoader = () => (
@@ -24,19 +23,9 @@ const PageLoader = () => (
 );
 
 const AppRouterLayer: React.FC<ChildrenInterface> = ({ children }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const authState = AuthenticateFactor.useSelector((state) => state);
+  // Redirection is now handled by SecurityLayer wrapping this component
 
-  useEffect(() => {
-    const isLoginPage = location.pathname.includes("/login");
-
-    // Redirect to login if logged out or auth failed
-    if ((authState.matches("onLogout") || authState.matches("onAuthenFailed")) && !isLoginPage) {
-      console.log("👋 Detected logout state, redirecting to login...");
-      navigate("/login/index");
-    }
-  }, [authState.value, location.pathname, navigate]);
+  // Auth redirection is now handled by SecurityLayer
 
   const renderComponent = (component: React.ReactNode) => {
     return (
@@ -50,54 +39,40 @@ const AppRouterLayer: React.FC<ChildrenInterface> = ({ children }) => {
 
     return routes.map((route, index) => {
       // Handle Redirects
-
-      if ('type' in route && route.type === 'redirect') {
-
+      if (route.type === 'redirect') {
+        const redirectRoute = route as RedirectRoute;
         return (
           <Route
-            key={`${route.path}-${index}`}
-            path={route.path}
-            element={<Navigate to={route.path} replace />} // Logic for external redirect might need customized component if it's external host
+            key={`${redirectRoute.path}-${index}`}
+            path={redirectRoute.path}
+            element={<Navigate to={redirectRoute.path} replace />}
           />
         );
       }
 
-      // Handle Pages and Domains (Layouts)
-      const hasChildren = route.children && route.children.length > 0;
-      // var element = null;
-      // // if (route.type === "domain") {
-      // //   element = route.component;
-      // // }
-      // // else if (route.type === "entry" && route.path === "index" || route.type === "page" || route.type === "component") {
-      // //   element =
-      // //     <>
-      // //       {route.component}
-      // //       <Outlet />
-      // //     </>
-      // // }
-      // element=route.component;
-      // // const element =!(route.type === 'entry')? route.component : <Outlet />;
-      var element = route.component;
+      // Explicitly cast to types that have component and children
+      const pageRoute = route as DomainRoute | PageRoute;
+      const hasChildren = pageRoute.children && pageRoute.children.length > 0;
+      const element = pageRoute.component;
+
       return (
         <Route
-          key={`${route.path}-${index}`}
-          path={route.path}
+          key={`${pageRoute.path}-${index}`}
+          path={pageRoute.path}
           element={renderComponent(element)}
         >
-          {/* If it has children, we might want a default index route behavior */}
           {hasChildren && (
             <>
-              {/* <Outlet /> */}
               <Route
                 index
                 element={
                   <Navigate
-                    to={route.children![0].path}
+                    to={pageRoute.children![0].path}
                     replace
                   />
                 }
               />
-              {renderRoutesRecursive(route.children!)}
+              {renderRoutesRecursive(pageRoute.children!)}
             </>
           )}
         </Route>

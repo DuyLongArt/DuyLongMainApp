@@ -49,15 +49,7 @@ public class CredentialEntity implements Credential {
         return password;
     }
 
-    @Override
-    public String getDevice() {
-        return deviceid;
-    }
-
-    @Override
-    public String getDeviceIP() {
-        return ipAddress;
-    }
+  
 
     public RoleTypes getRole() {
         return null;

@@ -49,7 +49,7 @@ const HomeLayout: React.FC<ChildrenInterface> = ({ children }) => {
 
       <Draggable onDrag={handleDrag} position={position}>
         {/* Draggable needs a DOM element reference. Wrapping custom component in a div is safest. */}
-        <div style={{ position: 'sticky', width: 'fit-content' }}>
+        <div style={{ position: 'sticky', width: 'fit-content', zIndex: 1000 }}>
           <AvatarFloatButton x={0} y={0}
             sizeScale={1.5} collaboratorDistance={100} />
         </div>

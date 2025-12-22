@@ -7,7 +7,7 @@ import OrchestraButton from '../../components/OrchestraButton.tsx';
 import CustomDrawer from '../../components/CustomDrawer';
 import { orchestraButton } from '../../../OrchestraLayer/StateManager/XState/OrchestraButton';
 import { useMachine } from '@xstate/react';
-import AvatarFloatButton from '../../components/AvatarFloatButton.tsx';
+// import AvatarFloatButton from '../../components/AvatarFloatButton.tsx';
 
 
 const OutletLayout: React.FC<ChildrenInterface> = ({ children }) => {
@@ -38,7 +38,7 @@ const OutletLayout: React.FC<ChildrenInterface> = ({ children }) => {
 
       </div>
 
-      <AvatarFloatButton x={100} y={80} sizeScale={1.5} collaboratorDistance={100} />
+      {/* <AvatarFloatButton x={100} y={80} sizeScale={1.5} collaboratorDistance={100} /> */}
 
     </div>
   );

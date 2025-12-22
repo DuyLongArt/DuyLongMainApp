@@ -18,17 +18,7 @@ public class AccountController {
 
     // SỬA LỖI 1: Sử dụng PathVariable để xác định tài nguyên cụ thể.
     // Đường dẫn đúng: /person/1
-    @GetMapping("/{alias}")
-    public String getPersonById(@PathVariable("alias") String alias) {
 
-        String aliasResult = personRepo.findAccountByAlias(alias);
-        if (alias == null) {
-            return "No such alias";
-        } else {
-            return alias;
-        }
-
-    }
     @GetMapping("/test")
     public String test() {
         return "test";
@@ -36,20 +26,14 @@ public class AccountController {
 
     // SỬA LỖI 2: Tạo một endpoint riêng và rõ ràng hơn để lấy tên.
     // Đường dẫn đúng: /person/1/name
-    @GetMapping("/{alias}/name")
+    @GetMapping("/{id}/name")
     public ResponseEntity<String> getPersonNameById(@PathVariable("id") Integer id) {
-        String name = personRepo.findNameById(id);
-        if (name != null) {
-            return ResponseEntity.ok(name); // Nếu tìm thấy, trả về 200 OK và tên
-        } else {
-            return ResponseEntity.notFound().build(); // Nếu không, trả về 404 Not Found
-        }
+        // Get account by identity ID and return associated person's full name
+        return personRepo.findByPersonIdentityId(id)
+                .map(account -> ResponseEntity.ok(
+                        account.getIdentity() != null ? account.getIdentity().getFirstName() : "No name"))
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/registation")
-    public ResponseEntity<String> registation(
-            @RequestBody backend.DataLayer.protocol.Credential.RegistrationCredential credential) {
-        // TODO: Implement registration logic
-        return ResponseEntity.ok("Registration implementation pending");
-    }
+
 }
