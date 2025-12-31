@@ -1,5 +1,6 @@
 package backend.DataLayer.protocol.Account;
 
+import backend.DataLayer.protocol.RoleTypes;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -38,6 +39,8 @@ public interface AccountDAO extends JpaRepository<AccountEntity, Integer> {
     @Query("SELECT a FROM AccountEntity a WHERE a.username = :username")
     Optional<AccountEntity> findAccountlByUsername(@Param("username") String username);
 
+    @Query("UPDATE AccountEntity a SET a.role = :role WHERE a.username=:username")
+    void updateAccountRoleByUsername(@Param("username") String username, @Param("role")RoleTypes role);
     /**
      * Find account by primary email ID.
      * 

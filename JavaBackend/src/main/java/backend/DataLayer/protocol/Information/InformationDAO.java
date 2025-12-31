@@ -16,7 +16,7 @@ import java.util.Optional;
 @Repository
 public interface InformationDAO extends JpaRepository<InformationEntity, Integer> {
 
-    @Query("SELECT i FROM InformationEntity i JOIN AccountEntity a ON i.identity.id=a.identity.id WHERE a.username = :username")
+    @Query("SELECT i FROM InformationEntity i JOIN AccountEntity a ON i.identity.id=a.identity.id  WHERE a.username = :username")
     InformationEntity findInformationByUserName(String username);
 
 
