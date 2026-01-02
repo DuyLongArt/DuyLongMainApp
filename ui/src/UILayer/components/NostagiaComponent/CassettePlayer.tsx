@@ -1,110 +1,135 @@
-import React, {useEffect, useState} from "react";
-import {AnalogButton} from "../../pages/Home/Widget/Widget5Page.tsx";
+import React, { useEffect, useState, useRef } from "react";
+import { AnalogButton } from "./AnalogButton";
 
 export const CassettePlayer = () => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [reelRotation, setReelRotation] = useState(0);
-    const [tapeDeck, setTapeDeck] = useState('A');
+    const [tapeDeck, setTapeDeck] = useState<'A' | 'B'>('A');
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const animationRef = useRef<number | null>(null);
+
+    // Initialize Audio with Plastic Love (Placeholder link - replace with your hosted file)
+    useEffect(() => {
+        // Note: Using a direct link to an MP3. Ensure this URL is valid or replace with local path.
+        audioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+        audioRef.current.loop = true;
+
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current = null;
+            }
+            if (animationRef.current) {
+                cancelAnimationFrame(animationRef.current);
+            }
+        };
+    }, []);
 
     useEffect(() => {
-        if (isPlaying) {
-            const timer = setInterval(() => {
-                setReelRotation(prev => prev + 5);
-            }, 100);
-            return () => clearInterval(timer);
+        if (audioRef.current) {
+            if (isPlaying) {
+                audioRef.current.play().catch(e => console.error("Playback failed:", e));
+                startReelAnimation();
+            } else {
+                audioRef.current.pause();
+                stopReelAnimation();
+            }
         }
     }, [isPlaying]);
 
+    const startReelAnimation = () => {
+        const animate = () => {
+            setReelRotation(prev => (prev + 1.5) % 360); // Slower, nostalgic rotation
+            animationRef.current = requestAnimationFrame(animate);
+        };
+        animationRef.current = requestAnimationFrame(animate);
+    };
+
+    const stopReelAnimation = () => {
+        if (animationRef.current) {
+            cancelAnimationFrame(animationRef.current);
+            animationRef.current = null;
+        }
+    };
+
     return (
-        <div className="bg-gradient-to-br from-amber-50 to-orange-100 border-4 border-amber-300 rounded-2xl p-6 shadow-2xl">
-            {/* Cassette deck header */}
+        <div className="bg-gradient-to-br from-zinc-900 to-black border-4 border-pink-500/30 rounded-2xl p-6 shadow-[0_0_20px_rgba(236,72,153,0.3)] max-w-md mx-auto">
+            {/* Header with City Pop Vibes */}
             <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-amber-800 mb-2">
-                    📼 SONY WM-D6C
+                <h3 className="text-2xl font-bold text-pink-400 mb-2 font-mono tracking-tighter italic">
+                    PLASTIC LOVE // 1984
                 </h3>
-                <div className="text-amber-600 font-mono text-sm">Professional Walkman</div>
+                <div className="text-cyan-400 font-mono text-xs uppercase tracking-[0.3em]">Mariya Takeuchi • Variety</div>
             </div>
 
             {/* Cassette tape */}
-            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-4 mb-6 border-2 border-gray-600">
-                {/* Tape label */}
-                <div className="bg-gradient-to-r from-cream-100 to-yellow-100 rounded p-2 mb-3 text-center border border-yellow-300">
-                    <div className="text-amber-800 font-bold text-sm">Mariya Takeuchi</div>
-                    <div className="text-amber-600 text-xs">Variety (1984)</div>
-                    <div className="text-amber-500 text-xs font-mono">Side {tapeDeck}</div>
+            <div className="bg-zinc-800 rounded-xl p-4 mb-8 border-4 border-zinc-700 shadow-inner relative overflow-hidden">
+                <div className="absolute inset-0 bg-linear-to-tr from-transparent via-white/10 to-transparent pointer-events-none z-10"></div>
+
+                {/* Tape label - Japanese Aesthetic */}
+                <div className={`bg-white rounded p-2 mb-4 text-center border-l-[12px] ${tapeDeck === 'A' ? 'border-pink-500' : 'border-cyan-500'} shadow-sm transition-all duration-700`}>
+                    <div className="text-black font-black text-sm tracking-widest uppercase">Takeuchi Mariya</div>
+                    <div className="text-zinc-600 text-[10px] font-bold">プラスティック・ラヴ</div>
+                    <div className="flex justify-between px-4 mt-1 text-[8px] font-mono text-pink-600">
+                        <span>NR [ON]</span>
+                        <span>SIDE {tapeDeck}</span>
+                        <span>POSITION [CHROME]</span>
+                    </div>
                 </div>
 
                 {/* Cassette reels */}
-                <div className="flex justify-between items-center">
-                    <div className="relative">
-                        <div
-                            className="w-12 h-12 border-4 border-gray-400 rounded-full bg-gradient-to-br from-gray-300 to-gray-500"
-                            style={{
-                                transform: `rotate(${reelRotation}deg)`,
-                                transition: isPlaying ? 'none' : 'transform 0.5s ease-out'
-                            }}
-                        >
-                            {/* Reel spokes */}
-                            <div className="absolute inset-2 border-2 border-gray-600 rounded-full">
-                                <div className="absolute top-1/2 left-1/2 w-6 h-0.5 bg-gray-600 transform -translate-x-1/2 -translate-y-1/2"></div>
-                                <div className="absolute top-1/2 left-1/2 w-0.5 h-6 bg-gray-600 transform -translate-x-1/2 -translate-y-1/2"></div>
-                            </div>
-                        </div>
+                <div className="flex justify-between items-center px-4 py-2 bg-black/40 rounded-lg border border-zinc-700">
+                    <Reel rotation={reelRotation} />
+                    <div className="flex-1 mx-4 h-10 bg-zinc-900 rounded flex items-center justify-center border border-zinc-800 overflow-hidden">
+                        <div className="w-full h-4 bg-pink-500/10 absolute"></div>
+                        <div className="w-full h-[1px] bg-pink-500/40"></div>
                     </div>
-
-                    {/* Tape mechanism */}
-                    <div className="flex-1 mx-4 h-2 bg-gradient-to-r from-amber-800 via-amber-600 to-amber-800 rounded-full border border-amber-700"></div>
-
-                    <div className="relative">
-                        <div
-                            className="w-12 h-12 border-4 border-gray-400 rounded-full bg-gradient-to-br from-gray-300 to-gray-500"
-                            style={{
-                                transform: `rotate(${-reelRotation}deg)`,
-                                transition: isPlaying ? 'none' : 'transform 0.5s ease-out'
-                            }}
-                        >
-                            <div className="absolute inset-2 border-2 border-gray-600 rounded-full">
-                                <div className="absolute top-1/2 left-1/2 w-6 h-0.5 bg-gray-600 transform -translate-x-1/2 -translate-y-1/2"></div>
-                                <div className="absolute top-1/2 left-1/2 w-0.5 h-6 bg-gray-600 transform -translate-x-1/2 -translate-y-1/2"></div>
-                            </div>
-                        </div>
-                    </div>
+                    <Reel rotation={reelRotation} />
                 </div>
             </div>
 
-            {/* Control buttons */}
-            <div className="flex justify-center space-x-3 mb-4">
-                <AnalogButton variant="chrome" size="sm" isPressed={false}>⏮</AnalogButton>
+            {/* Controls */}
+            <div className="grid grid-cols-3 gap-3 mb-6">
+                <AnalogButton variant="chrome" size="md" onClick={() => { }}>REV</AnalogButton>
                 <AnalogButton
                     variant="amber"
                     size="md"
                     onClick={() => setIsPlaying(!isPlaying)}
                     isPressed={isPlaying}
                 >
-                    {isPlaying ? '⏸ PAUSE' : '▶️ PLAY'}
+                    {isPlaying ? 'STOP' : 'PLAY'}
                 </AnalogButton>
-                <AnalogButton variant="chrome" size="sm">⏭</AnalogButton>
+                <AnalogButton variant="chrome" size="md" onClick={() => { }}>FWD</AnalogButton>
             </div>
 
-            {/* Side selector */}
-            <div className="flex justify-center space-x-2">
-                <AnalogButton
-                    variant={tapeDeck === 'A' ? 'amber' : 'vintage'}
-                    size="sm"
+            <div className="flex justify-center space-x-4 pt-4 border-t border-zinc-800">
+                <button
                     onClick={() => setTapeDeck('A')}
-                    isPressed={tapeDeck === 'A'}
+                    className={`text-[10px] font-mono px-3 py-1 rounded ${tapeDeck === 'A' ? 'bg-pink-500 text-white' : 'text-zinc-500 border border-zinc-800'}`}
                 >
                     SIDE A
-                </AnalogButton>
-                <AnalogButton
-                    variant={tapeDeck === 'B' ? 'amber' : 'vintage'}
-                    size="sm"
+                </button>
+                <button
                     onClick={() => setTapeDeck('B')}
-                    isPressed={tapeDeck === 'B'}
+                    className={`text-[10px] font-mono px-3 py-1 rounded ${tapeDeck === 'B' ? 'bg-cyan-500 text-white' : 'text-zinc-500 border border-zinc-800'}`}
                 >
                     SIDE B
-                </AnalogButton>
+                </button>
             </div>
         </div>
     );
 };
+
+// Sub-component for code cleanliness
+const Reel = ({ rotation }: { rotation: number }) => (
+    <div className="w-14 h-14 border-2 border-zinc-600 rounded-full bg-zinc-900 flex items-center justify-center shadow-inner">
+        <div
+            className="w-10 h-10 bg-zinc-100 rounded-full flex items-center justify-center relative"
+            style={{ transform: `rotate(${rotation}deg)` }}
+        >
+            <div className="absolute w-full h-[2px] bg-zinc-400"></div>
+            <div className="absolute h-full w-[2px] bg-zinc-400"></div>
+            <div className="w-4 h-4 bg-zinc-800 rounded-full z-10 border border-zinc-400"></div>
+        </div>
+    </div>
+);

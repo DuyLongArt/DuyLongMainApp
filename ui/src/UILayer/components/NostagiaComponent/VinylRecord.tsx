@@ -1,12 +1,44 @@
-import React, {useState} from "react";
-import {AnalogButton} from "../../pages/Home/Widget/Widget5Page.tsx";
+import React, { useState, useEffect, useRef } from "react";
+import { AnalogButton } from "./AnalogButton";
 
-export  const VinylRecord = () => {
+
+export const VinylRecord = () => {
     const [isSpinning, setIsSpinning] = useState(false);
     const [rpm, setRpm] = useState(33);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    // Initialize Audio
+    useEffect(() => {
+        audioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+        audioRef.current.loop = true;
+
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current = null;
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        if (audioRef.current) {
+            if (isSpinning) {
+                audioRef.current.play().catch(e => console.error("Playback failed:", e));
+            } else {
+                audioRef.current.pause();
+            }
+        }
+    }, [isSpinning]);
+
+    // Speed adjustment (pitch simulation - simple)
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.playbackRate = rpm === 45 ? 1.2 : 1.0;
+        }
+    }, [rpm]);
 
     return (
-        <div className="bg-gradient-to-br from-amber-900 to-orange-900 border-4 border-yellow-500 rounded-2xl p-6 shadow-2xl">
+        <div className="bg-linear-to-br from-amber-900 to-orange-900 border-4 border-yellow-500 rounded-2xl p-6 shadow-2xl">
             <div className="text-center mb-4">
                 <h3 className="text-lg font-bold text-yellow-200">
                     🎵 TECHNICS SL-1200
@@ -17,9 +49,8 @@ export  const VinylRecord = () => {
             {/* Vinyl record */}
             <div className="relative w-48 h-48 mx-auto mb-6">
                 <div
-                    className={`absolute inset-0 rounded-full bg-black border-4 border-yellow-600 ${
-                        isSpinning ? 'animate-spin' : ''
-                    }`}
+                    className={`absolute inset-0 rounded-full bg-black border-4 border-yellow-600 ${isSpinning ? 'animate-spin' : ''
+                        }`}
                     style={{
                         background: 'radial-gradient(circle, #1f2937 30%, #000000 70%)',
                         animationDuration: rpm === 33 ? '1.8s' : '1.3s'
@@ -40,7 +71,7 @@ export  const VinylRecord = () => {
                     ))}
 
                     {/* Center label */}
-                    <div className="absolute top-1/2 left-1/2 w-20 h-20 bg-gradient-to-br from-red-500 to-red-700 rounded-full transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center border-2 border-yellow-400">
+                    <div className="absolute top-1/2 left-1/2 w-20 h-20 bg-linear-to-br from-red-500 to-red-700 rounded-full transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center border-2 border-yellow-400">
                         <div className="text-center text-yellow-100">
                             <div className="font-bold text-xs">CITY POP</div>
                             <div className="text-xs">CLASSICS</div>
@@ -79,7 +110,7 @@ export  const VinylRecord = () => {
             </div>
 
             <div className="text-center text-yellow-600 font-mono text-sm">
-                Now Playing: Plastic Love<br/>
+                Now Playing: Plastic Love<br />
                 今聴いている：プラスチック・ラブ
             </div>
         </div>

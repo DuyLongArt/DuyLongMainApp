@@ -1,5 +1,6 @@
 {
   "component": "MotionImageSpinner",
+  "library": "framer-motion",
   "element": "motion.img",
   "general": {
     "name": "Spinning Button",

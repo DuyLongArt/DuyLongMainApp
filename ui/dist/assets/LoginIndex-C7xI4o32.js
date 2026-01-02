@@ -1,0 +1,1 @@
+import{j as o,B as t}from"./index-C1d-eBvy.js";import s from"./LoginForm-Ca9_PEsT.js";import"./user-DdNDrkcI.js";import"./eye-Clg7lm9J.js";const e=({children:r})=>o.jsxs(t,{children:[o.jsx(s,{}),r]});export{e as default};

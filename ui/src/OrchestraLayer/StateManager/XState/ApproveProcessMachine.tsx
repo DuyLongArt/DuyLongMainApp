@@ -1,5 +1,5 @@
 import axios from "axios";
-import { assign, setup } from "xstate";
+import { assign, setup, fromPromise } from "xstate";
 
 // Khai báo Context ban đầu
 const stepContext = {
@@ -26,6 +26,13 @@ export const ApproveProcessMachine = setup({
         fetchStepFromServer: () => {
             axios.get("/backend/step");
         }
+    },
+
+    actors: {
+        fetchStepFromServer: fromPromise(async () => {
+            const response = await axios.get("/backend/step");
+            return response.data;
+        })
     },
 
     // 2. KHAI BÁO TYPES (Sử dụng typeof để Typescript biết Context là gì)

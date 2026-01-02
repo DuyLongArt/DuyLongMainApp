@@ -1,5 +1,6 @@
 //
 import React, { useEffect, useState } from 'react';
+// @ts-ignore
 import AvatarImageSrc from "./Avatar.png";
 import axios from 'axios';
 

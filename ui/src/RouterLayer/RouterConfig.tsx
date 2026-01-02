@@ -10,15 +10,16 @@ const RegisterPage = lazy(() => import("../UILayer/pages/Register/RegisterPage.t
 const HomePage = lazy(() => import("../UILayer/pages/Home/HomePage.tsx"));
 const HomeLayout = lazy(() => import("../UILayer/pages/Home/HomeLayout.tsx"));
 const WidgetMainPage = lazy(() => import("../UILayer/pages/Home/Widget/WidgetMainPage.tsx"));
-const Widget1Page = lazy(() => import("../UILayer/pages/Home/Widget/Widget1Page.tsx"));
-const Widget2Page = lazy(() => import("../UILayer/pages/Home/Widget/Widget2Page.tsx"));
-const Widget3Page = lazy(() => import("../UILayer/pages/Home/Widget/Widget3Page.tsx"));
-const Widget4Page = lazy(() => import("../UILayer/pages/Home/Widget/Widget4Page.tsx"));
-const Widget5Page = lazy(() => import("../UILayer/pages/Home/Widget/Widget5Page.tsx"));
-const ContactPage = lazy(() => import("../UILayer/pages/Home/Contact/ContactPage.tsx"));
+// const Widget1Page = lazy(() => import("../UILayer/pages/Home/Widget/Widget1Page.tsx"));
+// const Widget2Page = lazy(() => import("../UILayer/pages/Home/Widget/Widget2Page.tsx"));
+// const Widget3Page = lazy(() => import("../UILayer/pages/Home/Widget/Widget3Page.tsx"));
+// const Widget4Page = lazy(() => import("../UILayer/pages/Home/Widget/Widget4Page.tsx"));
+// const Widget5Page = lazy(() => import("../UILayer/pages/Home/Widget/Widget5Page.tsx"));
+
+// const ContactPage = lazy(() => import("../UILayer/pages/Home/Contact/ContactPage.tsx"));
 const PersonProfilePage = lazy(() => import("../UILayer/pages/Admin/PersonProfilePage.tsx"));
 const IOTPage = lazy(() => import("../UILayer/pages/Home/IOT/IOTPage.tsx"));
-const ApproveProcessPage = lazy(() => import("../UILayer/pages/ApproveProcess/ApproveProcessPage.tsx"));
+// const ApproveProcessPage = lazy(() => import("../UILayer/pages/ApproveProcess/ApproveProcessPage.tsx"));
 // const AdminLayout = lazy(() => import("../UILayer/pages/Admin/AdminLayout.tsx")); // Assuming exists
 // const BlogLayout = lazy(() => import("../UILayer/pages/Blog/BlogLayout.tsx")); // Assuming exists
 // const WidgetLayout = lazy(() => import("../UILayer/pages/Home/Widget/WidgetLayout.tsx")); // Assuming exists
@@ -201,7 +202,7 @@ export const appRoutes: Route[] = [
                     }
                 ]
             },
-            {
+           /* {
                 path: "1",
                 component: <Widget1Page />,
                 title: "Widget 1",
@@ -225,7 +226,7 @@ export const appRoutes: Route[] = [
                 path: "5",
                 component: <Widget5Page />,
                 title: "Yellow City",
-            },
+            },*/
         ],
     },
     {
@@ -234,11 +235,11 @@ export const appRoutes: Route[] = [
         component: <OutletLayout />,
         title: "Process Approval",
         children: [
-            {
+            /*{
                 path: "index",
                 component: <ApproveProcessPage />,
                 title: "Process Approval",
-            }
+            }*/
         ]
     },
     {

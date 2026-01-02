@@ -17,6 +17,9 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 // Interface for our File object wrapper
+// ... imports
+
+// Interface for our File object wrapper
 interface FileUpload {
     id: string;
     file: File;
@@ -24,6 +27,15 @@ interface FileUpload {
     progress: number;
     status: 'pending' | 'uploading' | 'completed' | 'error';
 }
+
+const commonProps = {
+    placeholder: undefined,
+    onPointerEnterCapture: undefined,
+    onPointerLeaveCapture: undefined,
+    onResize: undefined,
+    onResizeCapture: undefined,
+} as any;
+
 const StoragePageIcon = () => {
     const navigator = useNavigate()
     return (
@@ -157,8 +169,8 @@ const StoragePage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                 {/* LEFT COLUMN: Upload Zone */}
-                <Card className="lg:col-span-2 h-fit shadow-lg">
-                    <CardBody>
+                <Card className="lg:col-span-2 h-fit shadow-lg" {...commonProps}>
+                    <CardBody {...commonProps}>
                         {/* Drag Zone */}
                         <div
                             onDragOver={onDragOver}
@@ -180,10 +192,10 @@ const StoragePage = () => {
                             <div className={`p-4 rounded-full mb-4 ${isDragging ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
                                 <CloudArrowUpIcon className="h-10 w-10" />
                             </div>
-                            <Typography variant="h5" color="blue-gray" className="font-bold">
+                            <Typography variant="h5" color="blue-gray" className="font-bold" {...commonProps}>
                                 Click or Drop files here
                             </Typography>
-                            <Typography color="gray" className="text-sm mt-2 text-center">
+                            <Typography color="gray" className="text-sm mt-2 text-center" {...commonProps}>
                                 Support for JPG, PNG, PDF (Max 10MB)
                             </Typography>
                         </div>
@@ -192,10 +204,10 @@ const StoragePage = () => {
                         {files.length > 0 && (
                             <div className="mt-8 flex flex-col gap-4">
                                 <div className="flex justify-between items-center">
-                                    <Typography variant="h6" color="blue-gray">
+                                    <Typography variant="h6" color="blue-gray" {...commonProps}>
                                         Pending Uploads ({files.length})
                                     </Typography>
-                                    <Button size="sm" color="red" variant="text" onClick={() => setFiles([])}>
+                                    <Button size="sm" color="red" variant="text" onClick={() => setFiles([])} {...commonProps}>
                                         Clear All
                                     </Button>
                                 </div>
@@ -216,10 +228,10 @@ const StoragePage = () => {
                                             {/* Info & Progress */}
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between mb-1">
-                                                    <Typography variant="small" className="font-medium truncate text-gray-900">
+                                                    <Typography variant="small" className="font-medium truncate text-gray-900" {...commonProps}>
                                                         {item.file.name}
                                                     </Typography>
-                                                    <Typography variant="small" className={getStatusColor(item.status)}>
+                                                    <Typography variant="small" className={getStatusColor(item.status)} {...commonProps}>
                                                         {item.status === 'uploading' ? `${item.progress}%` : item.status}
                                                     </Typography>
                                                 </div>
@@ -227,11 +239,12 @@ const StoragePage = () => {
                                                     value={item.progress}
                                                     size="sm"
                                                     color={item.status === 'error' ? "red" : item.status === 'completed' ? "green" : "blue"}
+                                                    {...commonProps}
                                                 />
                                             </div>
 
                                             {/* Action */}
-                                            <IconButton variant="text" color="blue-gray" onClick={() => removeFile(item.id)}>
+                                            <IconButton variant="text" color="blue-gray" onClick={() => removeFile(item.id)} {...commonProps}>
                                                 <XMarkIcon className="h-5 w-5" />
                                             </IconButton>
                                         </div>
@@ -239,7 +252,7 @@ const StoragePage = () => {
                                 </div>
 
                                 <div className="mt-4 flex justify-end">
-                                    <Button onClick={handleUploadAll} color="blue" disabled={files.every(f => f.status === 'completed')}>
+                                    <Button onClick={handleUploadAll} color="blue" disabled={files.every(f => f.status === 'completed')} {...commonProps}>
                                         Upload {files.filter(f => f.status === 'pending').length} Files
                                     </Button>
                                 </div>
@@ -270,26 +283,26 @@ const getStatusColor = (status: string) => {
 };
 
 const StorageStatsCard = () => (
-    <Card className="shadow-lg bg-gradient-to-br from-blue-900 to-blue-800 text-white">
-        <CardBody>
+    <Card className="shadow-lg bg-linear-to-br from-blue-900 to-blue-800 text-white" {...commonProps}>
+        <CardBody {...commonProps}>
             <div className="flex items-start justify-between mb-4">
                 <div>
-                    <Typography variant="h5" className="mb-1">Storage Usage</Typography>
-                    <Typography className="text-blue-200 text-sm">75% of 100GB Used</Typography>
+                    <Typography variant="h5" className="mb-1" {...commonProps}>Storage Usage</Typography>
+                    <Typography className="text-blue-200 text-sm" {...commonProps}>75% of 100GB Used</Typography>
                 </div>
                 <div className="p-2 bg-blue-700 rounded-lg">
                     <CloudArrowUpIcon className="h-6 w-6 text-white" />
                 </div>
             </div>
-            <Progress value={75} color="white" className="bg-blue-900/50 mb-4" />
+            <Progress value={75} color="white" className="bg-blue-900/50 mb-4" {...commonProps} />
             <div className="grid grid-cols-2 gap-4 text-center">
                 <div className="p-3 bg-blue-700/30 rounded-lg">
-                    <Typography variant="h4">1200</Typography>
-                    <Typography className="text-xs text-blue-200">Images</Typography>
+                    <Typography variant="h4" {...commonProps}>1200</Typography>
+                    <Typography className="text-xs text-blue-200" {...commonProps}>Images</Typography>
                 </div>
                 <div className="p-3 bg-blue-700/30 rounded-lg">
-                    <Typography variant="h4">350</Typography>
-                    <Typography className="text-xs text-blue-200">Documents</Typography>
+                    <Typography variant="h4" {...commonProps}>350</Typography>
+                    <Typography className="text-xs text-blue-200" {...commonProps}>Documents</Typography>
                 </div>
             </div>
         </CardBody>
@@ -297,9 +310,9 @@ const StorageStatsCard = () => (
 );
 
 const RecentFilesCard = () => (
-    <Card className="shadow-lg border border-gray-100">
-        <CardBody>
-            <Typography variant="h6" color="blue-gray" className="mb-4">Recent Uploads</Typography>
+    <Card className="shadow-lg border border-gray-100" {...commonProps}>
+        <CardBody {...commonProps}>
+            <Typography variant="h6" color="blue-gray" className="mb-4" {...commonProps}>Recent Uploads</Typography>
             <ul className="flex flex-col gap-3">
                 {[1, 2, 3].map((_, i) => (
                     <li key={i} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-md transition-colors cursor-pointer">
@@ -307,8 +320,8 @@ const RecentFilesCard = () => (
                             <PhotoIcon className="h-5 w-5" />
                         </div>
                         <div className="flex-1">
-                            <Typography variant="small" className="font-medium text-gray-900">vacation_photo_{i}.jpg</Typography>
-                            <Typography variant="small" className="text-xs text-gray-500">2.4 MB • 2 hours ago</Typography>
+                            <Typography variant="small" className="font-medium text-gray-900" {...commonProps}>vacation_photo_{i}.jpg</Typography>
+                            <Typography variant="small" className="text-xs text-gray-500" {...commonProps}>2.4 MB • 2 hours ago</Typography>
                         </div>
                     </li>
                 ))}

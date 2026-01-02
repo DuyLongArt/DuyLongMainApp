@@ -10,6 +10,14 @@ interface OrchestraButtonProps {
 
 import { motion } from 'framer-motion';
 
+const commonProps = {
+  placeholder: undefined,
+  onPointerEnterCapture: undefined,
+  onPointerLeaveCapture: undefined,
+  onResize: undefined,
+  onResizeCapture: undefined,
+} as any;
+
 const OrchestraButton: React.FC<OrchestraButtonProps> = ({ onClick }) => {
 
   // const url = "http:192.168.22.4:9000/duylongwebappobjectdatabase/admin.png"
@@ -18,18 +26,19 @@ const OrchestraButton: React.FC<OrchestraButtonProps> = ({ onClick }) => {
   return (
 
 
-<div className=''>
+    <div className=''>
 
 
-    <motion.div
-      drag
-      dragElastic={0.2}
-      dragMomentum={false}
-      className='flex items-center z-50'
-    >
-      <Button
-        onClick={onClick}
-        className="
+      <motion.div
+        drag
+        dragElastic={0.2}
+        dragMomentum={false}
+        className='flex items-center z-50'
+      >
+        <Button
+          onClick={onClick}
+          {...commonProps}
+          className="
         
         hover:from-purple-600 hover:to-indigo-700 
         shadow-lg hover:shadow-xl 
@@ -38,13 +47,13 @@ const OrchestraButton: React.FC<OrchestraButtonProps> = ({ onClick }) => {
       rounded-x
     
       bg-white! h-full flex items-center justify-center "
-        ripple={true}
-      >
-        <MotionImageSpinner imageUrl={MainAppIcon} />
-      </Button>
-    </motion.div>
+          ripple={true}
+        >
+          <MotionImageSpinner imageUrl={MainAppIcon} />
+        </Button>
+      </motion.div>
 
-</div>
+    </div>
 
 
 

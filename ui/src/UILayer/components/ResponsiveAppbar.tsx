@@ -13,6 +13,14 @@ interface ResponsiveListProps {
   pathList: string[];
 }
 
+const commonProps = {
+  placeholder: undefined,
+  onPointerEnterCapture: undefined,
+  onPointerLeaveCapture: undefined,
+  onResize: undefined,
+  onResizeCapture: undefined,
+} as any;
+
 const ResponsiveAppBar: React.FC<ResponsiveListProps> = ({ pageList, pathList }) => {
   const [openNav, setOpenNav] = useState(false);
   const navigate = useNavigate();
@@ -43,6 +51,7 @@ const ResponsiveAppBar: React.FC<ResponsiveListProps> = ({ pageList, pathList })
           as="li"
           variant="small"
           className="font-bold text-lg"
+          {...commonProps}
         >
           <div
             onClick={() => handleNavigation(path)}
@@ -63,6 +72,7 @@ const ResponsiveAppBar: React.FC<ResponsiveListProps> = ({ pageList, pathList })
       <Navbar
         fullWidth
         className="sticky top-0 z-50 h-max max-w-full  px-2 py-2 lg:px-8 border-b border-white/40 rounded-2xl bg-indigo-500/70 backdrop-blur-md shadow-lg"
+        {...commonProps}
       >
         <div className="flex items-center justify-between w-full">
 
@@ -72,6 +82,7 @@ const ResponsiveAppBar: React.FC<ResponsiveListProps> = ({ pageList, pathList })
             onClick={() => navigate("/home/index")}
             className="cursor-pointer py-1.5 font-bold text-xl lg:text-2xl text-white hover:text-indigo-200 transition-colors drop-shadow-sm"
             style={{ fontFamily: 'serif' }}
+            {...commonProps}
           >
             ICE SITE
           </Typography>
@@ -90,6 +101,7 @@ const ResponsiveAppBar: React.FC<ResponsiveListProps> = ({ pageList, pathList })
               className="ml-auto h-6 w-6 text-white hover:bg-white/10 focus:bg-white/10 active:bg-white/10 lg:hidden rounded-full"
               ripple={false}
               onClick={() => setOpenNav(!openNav)}
+              {...commonProps}
             >
               {openNav ? <CloseIcon /> : <MenuIcon />}
             </IconButton>

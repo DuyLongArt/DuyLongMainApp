@@ -33,8 +33,8 @@ const RegisterForm = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [bio, setBio] = useState('');
-    const [location, setLocation] = useState<LocationType>('');
-    const [country, setCountry] = useState<LocationType>('VietName');
+    const [location, setLocation] = useState('VietName');
+    const [country, setCountry] = useState<CountryType>('VietName');
 
     const [showPassword, setShowPassword] = useState(false);
     const [validationError, setValidationError] = useState<string | null>(null);

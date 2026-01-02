@@ -8,18 +8,20 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 // 2. FIX: Import marker images so they aren't invisible
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+// import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+// import markerIcon from 'leaflet/dist/images/marker-icon.png';
+// import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 // 3. APPLY FIX: Reset the default icon state
 // Leaflet's default icon path detection fails in React bundlers (Vite/Webpack)
+/*
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconUrl: markerIcon,
     iconRetinaUrl: markerIcon2x,
     shadowUrl: markerShadow,
 });
+*/
 
 // --- Component 1: The Button ---
 const IOTMapIcon = () => {

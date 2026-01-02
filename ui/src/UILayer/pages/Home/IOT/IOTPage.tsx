@@ -1,5 +1,4 @@
 import React from 'react';
-import { Typography, Card, CardBody, Button, Chip, IconButton } from "@material-tailwind/react";
 import { useUserProfileStore } from '../../../../OrchestraLayer/StateManager/Zustand/userProfileStore';
 import { useSelector } from '@xstate/react';
 import { ChangeIOTSessionActor } from '../../../../OrchestraLayer/StateManager/XState/ChangeIOTSession';
@@ -24,23 +23,23 @@ const IOTPage = () => {
     // ------------------------------
 
     return (
-        <div className="flex w-full min-h-screen bg-blue-gray-50/50 font-sans">
+        <div className="flex w-full min-h-screen bg-slate-50 font-sans">
 
             {/* 1. Improved Sidebar */}
-            <aside className='w-3 lg:w-64 bg-gray-900 text-white shadow-xl flex flex-col transition-all duration-300 z-10'>
-                <div className="p-2 flex flex-col items-center border-b border-gray-800">
+            <aside className='w-3 lg:w-64 bg-slate-900 text-white shadow-xl flex flex-col transition-all duration-300 z-10'>
+                <div className="p-2 flex flex-col items-center border-b border-slate-800">
                     <div className="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-900/40 mb-3 text-white">
                         <IOTMapIcon />
                     </div>
-                    <div className="hidden w-fit lg:block tracking-wider uppercase text-gray-400 text-xs font-bold">
+                    <div className="hidden w-fit lg:block tracking-wider uppercase text-slate-400 text-xs font-bold">
                         Smart Home
                     </div>
                 </div>
 
                 <div className="flex-1 flex flex-col gap-2 p-4">
-                    <Typography variant="small" className="hidden lg:block text-gray-500 font-bold uppercase ml-3 mb-2 text-[11px]">
+                    <p className="hidden lg:block text-slate-500 font-bold uppercase ml-3 mb-2 text-[11px]">
                         Zones
-                    </Typography>
+                    </p>
 
                     <NavButton
                         title="My Room"
@@ -67,19 +66,19 @@ const IOTPage = () => {
             <main className='flex-1 p-6 lg:p-10 overflow-y-auto'>
                 <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <Typography variant="h2" color="blue-gray" className="font-bold tracking-tight">
+                        <h2 className="text-3xl font-bold tracking-tight text-slate-800">
                             Dashboard
-                        </Typography>
-                        <Typography className="text-gray-500 font-medium mt-1">
+                        </h2>
+                        <p className="text-slate-500 font-medium mt-1">
                             Overview of your connected devices
-                        </Typography>
+                        </p>
                     </div>
-                    <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-blue-gray-100">
+                    <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100">
                         <div className="relative flex h-3 w-3">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                         </div>
-                        <span className="text-sm font-bold text-gray-600">System Online</span>
+                        <span className="text-sm font-bold text-slate-600">System Online</span>
                     </div>
                 </header>
 
@@ -102,7 +101,7 @@ function NavButton({ title, active, onClick, icon }: any) {
             className={`flex items-center justify-center lg:justify-start gap-4 p-3 rounded-xl transition-all duration-200 group relative overflow-hidden w-full
             ${active
                     ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
-                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                    : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                 }`}
         >
             <span className="z-10">{icon}</span>
@@ -115,9 +114,9 @@ function MyRoom() {
     return (
         <div>
             <div className="flex items-center justify-between mb-6">
-                <Typography variant="h4" color="blue-gray" className="font-bold">
+                <h4 className="text-xl font-bold text-slate-800">
                     My Room
-                </Typography>
+                </h4>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                 <DeviceCard name="Living Room Light" status="On" type="light" />
@@ -133,9 +132,9 @@ function SubRoom() {
     return (
         <div>
             <div className="flex items-center justify-between mb-6">
-                <Typography variant="h4" color="blue-gray" className="font-bold">
+                <h4 className="text-xl font-bold text-slate-800">
                     Sub Room
-                </Typography>
+                </h4>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                 <DeviceCard name="Sub Room Light" status="Off" type="light" />
@@ -152,48 +151,46 @@ function DeviceCard({ name, status, type }: { name: string, status: string, type
     let Icon = CpuChipIcon;
     let colorClass = "text-blue-500 bg-blue-50";
 
-    if (type === 'light') { Icon = LightBulbIcon; colorClass = isActive ? "text-amber-500 bg-amber-50" : "text-gray-400 bg-gray-100"; }
+    if (type === 'light') { Icon = LightBulbIcon; colorClass = isActive ? "text-amber-500 bg-amber-50" : "text-slate-400 bg-slate-100"; }
     if (type === 'temp') { Icon = FireIcon; colorClass = "text-orange-500 bg-orange-50"; }
     if (type === 'security') { Icon = LockClosedIcon; colorClass = status === 'Locked' ? "text-green-500 bg-green-50" : "text-red-500 bg-red-50"; }
 
     return (
-        <Card className="hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-blue-gray-50 overflow-hidden">
-            <CardBody className="p-6">
+        <div className="bg-white rounded-xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 overflow-hidden shadow-sm">
+            <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
                     <div className={`p-3 rounded-2xl ${colorClass}`}>
                         <Icon className="h-6 w-6" />
                     </div>
-                    <Chip
-                        size="sm"
-                        variant="ghost"
-                        value={status}
-                        color={isActive ? "green" : "blue-gray"}
-                        className="rounded-full font-bold"
-                    />
+                    <span
+                        className={`px-2 py-1 text-xs font-bold uppercase rounded-full ${isActive ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-500"}`}
+                    >
+                        {status}
+                    </span>
                 </div>
 
-                <Typography variant="h6" color="blue-gray" className="font-bold mb-1">
+                <h6 className="text-lg font-bold text-slate-800 mb-1">
                     {name}
-                </Typography>
-                <Typography variant="small" className="text-gray-500 font-medium mb-6">
+                </h6>
+                <p className="text-sm text-slate-500 font-medium mb-6">
                     {type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Device'}
-                </Typography>
+                </p>
 
-                <div className="flex gap-2 pt-4 border-t border-gray-100">
-                    <Button
-                        size="sm"
-                        variant={isActive ? "gradient" : "outlined"}
-                        color={isActive ? "blue" : "blue-gray"}
-                        className="flex-1 rounded-lg shadow-none hover:shadow-md"
+                <div className="flex gap-2 pt-4 border-t border-slate-100">
+                    <button
+                        className={`flex-1 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:shadow-md transition-all ${isActive
+                            ? "bg-linear-to-tr from-blue-600 to-blue-400 text-white"
+                            : "border border-slate-300 text-slate-700 hover:bg-slate-50"
+                            }`}
                     >
                         {isActive ? 'Active' : 'Enable'}
-                    </Button>
-                    <IconButton size="sm" variant="text" color="blue-gray">
+                    </button>
+                    <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors">
                         <span className="text-xl">⚙</span>
-                    </IconButton>
+                    </button>
                 </div>
-            </CardBody>
-        </Card>
+            </div>
+        </div>
     );
 }
 

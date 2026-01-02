@@ -8,7 +8,8 @@ import CustomDrawer from '../../components/CustomDrawer';
 import { orchestraButton } from '../../../OrchestraLayer/StateManager/XState/OrchestraButton';
 import { useMachine } from '@xstate/react';
 import AvatarFloatButton from '../../components/AvatarFloatButton.tsx';
-import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
+import Draggable from 'react-draggable';
+import type { DraggableData, DraggableEvent } from 'react-draggable';
 import { useUserProfileStore } from '../../../OrchestraLayer/StateManager/Zustand/userProfileStore.ts';
 import MainButton from '../../components/MainButton.tsx';
 

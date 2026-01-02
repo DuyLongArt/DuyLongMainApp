@@ -70,7 +70,6 @@ const customTheme = {
     defaultProps: {
       variant: "filled",
       color: "white",
-      color: "white",
       shadow: false,
     },
     styles: {
@@ -80,14 +79,11 @@ const customTheme = {
           display: "flex",
           flexDirection: "flex-col",
           backgroundClip: "bg-clip-border",
-          backgroundClip: "bg-clip-border",
           borderRadius: "rounded-xl border border-gray-200 dark:border-gray-700",
         },
         variants: {
           filled: {
             white: {
-              background: "bg-white dark:bg-gray-800",
-              color: "text-gray-700 dark:text-gray-200",
               background: "bg-white dark:bg-gray-800",
               color: "text-gray-700 dark:text-gray-200",
               shadow: "shadow-none",
@@ -98,6 +94,14 @@ const customTheme = {
     },
   },
 };
+
+const commonProps = {
+  placeholder: undefined,
+  onPointerEnterCapture: undefined,
+  onPointerLeaveCapture: undefined,
+  onResize: undefined,
+  onResizeCapture: undefined,
+} as any;
 
 // Main App Component
 export default function App() {
@@ -143,6 +147,7 @@ export default function App() {
             <Typography
               variant="h1"
               className="mb-8 text-center font-bold text-4xl md:text-5xl text-gray-900 dark:text-white"
+              {...commonProps}
             >
               Material Tailwind Theme Manager
             </Typography>
@@ -169,6 +174,7 @@ const ThemeToggler = () => {
           : 'bg-blue-600 hover:bg-blue-700'
           } text-white font-semibold py-3 px-6 rounded-full`}
         ripple={false}
+        {...commonProps}
       >
         🌙 Switch to {mode === 'light' ? 'Dark' : 'Light'} Mode ☀️
       </Button>
@@ -181,15 +187,19 @@ const ContentSection = () => {
   const { mode } = useThemeMode();
 
   return (
-    <Card className={`w-full max-w-lg transition-all duration-300 ${mode === 'dark'
-      ? 'bg-gray-800 border-gray-700'
-      : 'bg-white border-gray-200'
-      }`}>
-      <CardBody className="text-center p-8">
+    <Card
+      className={`w-full max-w-lg transition-all duration-300 ${mode === 'dark'
+        ? 'bg-gray-800 border-gray-700'
+        : 'bg-white border-gray-200'
+        }`}
+      {...commonProps}
+    >
+      <CardBody className="text-center p-8" {...commonProps}>
         <Typography
           variant="h3"
           className={`mb-4 font-semibold ${mode === 'dark' ? 'text-white' : 'text-gray-900'
             }`}
+          {...commonProps}
         >
           Current Theme:
           <span className={`ml-2 capitalize ${mode === 'dark'
@@ -204,6 +214,7 @@ const ContentSection = () => {
           variant="paragraph"
           className={`mb-6 leading-relaxed ${mode === 'dark' ? 'text-gray-300' : 'text-gray-600'
             }`}
+          {...commonProps}
         >
           This content dynamically changes its appearance based on the selected theme.
           Observe the background, text color, and button style adapting smoothly with Tailwind CSS transitions.
@@ -213,7 +224,7 @@ const ContentSection = () => {
           ? 'bg-gray-700 border-purple-500 text-gray-200'
           : 'bg-blue-50 border-blue-500 text-gray-700'
           }`}>
-          <Typography variant="small" className="font-medium">
+          <Typography variant="small" className="font-medium" {...commonProps}>
             💡 Pro Tip: You can extend this theming system to any component in your app using Tailwind CSS classes and the dark: modifier!
           </Typography>
         </div>

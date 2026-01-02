@@ -84,7 +84,6 @@ const AboutMePage: React.FC<AboutMePageProps> = () => {
                         <div className="w-full h-[80vh] min-h-[600px] bg-slate-50 relative">
                             <iframe
                                 src={`${CVPDFLink}#toolbar=0&navpanes=0&scrollbar=0`}
-                                type="application/pdf"
                                 className="w-full h-full border-none"
                                 title="CV Preview"
                             />
