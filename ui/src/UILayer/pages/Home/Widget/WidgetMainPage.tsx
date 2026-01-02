@@ -11,10 +11,10 @@ import GridComponent from '../../../components/GridComponent';
 // --- Component ---
 function App() {
   return (
-    <Box sx={{ flexGrow: 1, p: 3, backgroundColor: '#f4f6f8' }}>
-    <GridComponent/>
+    <div className='bg-white min-h-screen'>
+      <GridComponent />
 
-    </Box>
+    </div>
   );
 }
 

@@ -14,11 +14,18 @@ export default defineConfig({
     proxy: {
       // String shorthand for simple cases
       '/backend': {
-        target: 'http://localhost:8686', // Your Spring Boot URL
+        target: 'https://backend.duylong.art:443', // Your Spring Boot URL
         changeOrigin: true,
         secure: false,
         // Optional: Remove /backend from the URL before sending to Spring Boot
         // rewrite: (path) => path.replace(/^\/backend/, '') 
+      },
+      '/object': {
+        target: 'https://backend.duylong.art:443', // Your Spring Boot URL
+        changeOrigin: true,
+        secure: false,
+        // Optional: Remove /backend from the URL before sending to Spring Boot
+        // rewrite: (path) => path.replace(/^\/object/, '')
       }
     }
   }

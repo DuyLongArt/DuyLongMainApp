@@ -58,7 +58,7 @@ const EntryPage: React.FC = () => {
                             lineHeight: 1.6
                         }}
                     >
-                        Experience the next generation of application management. Secure, fast, and beautifully designed.
+                        Wellcome to DuyLong Page
                     </Typography>
 
                     <Box

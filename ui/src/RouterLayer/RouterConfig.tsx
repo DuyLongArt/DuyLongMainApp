@@ -2,7 +2,7 @@ import { lazy } from "react";
 import type { Route } from "./RouterProtocol";
 
 // Lazy load components
-const PersonPage = lazy(() => import("../UILayer/pages/Home/Personal/PersonPage.tsx"));
+// const PersonPage = lazy(() => import("../UILayer/pages/Home/Personal/PersonalPage.tsx"));
 const EntryPage = lazy(() => import("../UILayer/pages/Public/EntryPage.tsx"));
 const LoginIndex = lazy(() => import("../UILayer/pages/Login/LoginIndex.tsx"));
 const LoginForm = lazy(() => import("../UILayer/pages/Login/LoginForm.tsx"));
@@ -17,7 +17,7 @@ const Widget4Page = lazy(() => import("../UILayer/pages/Home/Widget/Widget4Page.
 const Widget5Page = lazy(() => import("../UILayer/pages/Home/Widget/Widget5Page.tsx"));
 const ContactPage = lazy(() => import("../UILayer/pages/Home/Contact/ContactPage.tsx"));
 const PersonProfilePage = lazy(() => import("../UILayer/pages/Admin/PersonProfilePage.tsx"));
-const IOTPage = lazy(() => import("../UILayer/pages/Home/Contact/IOTPage.tsx"));
+const IOTPage = lazy(() => import("../UILayer/pages/Home/IOT/IOTPage.tsx"));
 const ApproveProcessPage = lazy(() => import("../UILayer/pages/ApproveProcess/ApproveProcessPage.tsx"));
 // const AdminLayout = lazy(() => import("../UILayer/pages/Admin/AdminLayout.tsx")); // Assuming exists
 // const BlogLayout = lazy(() => import("../UILayer/pages/Blog/BlogLayout.tsx")); // Assuming exists
@@ -26,6 +26,10 @@ const ApproveProcessPage = lazy(() => import("../UILayer/pages/ApproveProcess/Ap
 // Eager loaded components
 import NotFoundPage from "../UILayer/pages/Error/NotFoundPage.tsx";
 import OutletLayout from "../UILayer/pages/Home/OutletLayout.tsx";
+import { IOTMap } from "../UILayer/pages/Home/IOT/IOTMap.tsx";
+import {StoragePage} from "../UILayer/pages/Home/Utilities/StoragePage.tsx";
+import UtilitiesPage from "../UILayer/pages/Home/Utilities/UtilitiesPage.tsx";
+import PersonalPage from "../UILayer/pages/Home/Person/PersonalPage.tsx";
 
 // Placeholder for BlankPage if it's not exported elsewhere
 const BlankPage = () => (
@@ -113,9 +117,16 @@ export const appRoutes: Route[] = [
                 component: <IOTPage />,
                 // title: "IOT",
                 children: [
-                    
-                ]
+                  {type:"component",path:"blank",component:<BlankPage />}
+                ],
+                
         },
+          {
+                        type: "component",
+                        path: "map",
+                        component: <IOTMap />,
+                        title: "Map",
+                    }
                 ]
             },
             {
@@ -127,7 +138,7 @@ export const appRoutes: Route[] = [
                     {
                 type: "entry",
                 path: "index",
-                component: <PersonPage />,
+                component: <PersonalPage />,
                 title: "Personal",
                 children: [
                     
@@ -152,23 +163,7 @@ export const appRoutes: Route[] = [
                     }
                 ]
             },
-            {
-                    type: "domain",
-                path: "contact",
-                component: <OutletLayout />,
-                title: "Contact",
-                children: [
-                    {
-                            type: "entry",
-                path: "index",
-                component: <ContactPage />,
-                title: "Contact",
-                children: [
-                    
-                ]
-                    }
-                ]
-            },
+           
     {
         type: "domain",
         path: "admin",
@@ -185,14 +180,26 @@ export const appRoutes: Route[] = [
   
     {
         type: "domain",
-        path: "widget",
+        path: "utilities",
         component: <HomeLayout />, // Was WidgetLayout, effectively Outlet
-        title: "SubWidget",
+        title: "Unity",
         children: [
             {
-                path: "blank",
-                component: <BlankPage />,
-                title: "Blank",
+                path: "index",
+                component: <UtilitiesPage />,
+                title: "Storage",
+                children: [
+                    {
+                        type:"component",
+                        path: "storage",
+                        // layout: <HomeLayout />,
+                        component: <StoragePage />,
+                        title: "Storage",
+                        children: [
+                            
+                        ]
+                    }
+                ]
             },
             {
                 path: "1",

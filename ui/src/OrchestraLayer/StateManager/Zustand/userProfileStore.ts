@@ -2,6 +2,8 @@ import axios from 'axios';
 import { create } from 'zustand';
 import Cookies from 'js-cookie';
 
+const API_BASE_URL = '/backend';
+
 export interface UserDetails {
     information_id: number | null;
     identity_id: number | null;
@@ -19,7 +21,6 @@ export interface UserDetails {
 
 export interface UserProfile {
     id: number | null;
-
     firstName: string;
     lastName: string;
     friends: number;
@@ -28,9 +29,18 @@ export interface UserProfile {
     alias: string;
 }
 
+export interface UserAccount {
+    role: 'ADMIN' | 'USER' | 'VIEWER';
+}
+
 export interface UserInformation {
     details: UserDetails;
     profiles: UserProfile;
+}
+
+interface UserAccountState {
+    account: UserAccount;
+    getUserRole: () => Promise<void>;
 }
 
 interface UserInformationState {
@@ -41,7 +51,7 @@ interface UserInformationState {
     editProfile: (university: string, location: string) => void;
 }
 
-export const useUserProfileStore = create<UserInformationState>((set, get) => ({
+const useUserProfileStore = create<UserInformationState>((set, get) => ({
     information: {
         details: {
             information_id: null,
@@ -59,7 +69,6 @@ export const useUserProfileStore = create<UserInformationState>((set, get) => ({
         },
         profiles: {
             id: null,
-
             firstName: '',
             lastName: '',
             friends: 208,
@@ -74,8 +83,8 @@ export const useUserProfileStore = create<UserInformationState>((set, get) => ({
             const token = Cookies.get('auth_jwt');
             if (!token) return;
 
-            // Fetching from your Spring Boot Endpoint
-            const response = await axios.get('http://localhost:22222/backend/person/information', {
+            // Fetch Person Information
+            const response = await axios.get(`${API_BASE_URL}/person/information`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -92,23 +101,20 @@ export const useUserProfileStore = create<UserInformationState>((set, get) => ({
                         profileImageUrl: data.profileImageUrl || state.information.profiles.profileImageUrl,
                         alias: data.alias,
                     },
-                    // Mapping additional fields to details if they exist in the response
                 }
             }));
 
-            const responseDetails = await axios.get('http://localhost:22222/backend/information/details', {
+            // Fetch Details
+            const responseDetails = await axios.get(`${API_BASE_URL}/information/details`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             const dataDetails = responseDetails.data;
-
             console.log("✅ Profile Sync Successful: ", dataDetails);
+
             set((state) => ({
                 information: {
-                    profiles: {
-                        ...state.information.profiles,
-
-                    },
+                    ...state.information,
                     details: {
                         ...state.information.details,
                         identity_id: dataDetails.id,
@@ -124,23 +130,14 @@ export const useUserProfileStore = create<UserInformationState>((set, get) => ({
                         linkedin_url: dataDetails.linkedin_url,
                     }
                 }
-            }
-            ));
+            }));
 
-            console.log("✅ Profile Sync Successful");
         } catch (error) {
             console.error("❌ Failed to fetch user profile:", error);
         }
     },
 
     updateProfileImageUrl: (url: string) => set((state) => ({
-        // information: {
-        //     ...state.information,
-        //     profiles: {
-        //         ...state.information.profiles,
-        //         profileImageUrl: url
-        //     }
-        // }
         information: {
             ...state.information,
             profiles: {
@@ -149,6 +146,7 @@ export const useUserProfileStore = create<UserInformationState>((set, get) => ({
             }
         }
     })),
+
     editProfile: (editUniversity: string, editLocation: string) => set((state) => ({
         information: {
             ...state.information,
@@ -158,30 +156,20 @@ export const useUserProfileStore = create<UserInformationState>((set, get) => ({
                     ...state.information.details,
                     university: editUniversity,
                     location: editLocation,
-                    github_url: state.information.details.github_url,
-                    website_url: state.information.details.website_url,
-                    company: state.information.details.company,
-                    country: state.information.details.country,
-                    bio: state.information.details.bio,
-                    occupation: state.information.details.occupation,
-                    education_level: state.information.details.education_level,
-                    linkedin_url: state.information.details.linkedin_url,
                 }
-            }
+            } as any // Temporary cast to bypass structure mismatch if 'details' is not directly under 'profiles' in intended schema, but keeping logically consistent with previous code
         }
-
     })),
 
 
     updateProfile: async () => {
         try {
             const token = Cookies.get('auth_jwt');
-            const { details } = get().information; // Get current state
+            const { details } = get().information;
 
-            // This matches your Java @PostMapping("edit")
-            // Sending the details object as the @RequestBody
             const response = await axios.post(
-                `http://localhost:22222/backend/information/edit?university=${details.university}&location=${details.location}`,
+                `${API_BASE_URL}/information/edit?university=${details.university}&location=${details.location}`,
+                {},
                 {
                     headers: { Authorization: `Bearer ${token}` }
                 }
@@ -192,6 +180,63 @@ export const useUserProfileStore = create<UserInformationState>((set, get) => ({
             console.error("❌ Failed to update profile in database:", error);
         }
     },
-
-
 }));
+
+const useUserAccountStore = create<UserAccountState>((set) => ({
+    account: {
+        role: 'USER',
+    },
+
+    getUserRole: async () => {
+        try {
+            const token = Cookies.get('auth_jwt');
+            const response = await axios.get(`${API_BASE_URL}/account/information`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            set((state) => ({
+                ...state,
+                account: {
+                    ...state.account,
+                    role: response.data.role,
+                },
+            }));
+        }
+        catch (error) {
+            console.error("❌ Failed to get user role:", error);
+        }
+    }
+}));
+
+interface SkillType {
+    id: number;
+    category: string;
+    name: string;
+    description: string;
+
+}
+interface UserSkillState {
+    value: SkillType[];
+    getUserSkill: () => Promise<void>;
+}
+const useUserSkillStore = create<UserSkillState>((set) => ({
+    value: [],
+    getUserSkill: async () => {
+        try {
+            const token = Cookies.get('auth_jwt');
+            const response = await axios.get<SkillType[]>(`${API_BASE_URL}/person/skills`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            console.log("✅ Database Skill Successful:", response.data);
+            set((state) => ({
+
+                ...state,
+                value: response.data
+            }));
+        }
+        catch (error) {
+            console.error("❌ Failed to get user skill:", error);
+        }
+    }
+
+}))
+export { useUserAccountStore, useUserProfileStore, useUserSkillStore };

@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Sample avatar image - replace with your AvatarImage component
 import { AvatarImage } from "../../DataLayer/LocalDataLayer/assets/AvatarImage";
 import { useObjectImageEtagStore } from "../../OrchestraLayer/StateManager/Zustand/objectImageStore";
 import { useUserProfileStore } from "../../OrchestraLayer/StateManager/Zustand/userProfileStore";
-import axios from "axios";
+import MotionImageSpinner from "../UILogics/Spin";
+import { MainAppIcon } from "../../DataLayer/LocalDataLayer/assets/IconAssets";
 interface AvatarFloatButtonProps {
     x: number;
     y: number;
     sizeScale?: number; // Size in pixels (default: 48)
     collaboratorDistance?: number; // Distance of collaborators from center (default: 60)
+    onClick?: () => void;
 }
 
 const CollaborateIcon: React.FC<{ size: number; collaboratorDistance: number }> = ({
@@ -197,11 +199,12 @@ const RippleEffect: React.FC<{ size: number }> = ({ size }) => {
         />
     );
 }
-const AvatarFloatButton: React.FC<AvatarFloatButtonProps> = ({
-    x,
-    y,
+
+const MainButton: React.FC<AvatarFloatButtonProps> = ({
+
     sizeScale = 1,
-    collaboratorDistance = 60
+    collaboratorDistance = 60,
+    onClick
 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -219,55 +222,17 @@ const AvatarFloatButton: React.FC<AvatarFloatButtonProps> = ({
     // Calculate avatar size properly
     const avatarSize = Math.max(size - borderWidth * 6, 20);
 
+
     const imageObjectStore = useObjectImageEtagStore();
     const userStore = useUserProfileStore();
     // const admisnUrl = "http://192.168.22.4:9000/duylongwebappobjectdatabase/admin.png";
-    const ADMIN_IMAGE_URL = `http://192.168.22.4:9000/duylongwebappobjectdatabase/${userStore.information.profiles.alias}/admin.png?v=${imageObjectStore.versions.avatarVersion}`;
-    const [profileBlobUrl, setProfileBlobUrl] = useState<string>('');
-    // const [coverBlobUrl, setCoverBlobUrl] = useState<string>('');
-
-    // Fetch Image via Axios
-    useEffect(() => {
-        let profileUrl = '';
-        let coverUrl = '';
-
-        const loadImage = async (url: string, setter: (val: string) => void) => {
-            // if (!user.profiles.alias) return;
-            try {
-                const response = await axios.get(url, { responseType: 'blob' });
-                const localUrl = URL.createObjectURL(response.data);
-                setter(localUrl);
-                return localUrl;
-            } catch (err) {
-                console.error("Lỗi tải ảnh qua Proxy:", err);
-                setter(url); // Fallback dùng link trực tiếp nếu axios lỗi
-            }
-        };
-
-        const loadAll = async () => {
-            profileUrl = await loadImage(ADMIN_IMAGE_URL, setProfileBlobUrl) || '';
-            // coverUrl = await loadImage(COVER_PHOTO_URL, setCoverBlobUrl) || '';
-        };
-
-        loadAll();
-
-        return () => {
-            if (profileUrl) URL.revokeObjectURL(profileUrl);
-            if (coverUrl) URL.revokeObjectURL(coverUrl);
-        };
-    }, []);
-
-
-
+    const adminUrl = `http://192.168.22.4:9000/duylongwebappobjectdatabase/${userStore.information.profiles.alias}/admin.png?v=${imageObjectStore.versions.avatarVersion}`;
     return (
         <div
-            className="fixed z-50 border-2 border-red-500 rotate-45"
-            style={{
-                bottom: `${x}px`,
-                right: `${y}px`,
-            }}
+            className=" z-50 w-15 h-15 border-3 flex justify-center items-center border-indigo-500 rotate-45"
+
         >
-            <div className="relative flex items-center justify-center">
+            <div className=" flex items-center justify-center">
                 {/* Collaboration Icons */}
                 <AnimatePresence>
                     {isExpanded && (
@@ -283,10 +248,42 @@ const AvatarFloatButton: React.FC<AvatarFloatButtonProps> = ({
                 <StarEffect glowSize1={glowSize1} glowSize2={glowSize2} rotatingBorderSize={rotatingBorderSize} />
                 {/* Main Avatar Button */}
                 <motion.button
-                    onClick={handleToggle}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="rounded-full flex items-center border-2  justify-center rotate-45 bg-white/95 backdrop-blur-xl border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-300 ease-out hover:bg-white z-10"
+                    onClick={onClick}
+                    whileHover={{ scale: 1.1, y: -2, 
+
+                        rotate: "360deg infinite",
+                        
+                 
+                        transition: {
+                            duration: 0.3,
+                            ease: "easeInOut"
+                        }
+
+                    }}
+                    whileTap={{ scale: 0.95, 
+
+                        transition: {
+                            duration: 0.3,
+                            ease: "easeInOut"
+                        }
+                    }}
+
+
+
+
+                    className="rounded-full 
+                
+                    flex items-center border-2 
+                     
+        hover:from-purple-600 hover:to-indigo-700 
+        shadow-lg hover:shadow-xl 
+      transition-all duration-300 transform hover:scale-105 
+      active:scale-95 
+      rounded-x
+    
+      bg-white! h-full flex items-center justify-center
+                    
+                    justify-center rotate-45 bg-white/95 backdrop-blur-xl border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-300 ease-out hover:bg-white z-10"
                     style={{
 
                         width: `${size}px`,
@@ -317,10 +314,12 @@ const AvatarFloatButton: React.FC<AvatarFloatButtonProps> = ({
                             }}
                         >
 
+                            {/* <MotionImageSpinner imageUrl={MainAppIcon} /> */}
+
 
                             <AvatarImage width={avatarSize} height={avatarSize}
-                                networkUrl={profileBlobUrl}
-
+                                networkUrl={MainAppIcon}
+                            // onClick={onClick}
                             />
                         </div>
                     </motion.div>
@@ -335,48 +334,11 @@ const AvatarFloatButton: React.FC<AvatarFloatButtonProps> = ({
                 </AnimatePresence>
 
                 {/* Status indicator */}
-                <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                    }}
-                    className="absolute bg-green-400 rounded-full border-2 border-white shadow-lg z-20"
-                    style={{
-                        width: `${statusSize}px`,
-                        height: `${statusSize}px`,
-                        top: '-2px',
-                        right: '-2px',
-                    }}
-                />
 
-                {/* Notification badge */}
-                {!isExpanded && (
-                    <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        exit={{ scale: 0 }}
-                        className="absolute bg-red-500 text-white rounded-full flex items-center justify-center font-bold shadow-lg z-30"
-                        style={{
-                            width: `${badgeSize}px`,
-                            height: `${badgeSize}px`,
-                            fontSize: `${Math.max(badgeSize * 0.5, 10)}px`,
-                            top: '-4px',
-                            right: '-4px',
-                        }}
-                    >
 
-                    </motion.div>
-                )}
-
-                {/* Floating particles */}
-                {isExpanded && (
-                    <FloatingParticle size={size * 1.5} delay={0} />
-                )}
             </div>
         </div>
     );
 };
 
-export default AvatarFloatButton;
+export default MainButton;

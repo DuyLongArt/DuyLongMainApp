@@ -128,9 +128,9 @@ const SecurityLayer: React.FC<ChildrenInterface> = ({ children }) => {
   // Render loading state
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen text-xl text-gray-700 bg-gray-100">
+      <div className="flex w-screen h-screen justify-center items-center text-xl text-gray-700 bg-gray-100">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+          <div className="border-4 w-20 h-20 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
           <p>Checking authentication status...</p>
         </div>
       </div>

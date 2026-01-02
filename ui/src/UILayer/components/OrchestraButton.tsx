@@ -12,14 +12,13 @@ import { motion } from 'framer-motion';
 
 const OrchestraButton: React.FC<OrchestraButtonProps> = ({ onClick }) => {
 
-  const url = "http:192.168.22.4:9000/duylongwebappobjectdatabase/admin.png"
+  // const url = "http:192.168.22.4:9000/duylongwebappobjectdatabase/admin.png"
 
 
   return (
 
 
-
-
+<div className=''>
 
 
     <motion.div
@@ -30,7 +29,9 @@ const OrchestraButton: React.FC<OrchestraButtonProps> = ({ onClick }) => {
     >
       <Button
         onClick={onClick}
-        className="hover:from-purple-600 hover:to-indigo-700 
+        className="
+        
+        hover:from-purple-600 hover:to-indigo-700 
         shadow-lg hover:shadow-xl 
       transition-all duration-300 transform hover:scale-105 
       active:scale-95 
@@ -42,6 +43,10 @@ const OrchestraButton: React.FC<OrchestraButtonProps> = ({ onClick }) => {
         <MotionImageSpinner imageUrl={MainAppIcon} />
       </Button>
     </motion.div>
+
+</div>
+
+
 
 
   );

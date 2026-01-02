@@ -1,4 +1,4 @@
 {
-    "backend_url":"http://localhost:8086",
-        "resolveJsonModule": true
+    "backend_url": "http://app.duylong.art:8686",
+    "resolveJsonModule": true
 }

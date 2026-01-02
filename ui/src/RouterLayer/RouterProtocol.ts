@@ -7,8 +7,9 @@ export interface ChildRoute {
     path: string;
     type?: string;
     component: React.ReactNode;
+    layout?: React.ReactNode;
     title?: string;
-    isDynamic?: boolean;
+    // isDynamic?: boolean;
     children?: ChildRoute[];
 }
 
@@ -32,12 +33,14 @@ export interface DomainRoute extends BaseRoute {
     component: React.ReactNode;
     children: ChildRoute[];
     title?: string;
+    layout?: React.ReactNode;
 }
 
 // Specific type for simple pages
 export interface PageRoute extends BaseRoute {
     type: 'page';
     path: string;
+    layout?: React.ReactNode;
     component: React.ReactNode;
     children?: ChildRoute[];
     title?: string;
@@ -45,6 +48,7 @@ export interface PageRoute extends BaseRoute {
 export interface ErrorRoute extends BaseRoute {
     type: 'error';
     path: string;
+    layout?: React.ReactNode;
     component: React.ReactNode;
     title?: string;
 }

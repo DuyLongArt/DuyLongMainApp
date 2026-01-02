@@ -1,21 +1,14 @@
-import Box from '@mui/material/Box';
 import type { ChildrenInterface } from '../../../OrchestraLayer/ChildrenComponent';
 import React from "react";
-import {CassettePlayer} from "../../components/NostagiaComponent/CassettePlayer.tsx";
-import {VinylRecord} from "../../components/NostagiaComponent/VinylRecord.tsx";
+import DashboardPage from "./Dashboard/DashboardPage";
 
-
-const HomePage: React.FC <ChildrenInterface>= ({children}) => {
-    return(
-        
-      <Box>
-
-        {/*{children}*/}
-          <CassettePlayer/>
-
-          <VinylRecord/>
-      </Box>
-
-    );
+const HomePage: React.FC<ChildrenInterface> = ({ children }) => {
+  return (
+    <div className="w-full h-full relative overflow-y-auto overflow-x-hidden">
+      {/* Background blobs or effects can go here if needed, but Dashboard has its own container */}
+      <DashboardPage />
+      {children}
+    </div>
+  );
 }
 export default HomePage;

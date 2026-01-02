@@ -18,10 +18,10 @@ const OutletLayout: React.FC<ChildrenInterface> = ({ children }) => {
       {/* Header Section */}
       <div className="">
         <OrchestraButton onClick={() => send({ type: 'CLICK' })} />
-        {/* <ResponsiveAppBar pageList={pageList} pathList={pathList} /> */}
+
       </div>
 
-      {/* Drawer Section */}
+
       <div>
         <CustomDrawer
           isOpen={state.matches("onButtonOpen")}
@@ -30,7 +30,7 @@ const OutletLayout: React.FC<ChildrenInterface> = ({ children }) => {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex justify-center overflow-auto">
+      <div className="flex-1 w-full h-screen overflow-auto">
 
         <Outlet />
         {children}

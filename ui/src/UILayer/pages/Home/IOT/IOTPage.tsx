@@ -1,106 +1,200 @@
-
-import React, { useContext } from 'react';
-import { Typography, Card, CardBody, Button } from "@material-tailwind/react";
+import React from 'react';
+import { Typography, Card, CardBody, Button, Chip, IconButton } from "@material-tailwind/react";
 import { useUserProfileStore } from '../../../../OrchestraLayer/StateManager/Zustand/userProfileStore';
-import IOTSessionIcon from '../IOT/IOTSessionIcon';
-import { useActorRef, useSelector } from '@xstate/react';
+import { useSelector } from '@xstate/react';
 import { ChangeIOTSessionActor } from '../../../../OrchestraLayer/StateManager/XState/ChangeIOTSession';
-
-// Define a simple IOT Store for this page if needed, or use RootStore
-// For now, let's assume we might extend root store later, 
-// or just use local state for demo purposes + root store for user info.
+import { IOTMapIcon } from './IOTMap';
+import {
+    HomeIcon,
+    LightBulbIcon,
+    LockClosedIcon,
+    CpuChipIcon,
+    FireIcon,
+    ArrowRightOnRectangleIcon,
+    GlobeAltIcon
+} from "@heroicons/react/24/solid";
+import HomeAssistant from './HomeAssistant';
 
 const IOTPage = () => {
     const user = useUserProfileStore((state) => state.information);
 
-
+    // --- CORE LOGIC (UNCHANGED) ---
     const changeSession = ChangeIOTSessionActor.useActorRef();
-    // var state;
-    var room: string = useSelector(changeSession, (snapshot) => snapshot.value);
-    // changeSession.subscribe((state) => {
-    //     console.log("IOTPage | State:", state.value);
-    //    room =state.value;
-    // })
+    const room = useSelector(changeSession, (snapshot) => snapshot.value);
+    // ------------------------------
+
     return (
-        <div className="flex w-full max-w-7xl min-h-screen">
+        <div className="flex w-full min-h-screen bg-blue-gray-50/50 font-sans">
 
-            <div className='flex-1 bg-blue-700'>
-                <IOTSessionIcon
-                    title="My Room"
-                    icon=""
-                    onClick={() => { changeSession.send({ type: "ROUTE", target: "onSubRoom" }) }}
-                />
-                <IOTSessionIcon
-                    title="Sub Room"
-                    icon=""
-                    onClick={() => { changeSession.send({ type: "ROUTE", target: "onMyRoom" }) }}
-                />
-            </div>
-            <div className='flex-11 bg-blue-200'>
-
-
-                <div className="">
-                    <Typography variant="h2" className="text-gray-900 font-bold mb-2">
-                        IOT Dashboard
-                    </Typography>
-                    <Typography className="text-gray-600">
-                        Welcome back, {user.profiles.firstName}. Here is your smart home status.
-                    </Typography>
-                    {room === "onMyRoom" ? <MyRoom /> : <SubRoom />}
+            {/* 1. Improved Sidebar */}
+            <aside className='w-3 lg:w-64 bg-gray-900 text-white shadow-xl flex flex-col transition-all duration-300 z-10'>
+                <div className="p-2 flex flex-col items-center border-b border-gray-800">
+                    <div className="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-900/40 mb-3 text-white">
+                        <IOTMapIcon />
+                    </div>
+                    <div className="hidden w-fit lg:block tracking-wider uppercase text-gray-400 text-xs font-bold">
+                        Smart Home
+                    </div>
                 </div>
 
+                <div className="flex-1 flex flex-col gap-2 p-4">
+                    <Typography variant="small" className="hidden lg:block text-gray-500 font-bold uppercase ml-3 mb-2 text-[11px]">
+                        Zones
+                    </Typography>
 
-            </div>
+                    <NavButton
+                        title="My Room"
+                        active={room === "onMyRoom"}
+                        icon={<HomeIcon className="h-5 w-5" />}
+                        onClick={() => changeSession.send({ type: "ROUTE", target: "onMyRoom" })}
+                    />
+                    <NavButton
+                        title="Sub Room"
+                        active={room === "onSubRoom"}
+                        icon={<ArrowRightOnRectangleIcon className="h-5 w-5" />}
+                        onClick={() => changeSession.send({ type: "ROUTE", target: "onSubRoom" })}
+                    />
+                    <NavButton
+                        title="Network"
+                        active={room === "onNetwork"}
+                        icon={<GlobeAltIcon className="h-5 w-5" />}
+                        onClick={() => changeSession.send({ type: "ROUTE", target: "onNetwork" })}
+                    />
+                </div>
+            </aside>
+
+            {/* 2. Main Content Area */}
+            <main className='flex-1 p-6 lg:p-10 overflow-y-auto'>
+                <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <Typography variant="h2" color="blue-gray" className="font-bold tracking-tight">
+                            Dashboard
+                        </Typography>
+                        <Typography className="text-gray-500 font-medium mt-1">
+                            Overview of your connected devices
+                        </Typography>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-blue-gray-100">
+                        <div className="relative flex h-3 w-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                        </div>
+                        <span className="text-sm font-bold text-gray-600">System Online</span>
+                    </div>
+                </header>
+
+                <div className="">
+                    {room === "onMyRoom" && <MyRoom />}
+                    {room === "onSubRoom" && <SubRoom />}
+                    {room === "onNetwork" && <HomeAssistant />}
+                </div>
+            </main>
         </div>
     );
 };
 
-const MyRoom: React.FC = () => {
+// --- Sub Components ---
+
+function NavButton({ title, active, onClick, icon }: any) {
     return (
-        <div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
-                {/* Mock IOT Cards */}
-                <DeviceCard name="Living Room Light" status="On" />
-                <DeviceCard name="Kitchen Thermostat" status="24°C" />
-                <DeviceCard name="Front Door" status="Locked" />
-                <DeviceCard name="System Status" status="Nominal" />
-            </div>
-        </div>
-    )
+        <button
+            onClick={onClick}
+            className={`flex items-center justify-center lg:justify-start gap-4 p-3 rounded-xl transition-all duration-200 group relative overflow-hidden w-full
+            ${active
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/30'
+                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                }`}
+        >
+            <span className="z-10">{icon}</span>
+            <span className="hidden lg:block font-medium z-10">{title}</span>
+        </button>
+    );
 }
 
-const SubRoom: React.FC = () => {
+function MyRoom() {
     return (
         <div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
-                {/* Mock IOT Cards */}
-                <DeviceCard name="Sub Room Light" status="On" />
-                <DeviceCard name="Sub Room Thermostat" status="24°C" />
-                <DeviceCard name="Sub Room Door" status="Locked" />
-                <DeviceCard name="Sub Room Status" status="Nominal" />
+            <div className="flex items-center justify-between mb-6">
+                <Typography variant="h4" color="blue-gray" className="font-bold">
+                    My Room
+                </Typography>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                <DeviceCard name="Living Room Light" status="On" type="light" />
+                <DeviceCard name="Kitchen Thermostat" status="24°C" type="temp" />
+                <DeviceCard name="Front Door" status="Locked" type="security" />
+                <DeviceCard name="System Status" status="Nominal" type="system" />
             </div>
         </div>
-    )
+    );
 }
 
-
-const DeviceCard = ({ name, status }: { name: string, status: string }) => {
+function SubRoom() {
     return (
-        <Card className="hover:shadow-lg transition-shadow">
-            <CardBody>
-                <Typography variant="h5" color="blue-gray" className="mb-2">
+        <div>
+            <div className="flex items-center justify-between mb-6">
+                <Typography variant="h4" color="blue-gray" className="font-bold">
+                    Sub Room
+                </Typography>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                <DeviceCard name="Sub Room Light" status="Off" type="light" />
+                <DeviceCard name="Sub Room Thermostat" status="22°C" type="temp" />
+                <DeviceCard name="Sub Room Door" status="Unlocked" type="security" />
+                <DeviceCard name="Sub Room Status" status="Nominal" type="system" />
+            </div>
+        </div>
+    );
+}
+
+function DeviceCard({ name, status, type }: { name: string, status: string, type?: string }) {
+    const isActive = status === 'On' || status === 'Locked' || status.includes('°C') || status === 'Nominal';
+    let Icon = CpuChipIcon;
+    let colorClass = "text-blue-500 bg-blue-50";
+
+    if (type === 'light') { Icon = LightBulbIcon; colorClass = isActive ? "text-amber-500 bg-amber-50" : "text-gray-400 bg-gray-100"; }
+    if (type === 'temp') { Icon = FireIcon; colorClass = "text-orange-500 bg-orange-50"; }
+    if (type === 'security') { Icon = LockClosedIcon; colorClass = status === 'Locked' ? "text-green-500 bg-green-50" : "text-red-500 bg-red-50"; }
+
+    return (
+        <Card className="hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-blue-gray-50 overflow-hidden">
+            <CardBody className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                    <div className={`p-3 rounded-2xl ${colorClass}`}>
+                        <Icon className="h-6 w-6" />
+                    </div>
+                    <Chip
+                        size="sm"
+                        variant="ghost"
+                        value={status}
+                        color={isActive ? "green" : "blue-gray"}
+                        className="rounded-full font-bold"
+                    />
+                </div>
+
+                <Typography variant="h6" color="blue-gray" className="font-bold mb-1">
                     {name}
                 </Typography>
-                <Typography>
-                    Status: <span className="font-semibold text-blue-500">{status}</span>
+                <Typography variant="small" className="text-gray-500 font-medium mb-6">
+                    {type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Device'}
                 </Typography>
-                <div className="mt-4 flex gap-2">
-                    <Button size="sm" variant="outlined">Toggle</Button>
-                    <Button size="sm" variant="text">Settings</Button>
+
+                <div className="flex gap-2 pt-4 border-t border-gray-100">
+                    <Button
+                        size="sm"
+                        variant={isActive ? "gradient" : "outlined"}
+                        color={isActive ? "blue" : "blue-gray"}
+                        className="flex-1 rounded-lg shadow-none hover:shadow-md"
+                    >
+                        {isActive ? 'Active' : 'Enable'}
+                    </Button>
+                    <IconButton size="sm" variant="text" color="blue-gray">
+                        <span className="text-xl">⚙</span>
+                    </IconButton>
                 </div>
             </CardBody>
         </Card>
     );
-};
+}
 
 export default IOTPage;

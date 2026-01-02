@@ -11,7 +11,7 @@ const changeIOTSession = setup(
             events: {} as {
 
                 type: "ROUTE";
-                target:string;
+                target: string;
 
             }
         }
@@ -25,17 +25,26 @@ const changeIOTSession = setup(
         states: {
             onMyRoom: {
                 on: {
-                    ROUTE: {
-                        target: "onSubRoom"
-                    }
+                    ROUTE: [
+                        { target: "onSubRoom", guard: ({ event }) => event.target === "onSubRoom" },
+                        { target: "onNetwork", guard: ({ event }) => event.target === "onNetwork" }
+                    ]
                 }
             },
             onSubRoom: {
                 on: {
-                    ROUTE: {
-                        // type: "iot",
-                        target: "onMyRoom"
-                    }
+                    ROUTE: [
+                        { target: "onMyRoom", guard: ({ event }) => event.target === "onMyRoom" },
+                        { target: "onNetwork", guard: ({ event }) => event.target === "onNetwork" }
+                    ]
+                }
+            },
+            onNetwork: {
+                on: {
+                    ROUTE: [
+                        { target: "onMyRoom", guard: ({ event }) => event.target === "onMyRoom" },
+                        { target: "onSubRoom", guard: ({ event }) => event.target === "onSubRoom" }
+                    ]
                 }
             }
         }
